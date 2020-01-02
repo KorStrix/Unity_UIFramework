@@ -14,14 +14,6 @@ using UnityEngine.UI;
 
 namespace UIWidgetContainerManager_Logic
 {
-    public enum EUIShowHideEvent
-    {
-        Before_Show_UIObject,
-        After_Show_UIObject,
-        Before_Hide_UIObject,
-        After_Hide_UIObject,
-    }
-
     #region ICanvasManager_Logic
 
     /// <summary>
@@ -43,10 +35,10 @@ namespace UIWidgetContainerManager_Logic
     public class CanvasManager_LogicUndo_Wrapper : ICanvasManager_Logic_IsPossible_Undo
     {
         public ICanvasManager_Logic_IsPossible_Undo pLogic { get; private set; }
-        public EUIShowHideEvent eWhenUndo { get; private set; }
+        public ECavnasState eWhenUndo { get; private set; }
 
 
-        public CanvasManager_LogicUndo_Wrapper(ICanvasManager_Logic_IsPossible_Undo pLogic, EUIShowHideEvent eWhenUndo)
+        public CanvasManager_LogicUndo_Wrapper(ICanvasManager_Logic_IsPossible_Undo pLogic, ECavnasState eWhenUndo)
         {
             this.pLogic = pLogic; this.eWhenUndo = eWhenUndo;
         }
@@ -62,6 +54,24 @@ namespace UIWidgetContainerManager_Logic
         }
     }
     #endregion
+
+
+    public class Print_CanvasState : ICanvasManager_Logic
+    {
+        ECavnasState _eState;
+
+        public Print_CanvasState(ECavnasState eState)
+        {
+            _eState = eState;
+        }
+
+        public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
+            Debug.Log(pCanvas.gameObject.name + " ECavnasState : " + _eState);
+
+            yield break;
+        }
+    }
 
     public class SetTransform_LastSibling : ICanvasManager_Logic
     {

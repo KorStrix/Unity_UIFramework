@@ -99,11 +99,11 @@ namespace StrixLibrary_Test
 
             GameObject pObjectToggle_A = new GameObject(HasToggle_TestObject.EToggleObjectName.ToggleA.ToString());
             Toggle pToggleA = pObjectToggle_A.AddComponent<Toggle>();
-            pObjectToggle_A.transform.parent = pObjectTest.transform;
+            pObjectToggle_A.transform.SetParent(pObjectTest.transform);
 
             GameObject pObjectToggle_B = new GameObject(HasToggle_TestObject.EToggleObjectName.ToggleB.ToString());
             Toggle pToggleB = pObjectToggle_B.AddComponent<Toggle>();
-            pObjectToggle_B.transform.parent = pObjectTest.transform;
+            pObjectToggle_B.transform.SetParent(pObjectTest.transform);
 
 
 

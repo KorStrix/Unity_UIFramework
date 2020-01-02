@@ -9,14 +9,14 @@ namespace StrixLibrary_Test
 {
     public class UIElementExtension_Tester
     {
-        [Test]
-        public void Text_SeekTween_Int()
+        [UnityTest]
+        public IEnumerator Text_SeekTween_Int()
         {
             GameObject pObjectTestTarget = new GameObject(nameof(Text_SeekTween_Int));
             Text pText = pObjectTestTarget.AddComponent<Text>();
 
             int iStartNumber = 0;
-            int iDestNumber = 100;
+            int iDestNumber = int.MaxValue;
 
             pText.text = iStartNumber.ToString();
 
@@ -25,23 +25,28 @@ namespace StrixLibrary_Test
                 float fSeek_0_1 = Random.Range(0.01f, 0.9f);
                 pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1);
                 Assert.AreEqual(pText.text, (Mathf.RoundToInt(iDestNumber * fSeek_0_1)).ToString());
+
+                pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1, "n1");
+                Assert.AreEqual(pText.text, (Mathf.RoundToInt(iDestNumber * fSeek_0_1)).ToString("n1"));
             }
 
-            pText.DoSeekTween(pText, iStartNumber, iDestNumber, 1f);
-            Assert.AreEqual(pText.text, (iDestNumber).ToString());
+            pText.DoSeekTween(pText, iStartNumber, iDestNumber, 0f);
+            Assert.AreEqual(pText.text, (iStartNumber).ToString());
 
-            pText.DoSeekTween(pText, iStartNumber, iDestNumber, 2f);
+            pText.DoPlayTween(pText, iStartNumber, iDestNumber, 0.01f);
+            yield return null;
+            yield return null;
             Assert.AreEqual(pText.text, (iDestNumber).ToString());
         }
 
-        [Test]
-        public void Text_SeekTween_Float()
+        [UnityTest]
+        public IEnumerator Text_SeekTween_Float()
         {
             GameObject pObjectTestTarget = new GameObject(nameof(Text_SeekTween_Float));
             Text pText = pObjectTestTarget.AddComponent<Text>();
 
             float fStartNumber = 0f;
-            float fDestNumber = 100f;
+            float fDestNumber = float.MaxValue;
 
             pText.text = fStartNumber.ToString();
 
@@ -50,13 +55,45 @@ namespace StrixLibrary_Test
                 float fSeek_0_1 = Random.Range(0.01f, 0.9f);
                 pText.DoSeekTween(pText, fStartNumber, fDestNumber, fSeek_0_1);
                 Assert.AreEqual(pText.text, (fDestNumber * fSeek_0_1).ToString());
+
+                pText.DoSeekTween(pText, fStartNumber, fDestNumber, fSeek_0_1, "n1");
+                Assert.AreEqual(pText.text, (fDestNumber * fSeek_0_1).ToString("n1"));
             }
 
-            pText.DoSeekTween(pText, fStartNumber, fDestNumber, 1f);
-            Assert.AreEqual(pText.text, (fDestNumber).ToString());
+            pText.DoSeekTween(pText, fStartNumber, fDestNumber, 0f);
+            Assert.AreEqual(pText.text, (fStartNumber).ToString());
 
-            pText.DoSeekTween(pText, fStartNumber, fDestNumber, 2f);
+            pText.DoPlayTween(pText, fStartNumber, fDestNumber, 0.01f);
+            yield return null;
+            yield return null;
             Assert.AreEqual(pText.text, (fDestNumber).ToString());
+        }
+
+        [UnityTest]
+        public IEnumerator Text_SeekTween_Long()
+        {
+            GameObject pObjectTestTarget = new GameObject(nameof(Text_SeekTween_Long));
+            Text pText = pObjectTestTarget.AddComponent<Text>();
+
+            long iStartNumber = 0;
+            long iDestNumber = long.MaxValue;
+
+            pText.text = iStartNumber.ToString();
+
+            for (int i = 0; i < 10; i++)
+            {
+                float fSeek_0_1 = Random.Range(0.01f, 0.9f);
+                pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1);
+                Assert.AreEqual(pText.text, (iDestNumber * fSeek_0_1).ToString());
+
+                pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1, "n1");
+                Assert.AreEqual(pText.text, (iDestNumber * fSeek_0_1).ToString("n1"));
+            }
+
+            pText.DoPlayTween(pText, iStartNumber, iDestNumber, 0.01f);
+            yield return null;
+            yield return null;
+            Assert.AreEqual(pText.text, (iDestNumber).ToString());
         }
     }
 }

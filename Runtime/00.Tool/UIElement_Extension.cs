@@ -15,83 +15,101 @@ using System.Collections.Generic;
 /// </summary>
 public static class UIElement_Extension
 {
-    delegate string GetNumberLerpString<T>(T iNumberStart, T iNumberDest, float fProgress_0_1, string strFormat);
+    delegate T GetLerp<T>(T iNumberStart, T iNumberDest, float fProgress_0_1);
+    delegate string ToString<T>(T iNumber, string strFormat);
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration)
     {
-        return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetNumberLerp_Int_HasNotFormat));
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Int, ToString_Int_NotUseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration, string strFormat)
     {
-        return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strFormat, GetNumberLerp_Int_HasFormat));
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strFormat, GetLerp_Int, ToString_Int_UseFormat));
+    }
+
+    static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration)
+    {
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Long, ToString_Long_NotUseFormat));
+    }
+
+    static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration, string strFormat)
+    {
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strFormat, GetLerp_Long, ToString_Long_UseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration)
     {
-        return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, null, GetNumberLerp_Float_HasNotFormat));
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, null, GetLerp_Float, ToString_Float_NotUseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration, string strFormat)
     {
-        return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, strFormat, GetNumberLerp_Float_HasFormat));
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, strFormat, GetLerp_Float, ToString_Float_UseFormat));
     }
 
     static public void DoSeekTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fSeekPos_0_1)
     {
-        SeekTweenText(pText, iNumberStart, iNumberDest, fSeekPos_0_1, null, GetNumberLerp_Int_HasNotFormat);
+        SeekTweenText(pText, iNumberStart, iNumberDest, fSeekPos_0_1, null, GetLerp_Int, ToString_Int_NotUseFormat);
     }
 
     static public void DoSeekTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fSeekPos_0_1, string strFormat)
     {
-        SeekTweenText(pText, iNumberStart, iNumberDest, fSeekPos_0_1, strFormat, GetNumberLerp_Int_HasFormat);
+        SeekTweenText(pText, iNumberStart, iNumberDest, fSeekPos_0_1, strFormat, GetLerp_Int, ToString_Int_UseFormat);
     }
 
     static public void DoSeekTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fSeekPos_0_1)
     {
-        SeekTweenText(pText, fNumberStart, fNumberDest, fSeekPos_0_1, null, GetNumberLerp_Float_HasNotFormat);
+        SeekTweenText(pText, fNumberStart, fNumberDest, fSeekPos_0_1, null, GetLerp_Float, ToString_Float_NotUseFormat);
     }
 
     static public void DoSeekTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fSeekPos_0_1, string strFormat)
     {
-        SeekTweenText(pText, fNumberStart, fNumberDest, fSeekPos_0_1, strFormat, GetNumberLerp_Float_HasFormat);
+        SeekTweenText(pText, fNumberStart, fNumberDest, fSeekPos_0_1, strFormat, GetLerp_Float, ToString_Float_UseFormat);
     }
 
 
-    static private IEnumerator TweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fDuration, string strFormat, GetNumberLerpString<T> NumberFormat)
+    static private IEnumerator TweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fDuration, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
     {
         float fProgress_0_1 = 0f;
         while (fProgress_0_1 < 1f)
         {
-            SeekTweenText(pText, iNumberStart, iNumberDest, fProgress_0_1, strFormat, NumberFormat);
+            SeekTweenText(pText, iNumberStart, iNumberDest, fProgress_0_1, strFormat, GetLerp, ToString);
             fProgress_0_1 += Time.deltaTime / fDuration;
 
             yield return null;
         }
 
-        SeekTweenText(pText, iNumberStart, iNumberDest, 1f, strFormat, NumberFormat);
-        yield return null;
+        pText.text = ToString(iNumberDest, strFormat);
+    }
+    
+
+    static private void SeekTweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fSeekPos_0_1, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
+    {
+        pText.text = ToString(GetLerp(iNumberStart, iNumberDest, fSeekPos_0_1), strFormat);
     }
 
-    static private void SeekTweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fSeekPos_0_1, string strFormat, GetNumberLerpString<T> NumberFormat)
+    private static int GetLerp_Int(int iNumberStart, int iNumberDest, float fProgress_0_1)
     {
-        pText.text = NumberFormat(iNumberStart, iNumberDest, fSeekPos_0_1, strFormat);
+        return Mathf.RoundToInt(Mathf.Lerp(iNumberStart, iNumberDest, fProgress_0_1));
+    }
+    
+    private static long GetLerp_Long(long iNumberStart, long iNumberDest, float fProgress_0_1)
+    {
+        return Mathf.RoundToInt(Mathf.Lerp(iNumberStart, iNumberDest, fProgress_0_1));
     }
 
-    private static string GetNumberLerp_Int_HasFormat(int iNumberStart, int iNumberDest, float fProgress_0_1, string strFormat)
+    private static float GetLerp_Float(float fNumberStart, float fNumberDest, float fProgress_0_1)
     {
-		return Mathf.RoundToInt(Mathf.Lerp(iNumberStart, iNumberDest, fProgress_0_1)).ToString(strFormat);
-    }
-    private static string GetNumberLerp_Int_HasNotFormat(int iNumberStart, int iNumberDest, float fProgress_0_1, string strFormat)
-    {
-		return Mathf.RoundToInt(Mathf.Lerp(iNumberStart, iNumberDest, fProgress_0_1)).ToString();
-    }
-    private static string GetNumberLerp_Float_HasFormat(float fNumberStart, float fNumberDest, float fProgress_0_1, string strFormat)
-    {
-        return Mathf.Lerp(fNumberStart, fNumberDest, fProgress_0_1).ToString(strFormat);
-	} 
-    private static string GetNumberLerp_Float_HasNotFormat(float fNumberStart, float fNumberDest, float fProgress_0_1, string strFormat)
-    {
-        return Mathf.Lerp(fNumberStart, fNumberDest, fProgress_0_1).ToString();
-    }
+        return Mathf.Lerp(fNumberStart, fNumberDest, fProgress_0_1);
+	}
+
+    private static string ToString_Int_UseFormat(int iNumber, string strFormat) { return iNumber.ToString(strFormat); }
+    private static string ToString_Int_NotUseFormat(int iNumber, string strFormat) { return iNumber.ToString(); }
+
+    private static string ToString_Long_UseFormat(long iNumber, string strFormat) { return iNumber.ToString(strFormat); }
+    private static string ToString_Long_NotUseFormat(long iNumber, string strFormat) { return iNumber.ToString(); }
+
+    private static string ToString_Float_UseFormat(float fNumber, string strFormat) { return fNumber.ToString(strFormat); }
+    private static string ToString_Float_NotUseFormat(float fNumber, string strFormat) { return fNumber.ToString(); }
 }

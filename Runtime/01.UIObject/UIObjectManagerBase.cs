@@ -21,7 +21,24 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
 
     /* enum & struct declaration                */
 
+    [System.Flags]
+    public enum ELogTypeFlag : ulong
+    {
+        None = 0,
+
+        Debug_1 = 1 << 0,
+        Debug_2 = 1 << 1,
+
+        Warning = 1 << 2,
+        Error = 1 << 3,
+
+        Test = 1 << 4,
+    }
+
     /* public - Field declaration            */
+
+    public delegate void delOnPrintLog(ELogTypeFlag eLogTypeFlag, string strLog, Object pContextObject);
+    public event delOnPrintLog OnPrintLog = DefaultPrintLog;
 
     public delegate void delOnException(System.Exception pException, Object pObject);
     static public event delOnException OnException;
@@ -30,10 +47,10 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
     {
         get
         {
-            if (_instance == null)
+            if (_instance.IsNull())
             {
                 _instance = FindObjectOfType<CLASS_DRIVEN_MANAGER>();
-                if (_instance == null)
+                if (_instance.IsNull())
                 {
                     GameObject pObjectInstance = new GameObject(typeof(CLASS_DRIVEN_MANAGER).Name);
                     _instance = pObjectInstance.AddComponent<CLASS_DRIVEN_MANAGER>();
@@ -50,18 +67,43 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
     /* protected & private - Field declaration         */
 
     static protected CLASS_DRIVEN_MANAGER _instance { get; private set; }
+    static protected bool _bApplication_IsQuit { get; private set; } = false;
 
     // ========================================================================== //
 
     /* public - [Do] Function
      * 외부 객체가 호출(For External class call)*/
 
-    static public void DoDestroy_Manager()
+    static public void DefaultPrintLog(ELogTypeFlag eLogTypeFlag, string strLog, Object pContextObject)
+    {
+        if ((eLogTypeFlag & ELogTypeFlag.Error) == ELogTypeFlag.Error)
+        {
+            Debug.LogError(eLogTypeFlag.ToString() + strLog, pContextObject);
+        }
+        else if ((eLogTypeFlag & ELogTypeFlag.Warning) == ELogTypeFlag.Warning)
+        {
+            Debug.LogWarning(eLogTypeFlag.ToString() + strLog, pContextObject);
+        }
+        else
+        {
+            Debug.Log(eLogTypeFlag.ToString() + strLog, pContextObject);
+        }
+    }
+
+
+    /// <summary>
+    /// 싱글톤을 파괴합니다
+    /// </summary>
+    static public void DoDestroy_Manager(bool bDeleteObject_Immediately = false)
     {
         if(_instance.IsNull() == false)
         {
             _instance.OnDestroy_ManagerInstance();
-            Destroy(_instance.gameObject);
+
+            if(bDeleteObject_Immediately)
+                DestroyImmediate(_instance.gameObject);
+            else
+                Destroy(_instance.gameObject);
         }
 
         _instance = null;
@@ -92,6 +134,9 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
 
     private void OnDestroy()
     {
+        if (_bApplication_IsQuit)
+            return;
+
         try
         {
             DoDestroy_Manager();
@@ -107,14 +152,15 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
         OnException = null;
     }
 
+    private void OnApplicationQuit()
+    {
+        _bApplication_IsQuit = true;
+    }
 
     /* protected - [abstract & virtual]         */
 
     virtual protected void OnAwake() { }
 
-    /// <summary>
-    /// 싱글톤으로 instance가 생성될 때 호출됩니다.
-    /// </summary>
     virtual protected void OnCreate_ManagerInstance() { }
     virtual protected void OnDestroy_ManagerInstance() { }
 

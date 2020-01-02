@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
-using UIWidgetContainerManager_Logic;
 using UnityEngine;
+
 using UnityEngine.TestTools;
+using NUnit.Framework;
+
+using UIWidgetContainerManager_Logic;
 
 namespace StrixLibrary_Test
 {
@@ -21,18 +23,22 @@ namespace StrixLibrary_Test
             switch (eName)
             {
                 case ECanvasName.Single:  OnFinishCreate(new GameObject(nameof(Canvas_ForTest)).AddComponent<Canvas_ForTest>()); break;
+
+                default:
+                    Debug.LogError("Error");
+                    break;
             }
 
             yield break;
         }
 
+        protected override void OnInit_ManagerLogic(Dictionary<EUIShowHideEvent, List<ICanvasManager_Logic>> mapManagerLogic)
+        {
+        }
+
         public override Canvas GetParentCavnas(ECanvasName eName, ICanvas pCanvas)
         {
             return null;
-        }
-
-        protected override void OnInit_ManagerLogic(Dictionary<EUIShowHideEvent, List<ICanvasManager_Logic>> mapManagerLogic)
-        {
         }
     }
 
@@ -125,8 +131,11 @@ namespace StrixLibrary_Test
 
     #endregion
 
+    /// <summary>
+    /// protected에 접근하기 위해 <see cref="CanvasManager_Example"/>를 상속
+    /// </summary>
     [Category("StrixLibrary")]
-    public class Canvas_Tester
+    public class Canvas_Tester : CanvasManager_Example
     {
         int iWaitFrameCount;
 
@@ -138,7 +147,7 @@ namespace StrixLibrary_Test
         {
             Debug.LogWarning(nameof(ICanvas_Basic_Test).SetColor_ForRichText(EColor_ForRichText.red));
 
-            CanvasManager_Example.DoDestroy_Manager();
+            CanvasManager_Example.DoDestroy_Manager(true);
 
             iWaitFrameCount = Random.Range(3, 6);
             // 매니져를 통한 팝업 켜기
@@ -180,7 +189,7 @@ namespace StrixLibrary_Test
         {
             Debug.LogWarning(nameof(ICanvas_ExtensionMethod_Test).SetColor_ForRichText(EColor_ForRichText.red));
 
-            CanvasManager_Example.DoDestroy_Manager();
+            CanvasManager_Example.DoDestroy_Manager(true);
 
             iWaitFrameCount = Random.Range(3, 6);
             // 매니져를 통한 팝업 켜기
@@ -237,7 +246,7 @@ namespace StrixLibrary_Test
         {
             Debug.LogWarning(nameof(ICanvas_Event_Hooking_Test).SetColor_ForRichText(EColor_ForRichText.red));
 
-            CanvasManager_Example.DoDestroy_Manager();
+            CanvasManager_Example.DoDestroy_Manager(true);
 
             iWaitFrameCount = Random.Range(3, 6);
 
@@ -274,7 +283,7 @@ namespace StrixLibrary_Test
         {
             Debug.Log(nameof(ICanvas_MultiplePopup_Test).SetColor_ForRichText(EColor_ForRichText.red));
 
-            CanvasManager_Example.DoDestroy_Manager();
+            CanvasManager_Example.DoDestroy_Manager(true);
             Assert.AreEqual(UICommandHandle<Canvas_ForTest>.iInstanceCount, 0);
 
             int iRandomCountMax = 0;
@@ -284,7 +293,7 @@ namespace StrixLibrary_Test
                 int iMultipleOpenCount = Random.Range(10, 20);
                 iRandomCountMax += iMultipleOpenCount;
 
-                yield return MultiplePopup_ShowHideTest(iMultipleOpenCount);
+                yield return MultiplePopup_ShowHideTest(iMultipleOpenCount, 2);
                 Debug.LogWarning("------------------------------------");
                 Debug.LogWarning(string.Format("Test Count : {0} // Test Cycle : {1} / {2}", iMultipleOpenCount, i + 1, iTestCase));
                 Debug.LogWarning("------------------------------------");
@@ -302,19 +311,19 @@ namespace StrixLibrary_Test
         {
             Debug.Log(nameof(ICanvas_GetShowedPopup_And_AllHide_Test).SetColor_ForRichText(EColor_ForRichText.red));
 
-            CanvasManager_Example.DoDestroy_Manager();
+            DoDestroy_Manager(true);
             Assert.AreEqual(UICommandHandle<Canvas_ForTest>.iInstanceCount, 0);
 
             int iMultipleOpenCount = Random.Range(10, 20);
-            yield return MultiplePopup_ShowHideTest(iMultipleOpenCount, false);
+            yield return MultiplePopup_ShowHideTest(iMultipleOpenCount, 2, false);
 
-            List<Canvas_ForTest> listCanvas_1 = CanvasManager_Example.GetAlreadyShow_PopupList<Canvas_ForTest>(CanvasManager_Example.ECanvasName.Single);
-            List<Canvas_ForTest> listCanvas_2 = CanvasManager_Example.GetAlreadyShow_PopupList<Canvas_ForTest>();
+            List<Canvas_ForTest> listCanvas_1 = GetAlreadyShow_CanvasList<Canvas_ForTest>(ECanvasName.Single);
+            List<ICanvas> listCanvas_2 = GetAlreadyShow_CanvasList();
 
             Assert.AreEqual(iMultipleOpenCount, listCanvas_1.Count);
             Assert.AreEqual(iMultipleOpenCount, listCanvas_2.Count);
 
-            CanvasManager_Example.DoAllHide_ShowedPopup(true);
+            DoAllHide_ShowedCanvas(true);
 
             for (int i = 0; i < listCanvas_1.Count; i++)
                 Assert.AreEqual(listCanvas_1[i].eState, Canvas_ForTest.EState.Show);
@@ -326,15 +335,36 @@ namespace StrixLibrary_Test
                 Assert.AreEqual(listCanvas_1[i].eState, Canvas_ForTest.EState.Hide);
         }
 
+        [UnityTest]
+        public IEnumerator CanvasManager_Destroy_And_Init_Loop()
+        {
+            Debug.Log(nameof(ICanvas_GetShowedPopup_And_AllHide_Test).SetColor_ForRichText(EColor_ForRichText.red));
+            
+            DoDestroy_Manager(true);
+            Assert.IsNull(_instance);
+            Assert.IsTrue(_instance.IsNull());
+
+            int iMultipleOpenCount = Random.Range(10, 20);
+            yield return MultiplePopup_ShowHideTest(iMultipleOpenCount, 2, false);
+
+            Assert.AreEqual(GetAlreadyShow_CanvasList().Count, iMultipleOpenCount);
+
+            DoDestroy_Manager(false);
+            Assert.IsNull(_instance);
+            Assert.AreEqual(GetAlreadyShow_CanvasList().Count, 0);
+
+            yield break;
+        }
+
         // ================================================================================================================
 
-        IEnumerator MultiplePopup_ShowHideTest(int iMultipleOpenCount, bool bIsHide = true)
+        IEnumerator MultiplePopup_ShowHideTest(int iMultipleOpenCount, int iMaxFrame, bool bIsHide = true)
         {
             List<UICommandHandle<Canvas_ForTest>> listCommandHandle = new List<UICommandHandle<Canvas_ForTest>>();
 
             for (int i = 1; i < iMultipleOpenCount + 1; i++)
             {
-                int iWaitFrameCount = i % 5;
+                int iWaitFrameCount = i % iMaxFrame;
 
                 var pHandle = CanvasManager_Example.DoShow_Multiple<Canvas_ForTest>(CanvasManager_Example.ECanvasName.Single).
                     Set_OnBeforeShow(x => x.DoSetWaitFrameCount(iWaitFrameCount));
@@ -416,6 +446,5 @@ namespace StrixLibrary_Test
 
             yield return null;
         }
-
     }
 }

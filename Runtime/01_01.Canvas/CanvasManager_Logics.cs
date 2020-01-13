@@ -204,7 +204,7 @@ namespace UIWidgetContainerManager_Logic
             var pHandle = pObject.DoHide();
             if (pHandle == null)
             {
-                Wrapper.Debug.LogWarning("Execute_UndoLogicCoroutine - pHandle == null");
+                Debug.LogWarning("Execute_UndoLogicCoroutine - pHandle == null");
                 yield break;
             }
             pHandle.Set_OnHide(OnFinishAnimation);

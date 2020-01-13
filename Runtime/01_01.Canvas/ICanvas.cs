@@ -76,6 +76,26 @@ static public class ICanvasHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
     /// </summary>
+    static public void DoHideOnly<T>(this T pObject)
+        where T : ICanvas
+    {
+        if (pObject == null)
+            return;
+
+        if (pObject.pUIManager == null)
+        {
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide), pObject);
+            pObject.gameObject.SetActive(false);
+
+            return;
+        }
+
+        pObject.pUIManager.IUIManager_Hide(pObject, true);
+    }
+
+    /// <summary>
+    /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
+    /// </summary>
     static public UICommandHandle<T> DoHide_NotPlayHideCoroutine<T>(this T pObject)
         where T : ICanvas
     {

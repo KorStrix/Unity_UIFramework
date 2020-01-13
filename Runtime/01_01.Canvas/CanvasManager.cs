@@ -522,7 +522,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
     {
         base.OnDestroy_ManagerInstance();
         
-        DoAllHide_ShowedCanvas(false);
+        // DoAllHide_ShowedCanvas(false);
 
         CLASS_DRIVEN_MANAGER pInstance = instance;
         if (pInstance.IsNull())

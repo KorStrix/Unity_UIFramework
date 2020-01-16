@@ -423,6 +423,9 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
     /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
     static public List<ICanvas> GetAlreadyShow_CanvasList()
     {
+        if (_bApplication_IsQuit)
+            return new List<ICanvas>();
+
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         List<CanvasWrapper> listCanvas_AlreadyShow = pInstance._list_CanvasShow;

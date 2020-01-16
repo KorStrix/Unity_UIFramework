@@ -52,6 +52,9 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
                 _instance = FindObjectOfType<CLASS_DRIVEN_MANAGER>();
                 if (_instance.IsNull())
                 {
+                    if (_bApplication_IsQuit)
+                        return null;
+
                     GameObject pObjectInstance = new GameObject(typeof(CLASS_DRIVEN_MANAGER).Name);
                     _instance = pObjectInstance.AddComponent<CLASS_DRIVEN_MANAGER>();
                 }

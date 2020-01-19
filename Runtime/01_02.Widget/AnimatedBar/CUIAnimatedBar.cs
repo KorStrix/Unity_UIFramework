@@ -35,7 +35,8 @@ public class CUIAnimatedBar : MonoBehaviour, IUIWidget
 
     public IUIManager pUIManager { get; set; }
 
-    public Image pImage_Fill;
+    [SerializeField]
+    Image _pImage_Fill = null;
 
     /* protected & private - Field declaration         */
 
@@ -46,6 +47,11 @@ public class CUIAnimatedBar : MonoBehaviour, IUIWidget
 
     /* public - [Do] Function
      * 외부 객체가 호출(For External class call)*/
+
+    public void DoInit(Image pImage_Fill)
+    {
+        this._pImage_Fill = pImage_Fill;
+    }
 
     public void DoAdd_AnimationLogic_OnIncrease(IAnimatedBarLogic pLogic, Image pImage)
     {
@@ -61,13 +67,13 @@ public class CUIAnimatedBar : MonoBehaviour, IUIWidget
 
     public void DoSet_BarFill(float fFill_0_1)
     {
-        pImage_Fill.fillAmount = fFill_0_1;
+        _pImage_Fill.fillAmount = fFill_0_1;
     }
     public void DoSet_BarFill_And_PlayAnimation(float fFill_0_1)
     {
-        if (pImage_Fill.fillAmount < fFill_0_1)
+        if (_pImage_Fill.fillAmount < fFill_0_1)
             Set_FillAmount_OnIncrease(fFill_0_1);
-        else if (pImage_Fill.fillAmount > fFill_0_1)
+        else if (_pImage_Fill.fillAmount > fFill_0_1)
             Set_FillAmount_OnDecrease(fFill_0_1);
     }
 
@@ -109,8 +115,8 @@ public class CUIAnimatedBar : MonoBehaviour, IUIWidget
 
     void Set_FillAmount_OnIncrease(float fFillAmount_0_1)
     {
-        float fBeforeFill = pImage_Fill.fillAmount;
-        pImage_Fill.fillAmount = fFillAmount_0_1;
+        float fBeforeFill = _pImage_Fill.fillAmount;
+        _pImage_Fill.fillAmount = fFillAmount_0_1;
 
         for (int i = 0; i < _listLogic_OnIncrease.Count; i++)
             _listLogic_OnIncrease[i].IAnimatedBarLogic_OnStartAnimation(fBeforeFill, fFillAmount_0_1, EDirection.Increase);
@@ -120,8 +126,8 @@ public class CUIAnimatedBar : MonoBehaviour, IUIWidget
 
     void Set_FillAmount_OnDecrease(float fFillAmount_0_1)
     {
-        float fBeforeFill = pImage_Fill.fillAmount;
-        pImage_Fill.fillAmount = fFillAmount_0_1;
+        float fBeforeFill = _pImage_Fill.fillAmount;
+        _pImage_Fill.fillAmount = fFillAmount_0_1;
 
         for (int i = 0; i < _listLogic_OnDecrease.Count; i++)
             _listLogic_OnDecrease[i].IAnimatedBarLogic_OnStartAnimation(fBeforeFill, fFillAmount_0_1, EDirection.Decrease);

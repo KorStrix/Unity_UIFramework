@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 
-public class ScrollItem_Example2 : MonoBehaviour, ICollectionItem
+public class ScrollItem_Example2 : MonoBehaviour, ICollectionItem, IPointerClickHandler
 {
     public Text text;
     public LayoutElement element;
@@ -17,4 +18,10 @@ public class ScrollItem_Example2 : MonoBehaviour, ICollectionItem
         element.preferredWidth = randomWidths[Mathf.Abs(idx) % 3];
         gameObject.name = name;
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("Click - " + text.text, this);
+    }
+
 }

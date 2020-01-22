@@ -61,7 +61,7 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
      * 외부 객체가 호출(For External class call)*/
 
 #if UNITY_EDITOR
-    [UnityEditor.MenuItem("GameObject/UI/" + nameof(RadioButton))]
+    [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(RadioButton))]
     static public void CreateRadioButton(MenuCommand pCommand)
     {
         const float const_fPosX = 120f;

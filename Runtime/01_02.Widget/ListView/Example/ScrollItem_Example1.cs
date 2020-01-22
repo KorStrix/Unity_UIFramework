@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 
-public class ScrollItem_Example1 : MonoBehaviour, ICollectionItem
+public class ScrollItem_Example1 : MonoBehaviour, ICollectionItem, IPointerClickHandler
 {
     public Image image;
 	public Text text;
@@ -67,4 +68,10 @@ public class ScrollItem_Example1 : MonoBehaviour, ICollectionItem
         }
         return new Color(r, g, b);
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("Click - " + text.text, this);
+    }
+
 }

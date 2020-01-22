@@ -26,7 +26,7 @@ public interface IAnimatedBarLogic
 /// 타겟 이미지가 붉은색으로 깜빡입니다.
 /// </summary>
 [System.Serializable]
-public class AnimatedBarLogic_Fade_DecreaseOnly : IAnimatedBarLogic
+public class AnimatedBarLogic_Blink_Image : IAnimatedBarLogic
 {
     public Color pAnimateColor = Color.red;
     public float fDuration = 1f;

@@ -7,8 +7,13 @@
 #endregion Header
 
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// 관리받는(관리자(<see cref="IUIManager"/>가 있는) <see cref="IUIObject"/> 
@@ -33,6 +38,69 @@ public interface ICanvas : IUIObject, IUIObject_Managed
 
 static public class ICanvasHelper
 {
+
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("GameObject/UI/Custom/" + "PopupBase")]
+    static public void CreateRadioButton(MenuCommand pCommand)
+    {
+        GameObject pObjectParents = pCommand.context as GameObject;
+
+        GameObject pObjectPopup = new GameObject("SomthingPopup");
+        GameObjectUtility.SetParentAndAlign(pObjectPopup, pObjectParents);
+
+        RectTransform pRectTransform_Popup = pObjectPopup.AddComponent<RectTransform>();
+        pRectTransform_Popup.SetAnchor(AnchorPresets.StretchAll);
+        pRectTransform_Popup.sizeDelta = Vector2.zero;
+        pObjectPopup.AddComponent<Canvas>();
+        pObjectPopup.AddComponent<GraphicRaycaster>();
+
+        GameObject pObjectBG = new GameObject("Image_BG");
+        GameObjectUtility.SetParentAndAlign(pObjectBG, pObjectPopup);
+
+        Image pImageBG = pObjectBG.AddComponent<Image>();
+        pImageBG.color = Color.white;
+        pImageBG.rectTransform.SetAnchor(AnchorPresets.StretchAll);
+        pImageBG.rectTransform.sizeDelta = new Vector2(-600f, -300f);
+
+        GameObject pObjectTitleBG = new GameObject("Image_TitleBG");
+        GameObjectUtility.SetParentAndAlign(pObjectTitleBG, pObjectBG);
+
+        Image pImageTitleBG = pObjectTitleBG.AddComponent<Image>();
+        pImageTitleBG.color = Color.gray;
+        pImageTitleBG.rectTransform.SetAnchor(AnchorPresets.TopCenter);
+        pImageTitleBG.rectTransform.sizeDelta = new Vector2(300f, 100f);
+
+        GameObject pObjectTitleText = new GameObject("Text_Title");
+        GameObjectUtility.SetParentAndAlign(pObjectTitleText, pObjectTitleBG);
+
+        Text pTextTitle = pObjectTitleText.AddComponent<Text>();
+        pTextTitle.color = Color.black;
+        pTextTitle.text = "Title";
+
+
+
+        GameObject pObjectButtonClose = new GameObject("Button_Close");
+        GameObjectUtility.SetParentAndAlign(pObjectButtonClose, pObjectBG);
+
+        Image pImageButton = pObjectButtonClose.AddComponent<Image>();
+        pImageButton.rectTransform.sizeDelta = new Vector2(150f, 50f);
+
+        pObjectButtonClose.AddComponent<Button>();
+
+        GameObject pObjectButtonCloseText = new GameObject("Text_Close");
+        GameObjectUtility.SetParentAndAlign(pObjectButtonCloseText, pObjectButtonClose);
+
+        Text pTextCloseButton = pObjectButtonCloseText.AddComponent<Text>();
+        pTextCloseButton.rectTransform.SetAnchor(AnchorPresets.StretchAll);
+        pTextCloseButton.text = "Close";
+
+        // 생성된 오브젝트를 Undo 시스템에 등록.
+        Undo.RegisterCreatedObjectUndo(pObjectPopup, "Create " + pObjectPopup.name);
+        Selection.activeObject = pObjectPopup;
+    }
+#endif
+
+
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 켭니다.
     /// </summary>

@@ -14,7 +14,7 @@ using System.Collections.Generic;
 /// <summary>
 /// 체력바, 경험치바 등에 사용하는 애니메이션 바.
 /// <para>주의) 이 객체는 바로 사용할 수 없습니다.</para>
-/// <para><see cref="DoAdd_AnimationLogic_OnIncrease"/>를 통해 Add하여 사용해야 합니다.</para>
+/// <para><see cref="DoAdd_AnimationLogic"/>를 통해 Add하여 사용해야 합니다.</para>
 /// </summary>
 public class CUIAnimatedBar : MonoBehaviour, IUIWidget
 {
@@ -24,13 +24,17 @@ public class CUIAnimatedBar : MonoBehaviour, IUIWidget
 
     public enum EDirection
     {
-        Increase,
-        Decrease,
+        None,
+
+        Increase = 1 << 0,
+        Decrease = 1 << 1,
+
+        Both = Increase + Decrease,
     }
 
     /* public - Field declaration            */
 
-    public delegate void del_OnChange_FillAmount(float fFillAmount_0_1_Before, float fFillAmount_0_1_After, CUIAnimatedBar.EDirection eDirection);
+    public delegate void del_OnChange_FillAmount(float fFillAmount_0_1_Before, float fFillAmount_0_1_After, EDirection eDirection);
     public event del_OnChange_FillAmount OnChange_FillAmount;
 
     public IUIManager pUIManager { get; set; }
@@ -53,16 +57,20 @@ public class CUIAnimatedBar : MonoBehaviour, IUIWidget
         this._pImage_Fill = pImage_Fill;
     }
 
-    public void DoAdd_AnimationLogic_OnIncrease(IAnimatedBarLogic pLogic, Image pImage)
+    public void DoAdd_AnimationLogic(IAnimatedBarLogic pLogic, Image pTargetImage, EDirection eDirection)
     {
-        pLogic.IAnimatedBarLogic_OnAwake(pImage);
-        _listLogic_OnIncrease.Add(pLogic);
-    }
+        pLogic.IAnimatedBarLogic_OnAwake(pTargetImage);
 
-    public void DoAdd_AnimationLogic_OnDecrease(IAnimatedBarLogic pLogic, Image pImage)
-    {
-        pLogic.IAnimatedBarLogic_OnAwake(pImage);
-        _listLogic_OnDecrease.Add(pLogic);
+        switch (eDirection)
+        {
+            case EDirection.Increase: _listLogic_OnIncrease.Add(pLogic); break;
+            case EDirection.Decrease: _listLogic_OnDecrease.Add(pLogic); break;
+
+            case EDirection.Both:
+                _listLogic_OnIncrease.Add(pLogic);
+                _listLogic_OnDecrease.Add(pLogic); 
+                break;
+        }
     }
 
     public void DoSet_BarFill(float fFill_0_1)

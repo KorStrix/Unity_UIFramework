@@ -23,14 +23,14 @@ namespace StrixLibrary_Test
             for(int i = 0; i < 10; i++)
             {
                 float fSeek_0_1 = Random.Range(0.01f, 0.9f);
-                pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1);
+                pText.DoSeekTween(iStartNumber, iDestNumber, fSeek_0_1);
                 Assert.AreEqual(pText.text, (Mathf.RoundToInt(iDestNumber * fSeek_0_1)).ToString());
 
-                pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1, "n1");
+                pText.DoSeekTween(iStartNumber, iDestNumber, fSeek_0_1, "n1");
                 Assert.AreEqual(pText.text, (Mathf.RoundToInt(iDestNumber * fSeek_0_1)).ToString("n1"));
             }
 
-            pText.DoSeekTween(pText, iStartNumber, iDestNumber, 0f);
+            pText.DoSeekTween(iStartNumber, iDestNumber, 0f);
             Assert.AreEqual(pText.text, (iStartNumber).ToString());
 
             pText.DoPlayTween(pText, iStartNumber, iDestNumber, 0.01f);
@@ -53,14 +53,14 @@ namespace StrixLibrary_Test
             for (int i = 0; i < 10; i++)
             {
                 float fSeek_0_1 = Random.Range(0.01f, 0.9f);
-                pText.DoSeekTween(pText, fStartNumber, fDestNumber, fSeek_0_1);
+                pText.DoSeekTween(fStartNumber, fDestNumber, fSeek_0_1);
                 Assert.AreEqual(pText.text, (fDestNumber * fSeek_0_1).ToString());
 
-                pText.DoSeekTween(pText, fStartNumber, fDestNumber, fSeek_0_1, "n1");
+                pText.DoSeekTween(fStartNumber, fDestNumber, fSeek_0_1, "n1");
                 Assert.AreEqual(pText.text, (fDestNumber * fSeek_0_1).ToString("n1"));
             }
 
-            pText.DoSeekTween(pText, fStartNumber, fDestNumber, 0f);
+            pText.DoSeekTween(fStartNumber, fDestNumber, 0f);
             Assert.AreEqual(pText.text, (fStartNumber).ToString());
 
             pText.DoPlayTween(pText, fStartNumber, fDestNumber, 0.01f);
@@ -83,10 +83,10 @@ namespace StrixLibrary_Test
             for (int i = 0; i < 10; i++)
             {
                 float fSeek_0_1 = Random.Range(0.01f, 0.9f);
-                pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1);
+                pText.DoSeekTween(iStartNumber, iDestNumber, fSeek_0_1);
                 Assert.AreEqual(pText.text, (iDestNumber * fSeek_0_1).ToString());
 
-                pText.DoSeekTween(pText, iStartNumber, iDestNumber, fSeek_0_1, "n1");
+                pText.DoSeekTween(iStartNumber, iDestNumber, fSeek_0_1, "n1");
                 Assert.AreEqual(pText.text, (iDestNumber * fSeek_0_1).ToString("n1"));
             }
 

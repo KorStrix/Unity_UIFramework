@@ -11,7 +11,7 @@ namespace SG
         void Start()
         {
             var ls = GetComponent<CUGUIScrollView>();
-            // ls.DoUpdateScroll(totalCount);
+            ls.DoCreate_ScrollItem(totalCount);
         }
     }
 }

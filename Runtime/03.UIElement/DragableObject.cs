@@ -43,14 +43,20 @@ public class DragableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
         public Vector3 GetWorldPos(Camera pCamera)
         {
-            return pCamera.ScreenToWorldPoint(pCamera.ScreenToWorldPoint(new Vector3(vecMousePos.x, vecMousePos.y, pCamera.nearClipPlane)));
+            if(pCamera == null)
+            {
+                Debug.LogError("GetWorldPos pCamera == null");
+                return Vector3.zero;
+            }
+
+            return pCamera.ScreenToWorldPoint(new Vector3(vecMousePos.x, vecMousePos.y, pCamera.nearClipPlane));
         }
     }
 
     public abstract class DragLogicBase
     {
-        protected DragableObject _pDragableObject { get; private set; }
-        public virtual void OnInit(DragableObject pDragableObject) { _pDragableObject = pDragableObject; }
+        public DragableObject pDragableObject { get; private set; }
+        public virtual void OnInit(DragableObject pDragableObject) { this.pDragableObject = pDragableObject; }
         public abstract void OnDragEvent(DragEvent sDragEvent);
     }
 
@@ -65,7 +71,7 @@ public class DragableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
         public override void OnDragEvent(DragEvent sDragEvent)
         {
-            _pDragableObject.listDragObject_Clone.Add(_OnInstantiate(_pDragableObject));
+            pDragableObject.listDragObject_Clone.Add(_OnInstantiate(pDragableObject));
         }
     }
 
@@ -80,9 +86,9 @@ public class DragableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
         public override void OnDragEvent(DragEvent sDragEvent)
         {
-            for(int i = 0; i < _pDragableObject.listDragObject_Clone.Count; i++)
+            for(int i = 0; i < pDragableObject.listDragObject_Clone.Count; i++)
             {
-                _OnDestroy(_pDragableObject.listDragObject_Clone[i]);
+                _OnDestroy(pDragableObject.listDragObject_Clone[i]);
                 i--;
             }
         }
@@ -140,10 +146,10 @@ public class DragableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
     public void OnDrag(PointerEventData eventData)
     {
-        DragEvent sDragEvent = new DragEvent(this, EDragState.Begin, Input.mousePosition);
+        DragEvent sDragEvent = new DragEvent(this, EDragState.Stay, Input.mousePosition);
         foreach (var pDragLogic_KeyPair in _mapDragLogic)
         {
-            if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.Begin) == false)
+            if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.Stay) == false)
                 continue;
 
             foreach (var pLogic in pDragLogic_KeyPair.Value)
@@ -155,10 +161,10 @@ public class DragableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        DragEvent sDragEvent = new DragEvent(this, EDragState.Begin, Input.mousePosition);
+        DragEvent sDragEvent = new DragEvent(this, EDragState.End, Input.mousePosition);
         foreach (var pDragLogic_KeyPair in _mapDragLogic)
         {
-            if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.Begin) == false)
+            if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.End) == false)
                 continue;
 
             foreach (var pLogic in pDragLogic_KeyPair.Value)

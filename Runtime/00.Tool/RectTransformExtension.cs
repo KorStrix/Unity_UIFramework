@@ -233,11 +233,11 @@ public static class RectTransformExtensions
     }
 
     /// <summary>
+    /// 스크린 기준의 Rect를 구합니다
     /// https://answers.unity.com/questions/1013011/convert-recttransform-rect-to-screen-space.html
     /// </summary>
     /// <param name="pRectTransform"></param>
-    /// <returns></returns>
-    public static Rect GetRect_ByScreen(this RectTransform pRectTransform)
+    public static Rect GetScreenRect(this RectTransform pRectTransform)
     {
         Vector2 size = Vector2.Scale(pRectTransform.rect.size, pRectTransform.lossyScale);
         return new Rect((Vector2)pRectTransform.position - (size * 0.5f), size);

@@ -38,7 +38,7 @@ public class AnimatedBarLogic_Blink_Image : IAnimatedBarLogic
     public void IAnimatedBarLogic_OnAwake(Image pImage)
     {
         _pImage = pImage;
-        _pImage.enabled = false;
+        _pImage.gameObject.SetActive(false);
     }
 
     public void IAnimatedBarLogic_OnStartAnimation(float fFillAmount_0_1_Before, float fFillAmount_0_1_After, CUIAnimatedBar.EDirection eDirection)
@@ -53,7 +53,7 @@ public class AnimatedBarLogic_Blink_Image : IAnimatedBarLogic
 
         _pCurrentColor = pAnimateColor;
 
-        _pImage.enabled = true;
+        _pImage.gameObject.SetActive(true);
         _pImage.color = _pCurrentColor;
     }
 
@@ -70,7 +70,7 @@ public class AnimatedBarLogic_Blink_Image : IAnimatedBarLogic
         }
         else
         {
-            _pImage.enabled = false;
+            _pImage.gameObject.SetActive(false);
         }
     }
 }

@@ -262,4 +262,10 @@ public static class RectTransformExtensions
     {
         return gameObject == null || ReferenceEquals(gameObject, null);
     }
+
+    static public Vector3 Convert_UI_To_WorldScreenPos(this RectTransform pTarget, Camera pUICamera, Camera pWorldCamera)
+    {
+        Vector3 vecScreenPoint = pUICamera.WorldToScreenPoint(pTarget.position);
+        return pWorldCamera.ScreenToWorldPoint(vecScreenPoint);
+    }
 }

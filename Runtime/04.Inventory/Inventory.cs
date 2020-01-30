@@ -23,7 +23,7 @@ namespace UIFramework
 
     public interface IData
     {
-        public int GetUniqueID { get; }
+        int GetUniqueID { get; }
     }
 
     public interface IData_IsPossible_Add_And_Subtract : IData

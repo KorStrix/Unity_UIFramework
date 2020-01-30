@@ -11,59 +11,63 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-/// <summary>
-/// 
-/// </summary>
-[RequireComponent(typeof(Inventory))]
-public class InventoryTester : MonoBehaviour
+namespace UIFramework
 {
-    /* const & readonly declaration             */
 
-
-    /* enum & struct declaration                */
-
-    [System.Serializable]
-    public class SomthingData
+    /// <summary>
+    /// 
+    /// </summary>
+    [RequireComponent(typeof(Inventory))]
+    public class InventoryTester : MonoBehaviour
     {
-        public string strName;
-        public Sprite pSpriteIcon;
-        public Color pColor;
+        /* const & readonly declaration             */
+
+
+        /* enum & struct declaration                */
+
+        [System.Serializable]
+        public class SomthingData
+        {
+            public string strName;
+            public Sprite pSpriteIcon;
+            public Color pColor;
+        }
+
+        /* public - Field declaration               */
+
+        public List<SomthingData> listSomthingData = new List<SomthingData>();
+
+        /* protected & private - Field declaration  */
+
+        Inventory _pInventory;
+
+        // ========================================================================== //
+
+        /* public - [Do~Somthing] Function 	        */
+
+
+        // ========================================================================== //
+
+        /* protected - [Override & Unity API]       */
+
+        private void Awake()
+        {
+            _pInventory = GetComponent<Inventory>();
+        }
+
+        private void OnEnable()
+        {
+            _pInventory.DoClear();
+            _pInventory.DoAddRange(listSomthingData.ToArray());
+        }
+
+        /* protected - [abstract & virtual]         */
+
+
+        // ========================================================================== //
+
+        #region Private
+
+        #endregion Private
     }
-
-    /* public - Field declaration               */
-
-    public List<SomthingData> listSomthingData = new List<SomthingData>();
-
-    /* protected & private - Field declaration  */
-
-    Inventory _pInventory;
-
-    // ========================================================================== //
-
-    /* public - [Do~Somthing] Function 	        */
-
-
-    // ========================================================================== //
-
-    /* protected - [Override & Unity API]       */
-
-    private void Awake()
-    {
-        _pInventory = GetComponent<Inventory>();
-    }
-
-    private void OnEnable()
-    {
-        _pInventory.DoClear();
-        _pInventory.DoAddRange(listSomthingData.ToArray());
-    }
-
-    /* protected - [abstract & virtual]         */
-
-
-    // ========================================================================== //
-
-    #region Private
-
-    #endregion Private
 }

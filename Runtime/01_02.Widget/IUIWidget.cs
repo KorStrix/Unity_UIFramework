@@ -11,7 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// Panel, <see cref="ICanvas"/> 제외하고, 고유한 객체로 동작하는 작은 UI Object
+/// <see cref="ICanvas"/> 제외하고, 고유한 객체로 동작하는 작은 UI Object
 /// <para>예시) <see cref="CUIAnimatedBar"/></para>
 /// </summary>
 public interface IUIWidget : IUIObject

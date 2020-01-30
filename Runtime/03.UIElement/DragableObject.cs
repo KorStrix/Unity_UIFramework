@@ -12,191 +12,121 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
-/// <summary>
-/// 
-/// </summary>
-public class DragableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+namespace UIFramework
 {
-    /* const & readonly declaration             */
-
-    /* enum & struct declaration                */
-
-    public enum EDragState
+    /// <summary>
+    /// 
+    /// </summary>
+    public class DragableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        None = 0,
+        /* const & readonly declaration             */
 
-        Begin = 1 << 0,
-        Stay = 1 << 1,
-        End = 1 << 2,
-    }
+        /* enum & struct declaration                */
 
-    public struct DragEvent
-    {
-        public DragableObject pDragableObject { get; private set; }
-        public EDragState eDragState { get; private set; }
-        public Vector2 vecMousePos { get; private set; }
+        /* public - Field declaration               */
 
-        public DragEvent(DragableObject pDragableObject, EDragState eDragState, Vector2 vecMousePos)
+        public delegate void delOnDrag(DragEvent sMessage);
+        public event delOnDrag OnDragEvent;
+
+        public List<DragableObject> listDragObject_Clone { get; private set; } = new List<DragableObject>();
+
+        /* protected & private - Field declaration  */
+
+        Dictionary<EDragState, List<DragLogicBase>> _mapDragLogic = new Dictionary<EDragState, List<DragLogicBase>>();
+
+        // ========================================================================== //
+
+        /* public - [Do~Somthing] Function 	        */
+
+        public void DoAddLogic(EDragState eDragStateFlag, DragLogicBase pLogic)
         {
-            this.pDragableObject = pDragableObject; this.eDragState = eDragState; this.vecMousePos = vecMousePos;
+            if (_mapDragLogic.ContainsKey(eDragStateFlag) == false)
+                _mapDragLogic.Add(eDragStateFlag, new List<DragLogicBase>());
+
+            pLogic.OnInit(this);
+            _mapDragLogic[eDragStateFlag].Add(pLogic);
         }
 
-        public Vector3 GetWorldPos(Camera pCamera)
+        public void DoClearAllLogic()
         {
-            if(pCamera == null)
+            foreach (var pLogicList in _mapDragLogic.Values)
+                pLogicList.Clear();
+        }
+
+        // ========================================================================== //
+
+        /* protected - [Override & Unity API]       */
+
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            DragEvent sDragEvent = new DragEvent(this, EDragState.Begin, Input.mousePosition);
+            foreach (var pDragLogic_KeyPair in _mapDragLogic)
             {
-                Debug.LogError("GetWorldPos pCamera == null");
-                return Vector3.zero;
+                if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.Begin) == false)
+                    continue;
+
+                foreach (var pLogic in pDragLogic_KeyPair.Value)
+                    pLogic.OnDragEvent(sDragEvent);
             }
 
-            return pCamera.ScreenToWorldPoint(new Vector3(vecMousePos.x, vecMousePos.y, pCamera.nearClipPlane));
-        }
-    }
-
-    public abstract class DragLogicBase
-    {
-        public DragableObject pDragableObject { get; private set; }
-        public virtual void OnInit(DragableObject pDragableObject) { this.pDragableObject = pDragableObject; }
-        public abstract void OnDragEvent(DragEvent sDragEvent);
-    }
-
-    public class DragLogic_CloneObject : DragLogicBase
-    {
-        System.Func<DragableObject, DragableObject> _OnInstantiate;
-
-        public DragLogic_CloneObject(System.Func<DragableObject, DragableObject> OnInstantiate)
-        {
-            _OnInstantiate = OnInstantiate;
+            OnDragEvent?.Invoke(sDragEvent);
         }
 
-        public override void OnDragEvent(DragEvent sDragEvent)
+        public void OnDrag(PointerEventData eventData)
         {
-            pDragableObject.listDragObject_Clone.Add(_OnInstantiate(pDragableObject));
-        }
-    }
-
-    public class DragLogic_DestroyAll_CloneObject : DragLogicBase
-    {
-        System.Action<DragableObject> _OnDestroy;
-
-        public DragLogic_DestroyAll_CloneObject(System.Action<DragableObject> OnDestroy)
-        {
-            _OnDestroy = OnDestroy;
-        }
-
-        public override void OnDragEvent(DragEvent sDragEvent)
-        {
-            for(int i = 0; i < pDragableObject.listDragObject_Clone.Count; i++)
+            DragEvent sDragEvent = new DragEvent(this, EDragState.Stay, Input.mousePosition);
+            foreach (var pDragLogic_KeyPair in _mapDragLogic)
             {
-                _OnDestroy(pDragableObject.listDragObject_Clone[i]);
-                i--;
+                if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.Stay) == false)
+                    continue;
+
+                foreach (var pLogic in pDragLogic_KeyPair.Value)
+                    pLogic.OnDragEvent(sDragEvent);
             }
+
+            OnDragEvent?.Invoke(sDragEvent);
         }
-    }
 
-    /* public - Field declaration               */
-
-    public delegate void delOnDrag(DragEvent sMessage);
-    public event delOnDrag OnDragEvent;
-
-    public List<DragableObject> listDragObject_Clone { get; private set; } = new List<DragableObject>();
-
-    /* protected & private - Field declaration  */
-
-    Dictionary<EDragState, List<DragLogicBase>> _mapDragLogic = new Dictionary<EDragState, List<DragLogicBase>>();
-
-    // ========================================================================== //
-
-    /* public - [Do~Somthing] Function 	        */
-
-    public void DoAddLogic(EDragState eDragStateFlag, DragLogicBase pLogic)
-    {
-        if (_mapDragLogic.ContainsKey(eDragStateFlag) == false)
-            _mapDragLogic.Add(eDragStateFlag, new List<DragLogicBase>());
-
-        pLogic.OnInit(this);
-        _mapDragLogic[eDragStateFlag].Add(pLogic);
-    }
-
-    public void DoClearAllLogic()
-    {
-        foreach(var pLogicList in _mapDragLogic.Values)
-            pLogicList.Clear();
-    }
-
-    // ========================================================================== //
-
-    /* protected - [Override & Unity API]       */
-
-
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        DragEvent sDragEvent = new DragEvent(this, EDragState.Begin, Input.mousePosition);
-        foreach(var pDragLogic_KeyPair in _mapDragLogic)
+        public void OnEndDrag(PointerEventData eventData)
         {
-            if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.Begin) == false)
-                continue;
+            DragEvent sDragEvent = new DragEvent(this, EDragState.End, Input.mousePosition);
+            foreach (var pDragLogic_KeyPair in _mapDragLogic)
+            {
+                if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.End) == false)
+                    continue;
 
-            foreach(var pLogic in pDragLogic_KeyPair.Value)
-                pLogic.OnDragEvent(sDragEvent); 
+                foreach (var pLogic in pDragLogic_KeyPair.Value)
+                    pLogic.OnDragEvent(sDragEvent);
+            }
+
+            OnDragEvent?.Invoke(sDragEvent);
         }
 
-        OnDragEvent?.Invoke(sDragEvent);
-    }
+        /* protected - [abstract & virtual]         */
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        DragEvent sDragEvent = new DragEvent(this, EDragState.Stay, Input.mousePosition);
-        foreach (var pDragLogic_KeyPair in _mapDragLogic)
+
+        // ========================================================================== //
+
+        #region Private
+
+        bool ContainEnumFlag<T>(T eEnumFlag, params T[] arrEnum)
+            where T : struct, System.IConvertible, System.IComparable, System.IFormattable
         {
-            if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.Stay) == false)
-                continue;
+            bool bIsContain = false;
 
-            foreach (var pLogic in pDragLogic_KeyPair.Value)
-                pLogic.OnDragEvent(sDragEvent);
+            int iEnumFlag = eEnumFlag.GetHashCode();
+            for (int i = 0; i < arrEnum.Length; i++)
+            {
+                int iEnum = arrEnum[i].GetHashCode();
+                bIsContain = (iEnumFlag & iEnum) != 0;
+                if (bIsContain)
+                    break;
+            }
+
+            return bIsContain;
         }
 
-        OnDragEvent?.Invoke(sDragEvent);
+        #endregion Private
     }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        DragEvent sDragEvent = new DragEvent(this, EDragState.End, Input.mousePosition);
-        foreach (var pDragLogic_KeyPair in _mapDragLogic)
-        {
-            if (ContainEnumFlag(pDragLogic_KeyPair.Key, EDragState.End) == false)
-                continue;
-
-            foreach (var pLogic in pDragLogic_KeyPair.Value)
-                pLogic.OnDragEvent(sDragEvent);
-        }
-
-        OnDragEvent?.Invoke(sDragEvent);
-    }
-
-    /* protected - [abstract & virtual]         */
-
-
-    // ========================================================================== //
-
-    #region Private
-
-    bool ContainEnumFlag<T>(T eEnumFlag, params T[] arrEnum)
-        where T : struct, System.IConvertible, System.IComparable, System.IFormattable
-    {
-        bool bIsContain = false;
-
-        int iEnumFlag = eEnumFlag.GetHashCode();
-        for (int i = 0; i < arrEnum.Length; i++)
-        {
-            int iEnum = arrEnum[i].GetHashCode();
-            bIsContain = (iEnumFlag & iEnum) != 0;
-            if (bIsContain)
-                break;
-        }
-
-        return bIsContain;
-    }
-
-    #endregion Private
 }

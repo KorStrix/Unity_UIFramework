@@ -67,7 +67,7 @@ namespace UIWidgetContainerManager_Logic
 
         public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
-            Debug.Log(pCanvas.gameObject.name + " ECavnasState : " + _eState);
+            Debug.Log(pCanvas.gameObject.name + " ECavnasState : " + _eState, pCanvas.gameObject);
 
             yield break;
         }

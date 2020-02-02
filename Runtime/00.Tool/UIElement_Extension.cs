@@ -15,7 +15,7 @@ using System.Collections.Generic;
 /// </summary>
 public static class UIElement_Extension
 {
-    #region Text
+    #region TextNumber
 
     delegate T GetLerp<T>(T iNumberStart, T iNumberDest, float fProgress_0_1);
     public delegate string ToString<T>(T iNumber, string strFormat_Or_Null);
@@ -130,7 +130,56 @@ public static class UIElement_Extension
     private static string ToString_Float_UseFormat(float fNumber, string strFormat) { return fNumber.ToString(strFormat); }
     private static string ToString_Float_NotUseFormat(float fNumber, string strFormat) { return fNumber.ToString(); }
 
-    #endregion Text
+    #endregion TextNumber
+
+    //static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextStart, string strTextDest, float fDuration)
+    //{
+    //    return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextStart, strTextDest, fDuration));
+    //}
+
+    static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fDuration)
+    {
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fDuration,  OnCalculateProgress_Duration));
+    }
+
+    static public Coroutine DoPlayTween_BySpeed(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fSpeed)
+    {
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fSpeed, OnCalculateProgress_Speed));
+    }
+
+    static private IEnumerator TweenText(UnityEngine.UI.Text pText, string strTextDest, float fValue, System.Func<float ,float ,float> OnCalculateProgress)
+    {
+        int iLength = strTextDest.Length;
+        int iCutLengthPrev = -1;
+        pText.text = "";
+
+        float fProgress_0_1 = 0f;
+        while (fProgress_0_1 < 1f)
+        {
+            int iCutLength = (int)(iLength * fProgress_0_1);
+            if(iCutLengthPrev != iCutLength)
+            {
+                iCutLengthPrev = iCutLength;
+                pText.text = strTextDest.Substring(0, iCutLength);
+            }
+
+            fProgress_0_1 += OnCalculateProgress(fValue, fProgress_0_1);
+            yield return null;
+        }
+
+        pText.text = strTextDest;
+    }
+
+    private static float OnCalculateProgress_Duration(float fDuration, float fProgress_0_1)
+    {
+        return Time.deltaTime / fDuration;
+    }
+
+    private static float OnCalculateProgress_Speed(float fSpeed, float fProgress_0_1)
+    {
+        return Time.deltaTime * fSpeed;
+    }
+
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Slider pSlider, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
     {

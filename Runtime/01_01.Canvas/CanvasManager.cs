@@ -104,7 +104,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         {
             this.eName = eName; this.pInstance = pInstance; this._OnStartCoroutine = OnStartCoroutine; this._OnStopCoroutine = OnStopCoroutine;
 
-            eState = ECavnasState.Disable;
+            DoSet_State(ECavnasState.Disable);
             _listChildrenWidget.Clear();
             pInstance.gameObject?.GetComponentsInChildren(true, _listChildrenWidget);
             for(int i = 0; i < _listChildrenWidget.Count; i++)
@@ -185,18 +185,19 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         public void DoSet_State_IsEnable()
         {
-            eState = ECavnasState.Showing;
+            DoSet_State(ECavnasState.Showing);
         }
 
-        public void DoSet_State_Is_Disable()
+        public void DoSet_State_Is_Disable_Force()
         {
             if (pInstance.Equals(null) == false)
                 pInstance.gameObject?.SetActive(false);
-            eState = ECavnasState.Disable;
+            DoSet_State(ECavnasState.Disable);
         }
 
         public void DoSet_State(ECavnasState eState)
         {
+            // Debug.LogError(eName + "State : " + eState, pInstance.gameObject);
             this.eState = eState;
         }
 
@@ -664,10 +665,12 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (bIsShow == false)
         {
             sUICommandHandle.Event_OnHide(false);
-            pWrapper.DoSet_State_Is_Disable();
+            pWrapper.DoSet_State_Is_Disable_Force();
 
             yield break;
         }
+
+        _list_CanvasShow.Add(pWrapper);
 
         yield return Execute_ManagerLogic(ECavnasState.Process_Before_ShowCoroutine, pWrapper);
         sUICommandHandle.Event_OnBeforeShow();
@@ -680,7 +683,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         OnShow_AfterAnimation(pWrapper.eName, pWrapper.pInstance);
 
-        _list_CanvasShow.Add(pWrapper);
+        // _list_CanvasShow.Add(pWrapper);
 
         yield break;
     }
@@ -702,12 +705,14 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
             yield return pWrapper.DoExecute_HideCoroutine();
 
         yield return Execute_ManagerLogic(ECavnasState.Process_After_HideCoroutine, pWrapper);
+
         sUICommandHandle.Event_OnHide(true);
 
-        int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, (x) => x.Check_IsEnable()).Count;
+        int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
         OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
 
-        pWrapper.DoSet_State_Is_Disable();
+        yield return Execute_ManagerLogic(ECavnasState.Disable, pWrapper);
+        pWrapper.DoSet_State_Is_Disable_Force();
         if (Check_Wrapper_IsNull(pWrapper))
             RemoveWrapper(pWrapper);
 
@@ -760,6 +765,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (listEnableWrapper.Count == 0)
         {
             Debug.LogWarning(name + " CoProcess_Hiding - eName : " + eName + " listEnableWrapper.Count == 0", this);
+            sUICommandHandle.Event_OnHide(true);
             yield break;
         }
 
@@ -805,6 +811,11 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         {
             pWrapper = listDisableWrapper[listDisableWrapper.Count - 1];
             bGet_IsSuccess = true;
+        }
+        else
+        {
+            Debug.LogWarning(name + " Get_UnUsedWrapper - eName : " + eName + " listDisableWrapper.Count == 0", this);
+            Get_MatchWrapperList(eName, (x) => x.Check_IsEnable() == false);
         }
 
         return bGet_IsSuccess;
@@ -886,7 +897,9 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
                 _mapWrapper.Add(eName, new List<CanvasWrapper>());
 
             _mapWrapper[eName].Add(pWrapper);
-            _mapWrapper_Key_Is_Instance.Add(pInstance, pWrapper);
+
+            if(_mapWrapper_Key_Is_Instance.ContainsKey(pInstance) == false)
+                _mapWrapper_Key_Is_Instance.Add(pInstance, pWrapper);
 
             pWrapper.pInstance.pUIManager = this;
         }

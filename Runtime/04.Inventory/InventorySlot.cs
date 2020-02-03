@@ -21,7 +21,7 @@ using UnityEditor;
 /// <summary>
 /// 
 /// </summary>
-public class InventorySlot : UIFramework.WidgetObjectBase, IPointerClickHandler
+public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerClickHandler
 {
     /* const & readonly declaration             */
 

@@ -17,7 +17,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public class PopupText : WidgetObjectBase
+    public class PopupText : UIWidgetObjectBase
     {
         /* const & readonly declaration             */
 
@@ -80,7 +80,7 @@ namespace UIFramework
 
             _listLogicCoroutine.Clear();
             for (int i = 0; i < listTextLogic.Count; i++)
-                _listLogicCoroutine.Add(StartCoroutine(listTextLogic[i].OnShowText(this)));
+                _listLogicCoroutine.Add(StartCoroutine(listTextLogic[i].OnShowText(this, strText)));
 
             yield return _listLogicCoroutine.GetEnumerator_Safe();
 

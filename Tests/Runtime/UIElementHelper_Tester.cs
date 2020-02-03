@@ -21,9 +21,9 @@ namespace StrixLibrary_Test
 
         public EButtonObjectName eLastClickButton { get; private set; } = EButtonObjectName.None;
 
-        public void IHas_UIButton_OnClickButton(EButtonObjectName eButtonName)
+        public void IHas_UIButton_OnClickButton(UIButtonMessage<EButtonObjectName> sButtonMsg)
         {
-            eLastClickButton = eButtonName;
+            eLastClickButton = sButtonMsg.eButtonName;
         }
     }
 

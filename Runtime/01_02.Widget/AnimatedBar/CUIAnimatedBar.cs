@@ -16,7 +16,7 @@ using System.Collections.Generic;
 /// <para>주의) 이 객체는 바로 사용할 수 없습니다.</para>
 /// <para><see cref="DoAdd_AnimationLogic"/>를 통해 Add하여 사용해야 합니다.</para>
 /// </summary>
-public class CUIAnimatedBar : UIFramework.WidgetObjectBase
+public class CUIAnimatedBar : UIFramework.UIWidgetObjectBase
 {
     /* const & readonly declaration             */
 

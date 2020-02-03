@@ -15,7 +15,7 @@ namespace UIFramework
 {
     public interface IPopupText_Logic
     {
-        IEnumerator OnShowText(PopupText pTextOwner);
+        IEnumerator OnShowText(PopupText pTextOwner, string strText);
         IEnumerator OnHideText(PopupText pTextOwner);
     }
 }

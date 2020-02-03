@@ -17,7 +17,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public class InventorySlot_TestDataDrawer : WidgetObjectBase
+    public class InventorySlot_TestDataDrawer : UIWidgetObjectBase
     {
         /* const & readonly declaration             */
 

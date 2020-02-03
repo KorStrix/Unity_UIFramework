@@ -19,12 +19,23 @@ using System.Linq;
 
 public interface IHas_UIButton<Enum_ButtonName>
 {
-    void IHas_UIButton_OnClickButton(Enum_ButtonName eButtonName);
+    void IHas_UIButton_OnClickButton(UIButtonMessage<Enum_ButtonName> sButtonMsg);
 }
 
 public interface IHas_UIToggle
 {
     void IHas_UIToggle_OnToggle(UIToggleMessage sToggleMessage);
+}
+
+public struct UIButtonMessage<Enum_ButtonName>
+{
+    public Enum_ButtonName eButtonName { get; private set; }
+    public Button pButton { get; private set; }
+
+    public UIButtonMessage(Enum_ButtonName eButtonName, Button pButton = null)
+    {
+        this.eButtonName = eButtonName; this.pButton = pButton;
+    }
 }
 
 public struct UIToggleMessage
@@ -84,7 +95,9 @@ public static class SCUIElementEventHelper
 
             UnityEngine.Events.UnityAction pAction = () => 
             {
-                pOwner.SendMessage(nameof(IHas_UIButton<object>.IHas_UIButton_OnClickButton), pEnum, SendMessageOptions.DontRequireReceiver); 
+                System.Type pButtonMessageGenericType = typeof(UIButtonMessage<>).MakeGenericType(pType_EnumButtonName);
+                object pButtonMsg = System.Activator.CreateInstance(pButtonMessageGenericType, pEnum, pButton);
+                pOwner.SendMessage(nameof(IHas_UIButton<object>.IHas_UIButton_OnClickButton), pButtonMsg, SendMessageOptions.DontRequireReceiver); 
             };
 
             pButton.onClick.AddListener(pAction);

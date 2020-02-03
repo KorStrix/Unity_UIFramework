@@ -16,7 +16,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public class WidgetObjectBase : MonoBehaviour, IUIWidget
+    public class UIWidgetObjectBase : MonoBehaviour, IUIWidget
     {
         /* const & readonly declaration             */
 

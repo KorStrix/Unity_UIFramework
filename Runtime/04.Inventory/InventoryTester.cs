@@ -57,6 +57,9 @@ namespace UIFramework
 
         private void OnEnable()
         {
+            if(_pInventory.bIsExecute_Awake == false)
+                _pInventory.EventAwake();
+
             _pInventory.DoClear();
             _pInventory.DoAddRange(listSomthingData.ToArray());
         }

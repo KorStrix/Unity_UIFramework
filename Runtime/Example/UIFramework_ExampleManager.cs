@@ -17,28 +17,16 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public class UIFramework_ExampleManager : UIWidgetObjectBase, IHas_UIButton<UIFramework_ExampleManager.EUIButton>
+    public class UIFramework_ExampleManager : UIWidgetObjectBase
     {
         /* const & readonly declaration             */
 
         /* enum & struct declaration                */
 
-        public enum EUIButton
-        {
-            Button_ShowPopupText,
-        }
-
-        enum EUIElement
-        {
-            InputField_PopupText,
-        }
-
         /* public - Field declaration               */
 
 
         /* protected & private - Field declaration  */
-
-        InputField _pInputField;
 
         // ========================================================================== //
 
@@ -48,27 +36,6 @@ namespace UIFramework
         // ========================================================================== //
 
         /* protected - [Override & Unity API]       */
-
-        protected override void OnAwake()
-        {
-            base.OnAwake();
-
-            _pInputField = GetComponentInChildren<InputField>();
-            if (string.IsNullOrEmpty(_pInputField.text))
-                _pInputField.text = Random.Range(0, 1000).ToString();
-        }
-
-        public void IHas_UIButton_OnClickButton(UIButtonMessage<EUIButton> sButtonMsg)
-        {
-            switch (sButtonMsg.eButtonName)
-            {
-                case EUIButton.Button_ShowPopupText:
-                    break;
-
-                default:
-                    break;
-            }
-        }
 
         /* protected - [abstract & virtual]         */
 

@@ -24,12 +24,11 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
+        public IUIManager pUIManager { get; set; }
 
         /* protected & private - Field declaration  */
 
         bool _bExecute_Awake = false;
-
-        public IUIManager pUIManager { get; set; }
 
         // ========================================================================== //
 
@@ -41,10 +40,11 @@ namespace UIFramework
 
         private void Awake()
         {
-            if (_bExecute_Awake == false)
+            if (_bExecute_Awake)
                 return;
             _bExecute_Awake = true;
 
+            SCUIElementEventHelper.DoInit_HasUIElement(this);
             OnAwake();
         }
 

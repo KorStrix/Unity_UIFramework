@@ -132,7 +132,7 @@ namespace UIFramework
             if (_mapSlot_ByData.TryGetValue(pData.GetUniqueID, out pSlot) == false)
                 return;
 
-            Slot_ClearData(pSlot, pData, pData.GetUniqueID);
+            Slot_ClearData(pSlot, pData.GetUniqueID);
         }
 
         public void DoRemove(object pData)
@@ -141,14 +141,18 @@ namespace UIFramework
             if (_mapSlot_ByData.TryGetValue(pData.GetHashCode(), out pSlot) == false)
                 return;
 
-            Slot_ClearData(pSlot, pData, pData.GetHashCode());
+            Slot_ClearData(pSlot, pData.GetHashCode());
         }
 
         public void DoClear()
         {
             for (int i = 0; i < _listSlot.Count; i++)
             {
-                Slot_ClearData(_listSlot[i], _listSlot[i].pData, _listSlot[i].pData.GetHashCode());
+                InventorySlot pSlot = _listSlot[i];
+                if(pSlot.pData != null)
+                    Slot_ClearData(pSlot, pSlot.pData.GetHashCode());
+                else
+                    Slot_ClearData(pSlot);
             }
 
             _iSelectedIndex = -1;
@@ -178,7 +182,12 @@ namespace UIFramework
             _mapSlot_ByData.Add(iDataKey, pSlot);
         }
 
-        private void Slot_ClearData(InventorySlot pSlot, object pData, int iDataKey)
+        private void Slot_ClearData(InventorySlot pSlot)
+        {
+            pSlot.DoClear();
+        }
+
+        private void Slot_ClearData(InventorySlot pSlot, int iDataKey)
         {
             pSlot.DoClear();
             _mapSlot_ByData.Remove(iDataKey);

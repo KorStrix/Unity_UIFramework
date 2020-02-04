@@ -23,16 +23,32 @@ namespace UIFramework
 
         /* enum & struct declaration                */
 
+        public enum EEventWhen
+        {
+            Show,
+            Hide,
+        }
+
+        [System.Serializable]
+        public class PopupupTextLogic
+        {
+            public EEventWhen eEventWhen;
+            public PopupText_Logic_ComponentBase pPopupTextLogic;
+        }
+
         /* public - Field declaration               */
 
+        public Text pText { get; private set; }
+
+        public List<PopupupTextLogic> listLogic_Insert_OnAwake = new List<PopupupTextLogic>();
 
         /* protected & private - Field declaration  */
 
-        List<IPopupText_Logic> listTextLogic = new List<IPopupText_Logic>();
+        List<IPopupText_Logic> _listPopupTextLogic_OnShow = new List<IPopupText_Logic>();
+        List<IPopupText_Logic> _listPopupTextLogic_OnHide = new List<IPopupText_Logic>();
         List<Coroutine> _listLogicCoroutine = new List<Coroutine>();
-        Coroutine _pCoroutine_Show;
+        Coroutine _pCoroutine;
 
-        Text _pText;
 
         // ========================================================================== //
 
@@ -40,19 +56,34 @@ namespace UIFramework
 
         public void DoShow(string strText, Vector3 vecWorldPos)
         {
-            if (_pCoroutine_Show != null)
-                StopCoroutine(_pCoroutine_Show);
-            _pCoroutine_Show = StartCoroutine(OnShow_Coroutine(strText, vecWorldPos));
+            if (_pCoroutine != null)
+                StopCoroutine(_pCoroutine);
+            _pCoroutine = StartCoroutine(OnPopupTextAnimation_Coroutine(strText, vecWorldPos));
         }
 
-        public void DoAddLogic(IPopupText_Logic pPopupText_Logic)
+        public void DoShow(Canvas pCanvasParents, string strText, Vector3 vecWorldPos)
         {
-            listTextLogic.Add(pPopupText_Logic);
+            transform.SetParent(pCanvasParents.transform);
+
+            DoShow(strText, vecWorldPos);
         }
 
-        public void DoClearLogic()
+        public void DoAddLogic(EEventWhen eEventWhen, IPopupText_Logic pPopupText_Logic)
         {
-            listTextLogic.Clear();
+            switch (eEventWhen)
+            {
+                case EEventWhen.Show: _listPopupTextLogic_OnShow.Add(pPopupText_Logic); break;
+                case EEventWhen.Hide: _listPopupTextLogic_OnHide.Add(pPopupText_Logic); break;
+            }
+        }
+
+        public void DoClearLogic(EEventWhen eEventWhen)
+        {
+            switch (eEventWhen)
+            {
+                case EEventWhen.Show: _listPopupTextLogic_OnShow.Clear(); break;
+                case EEventWhen.Hide: _listPopupTextLogic_OnHide.Clear(); break;
+            }
         }
 
         // ========================================================================== //
@@ -63,7 +94,10 @@ namespace UIFramework
         {
             base.OnAwake();
 
-            _pText = GetComponent<Text>();
+            pText = GetComponent<Text>();
+
+            for(int i = 0; i < listLogic_Insert_OnAwake.Count; i++)
+                DoAddLogic(listLogic_Insert_OnAwake[i].eEventWhen, listLogic_Insert_OnAwake[i].pPopupTextLogic);
         }
 
         /* protected - [abstract & virtual]         */
@@ -73,14 +107,20 @@ namespace UIFramework
 
         #region Private
 
-        IEnumerator OnShow_Coroutine(string strText, Vector3 vecWorldPos)
+        IEnumerator OnPopupTextAnimation_Coroutine(string strText, Vector3 vecWorldPos)
         {
-            _pText.text = strText;
+            pText.text = strText;
             transform.position = vecWorldPos;
 
             _listLogicCoroutine.Clear();
-            for (int i = 0; i < listTextLogic.Count; i++)
-                _listLogicCoroutine.Add(StartCoroutine(listTextLogic[i].OnShowText(this, strText)));
+            for (int i = 0; i < _listPopupTextLogic_OnShow.Count; i++)
+                _listLogicCoroutine.Add(StartCoroutine(_listPopupTextLogic_OnShow[i].OnAnimation(this, strText)));
+
+            yield return _listLogicCoroutine.GetEnumerator_Safe();
+
+            _listLogicCoroutine.Clear();
+            for (int i = 0; i < _listPopupTextLogic_OnHide.Count; i++)
+                _listLogicCoroutine.Add(StartCoroutine(_listPopupTextLogic_OnHide[i].OnAnimation(this, strText)));
 
             yield return _listLogicCoroutine.GetEnumerator_Safe();
 

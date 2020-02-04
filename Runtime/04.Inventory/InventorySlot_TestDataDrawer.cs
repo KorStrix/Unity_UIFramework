@@ -25,10 +25,10 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
+        public Image pImage_Icon;
 
         /* protected & private - Field declaration  */
 
-        Image _pImage_Icon;
         Text _pText_Name;
 
         // ========================================================================== //
@@ -44,7 +44,6 @@ namespace UIFramework
         {
             base.OnAwake();
 
-            _pImage_Icon = GetComponentInChildren<Image>();
             _pText_Name = GetComponentInChildren<Text>();
 
             InventorySlot pSlot = GetComponent<InventorySlot>();
@@ -62,15 +61,15 @@ namespace UIFramework
         {
             if (obj.pData_Current == null)
             {
-                _pImage_Icon.sprite = null;
-                _pImage_Icon.color = new Color(0f, 0f, 0f, 0f);
+                pImage_Icon.sprite = null;
+                pImage_Icon.color = new Color(0f, 0f, 0f, 0f);
                 _pText_Name.text = "";
             }
             else
             {
                 InventoryTester.SomthingData pData = obj.pData_Current as InventoryTester.SomthingData;
-                _pImage_Icon.sprite = pData.pSpriteIcon;
-                _pImage_Icon.color = pData.pColor;
+                pImage_Icon.sprite = pData.pSpriteIcon;
+                pImage_Icon.color = pData.pColor;
                 _pText_Name.text = pData.strName;
             }
         }

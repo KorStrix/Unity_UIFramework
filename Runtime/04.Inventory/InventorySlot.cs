@@ -21,7 +21,7 @@ using UnityEditor;
 /// <summary>
 /// 
 /// </summary>
-public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerClickHandler
+public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerEnterHandler, IPointerClickHandler
 {
     /* const & readonly declaration             */
 
@@ -42,15 +42,16 @@ public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerClickHandle
     /* public - Field declaration               */
 
     public event System.Action<InventorySlot, PointerEventData> OnClickedSlot;
+    public event System.Action<InventorySlot, PointerEventData> OnHoverSlot;
     public event System.Action<OnChangeSlotData_Msg> OnChangeSlotData;
 
     public object pData { get; private set; }
 
+    [Header("디버깅 유무")]
+    public bool bIsDebug = false;
+
     [Header("드래그 유무")]
     public bool bIsDragAble = false;
-
-    [Header("데이터가 없을 때 슬롯 그리기 유무")]
-    public bool bIsDraw_OnEmptyData = true;
 
     public int iSlotIndex;
 
@@ -63,6 +64,9 @@ public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerClickHandle
 
     public void DoSetData(object pData)
     {
+        if (bIsDebug)
+            Debug.Log($"{name}-{iSlotIndex} {nameof(DoSetData)} - {pData.ToString()}", this);
+
         OnChangeSlotData?.Invoke(new OnChangeSlotData_Msg(this, this.pData, pData));
 
         this.pData = pData;
@@ -70,6 +74,9 @@ public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerClickHandle
 
     public void DoClear()
     {
+        if (bIsDebug)
+            Debug.Log($"{name}-{iSlotIndex} {nameof(DoClear)}", this);
+
         OnChangeSlotData?.Invoke(new OnChangeSlotData_Msg(this, pData, null));
 
         pData = null;
@@ -77,7 +84,18 @@ public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerClickHandle
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        OnClickedSlot.Invoke(this, eventData);
+        if (bIsDebug)
+            Debug.Log($"{name}-{iSlotIndex} {nameof(OnPointerClick)}", this);
+
+        OnClickedSlot?.Invoke(this, eventData);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (bIsDebug)
+            Debug.Log($"{name}-{iSlotIndex} {nameof(OnPointerEnter)}", this);
+
+        OnHoverSlot?.Invoke(this, eventData);
     }
 
     // ========================================================================== //

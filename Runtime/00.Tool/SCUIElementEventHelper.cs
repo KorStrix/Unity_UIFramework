@@ -30,11 +30,11 @@ public interface IHas_UIToggle
 public struct UIButtonMessage<Enum_ButtonName>
 {
     public Enum_ButtonName eButtonName { get; private set; }
-    public Button pButton { get; private set; }
+    public Button pButtonInstance_OrNull { get; private set; }
 
     public UIButtonMessage(Enum_ButtonName eButtonName, Button pButton = null)
     {
-        this.eButtonName = eButtonName; this.pButton = pButton;
+        this.eButtonName = eButtonName; this.pButtonInstance_OrNull = pButton;
     }
 }
 

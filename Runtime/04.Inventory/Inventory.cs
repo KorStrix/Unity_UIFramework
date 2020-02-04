@@ -167,7 +167,22 @@ namespace UIFramework
             base.OnAwake();
 
             GetComponentsInChildren(_listSlot);
+
+            for(int i = 0; i < _listSlot.Count; i++)
+            {
+                _listSlot[i].OnDragSlot += Inventory_OnDragSlot;
+                _listSlot[i].OnDragEndSlot += Inventory_OnDragEndSlot;
+            }
         }
+
+        private void Inventory_OnDragSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
+        {
+        }
+
+        private void Inventory_OnDragEndSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
+        {
+        }
+
 
         /* protected - [abstract & virtual]         */
 

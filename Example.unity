@@ -316,7 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
+  bIsDebug: 1
   bIsDragAble: 0
   iSlotIndex: 0
 --- !u!114 &54787549
@@ -791,9 +791,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
+  bIsDebug: 1
   bIsDragAble: 0
-  iSlotIndex: 0
+  iSlotIndex: 1
 --- !u!114 &287933678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1156,9 +1156,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
+  bIsDebug: 1
   bIsDragAble: 0
-  iSlotIndex: 0
+  iSlotIndex: 2
 --- !u!114 &445356497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1262,7 +1262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
+  bIsDebug: 1
   bIsDragAble: 0
   iSlotIndex: 0
 --- !u!114 &485044502
@@ -2732,7 +2732,7 @@ GameObject:
   - component: {fileID: 940402993}
   - component: {fileID: 940402992}
   m_Layer: 5
-  m_Name: Inventory (1)
+  m_Name: Inventory_Equip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3377,9 +3377,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
+  bIsDebug: 1
   bIsDragAble: 0
-  iSlotIndex: 0
+  iSlotIndex: 3
 --- !u!114 &1210821141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5282,7 +5282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
+  bIsDebug: 1
   bIsDragAble: 0
   iSlotIndex: 0
 --- !u!114 &1956028507
@@ -5633,7 +5633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
+  bIsDebug: 1
   bIsDragAble: 0
   iSlotIndex: 0
 --- !u!114 &2009840975

@@ -21,7 +21,7 @@ using UnityEditor;
 /// <summary>
 /// 
 /// </summary>
-public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerEnterHandler, IPointerClickHandler
+public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerEnterHandler, IPointerClickHandler, IDragHandler, IEndDragHandler
 {
     /* const & readonly declaration             */
 
@@ -96,6 +96,22 @@ public class InventorySlot : UIFramework.UIWidgetObjectBase, IPointerEnterHandle
             Debug.Log($"{name}-{iSlotIndex} {nameof(OnPointerEnter)}", this);
 
         OnHoverSlot?.Invoke(this, eventData);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (bIsDebug)
+            Debug.Log($"{name}-{iSlotIndex} {nameof(OnDrag)}", this);
+
+
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (bIsDebug)
+            Debug.Log($"{name}-{iSlotIndex} {nameof(OnEndDrag)}", this);
+
+
     }
 
     // ========================================================================== //

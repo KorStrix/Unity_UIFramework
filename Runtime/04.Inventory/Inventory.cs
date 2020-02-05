@@ -170,8 +170,10 @@ namespace UIFramework
 
             for(int i = 0; i < _listSlot.Count; i++)
             {
-                _listSlot[i].OnDragSlot += Inventory_OnDragSlot;
-                _listSlot[i].OnDragEndSlot += Inventory_OnDragEndSlot;
+                InventorySlot pInventorySlot = _listSlot[i];
+                pInventorySlot.OnDragSlot += Inventory_OnDragSlot;
+                pInventorySlot.OnDragEndSlot += Inventory_OnDragEndSlot;
+                pInventorySlot.DoInit(this);
             }
         }
 

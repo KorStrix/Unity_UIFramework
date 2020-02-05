@@ -27,7 +27,7 @@ public enum EFontStyle_ForRichText
 /// </summary>
 public static class String_ForRichText_Extension
 {
-    static public string SetFontStyle_ForRichText(this string strText, EFontStyle_ForRichText eStyle)
+    static public string ConvertRichText_SetStyle(this string strText, EFontStyle_ForRichText eStyle)
     {
         switch (eStyle)
         {
@@ -37,12 +37,22 @@ public static class String_ForRichText_Extension
         }
     }
 
-    static public string SetColor_ForRichText(this string strText, EColor_ForRichText eColor)
+    /// <summary>
+    /// Rich Text를 리턴합니다
+    /// </summary>
+    /// <param name="strColor">예시) Red = FF0000, Green = 00FF00, Blue = 0000FF </param>
+    /// <returns></returns>
+    static public string ConvertRichText_SetColor(this string strText, string strColorHex)
+    {
+        return "<color=#" + strColorHex + ">" + strText + "</color>";
+    }
+
+    static public string ConvertRichText_SetColor(this string strText, EColor_ForRichText eColor)
     {
         return "<color=" + eColor.ToString() + ">" + strText + "</color>";
     }
 
-    static public string SetFontSize_ForRichText(this string strText, int iFontSize)
+    static public string ConvertRichText_SetFontSize(this string strText, int iFontSize)
     {
         return string.Format("<size={0}>{1}</size>", iFontSize, strText);
     }

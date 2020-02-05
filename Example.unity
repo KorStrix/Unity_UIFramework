@@ -5283,7 +5283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 1
-  bIsDragAble: 0
+  bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1956028507
 MonoBehaviour:

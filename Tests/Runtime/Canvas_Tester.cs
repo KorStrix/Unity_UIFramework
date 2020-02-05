@@ -145,7 +145,7 @@ namespace StrixLibrary_Test
         [UnityTest]
         public IEnumerator ICanvas_Basic_Test()
         {
-            Debug.LogWarning(nameof(ICanvas_Basic_Test).SetColor_ForRichText(EColor_ForRichText.red));
+            Debug.LogWarning(nameof(ICanvas_Basic_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
 
             CanvasManager_Example.DoDestroy_Manager(true);
 
@@ -187,7 +187,7 @@ namespace StrixLibrary_Test
         [UnityTest]
         public IEnumerator ICanvas_ExtensionMethod_Test()
         {
-            Debug.LogWarning(nameof(ICanvas_ExtensionMethod_Test).SetColor_ForRichText(EColor_ForRichText.red));
+            Debug.LogWarning(nameof(ICanvas_ExtensionMethod_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
 
             CanvasManager_Example.DoDestroy_Manager(true);
 
@@ -244,7 +244,7 @@ namespace StrixLibrary_Test
         [UnityTest]
         public IEnumerator ICanvas_Event_Hooking_Test()
         {
-            Debug.LogWarning(nameof(ICanvas_Event_Hooking_Test).SetColor_ForRichText(EColor_ForRichText.red));
+            Debug.LogWarning(nameof(ICanvas_Event_Hooking_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
 
             CanvasManager_Example.DoDestroy_Manager(true);
 
@@ -281,7 +281,7 @@ namespace StrixLibrary_Test
         [UnityTest]
         public IEnumerator ICanvas_MultiplePopup_Test()
         {
-            Debug.Log(nameof(ICanvas_MultiplePopup_Test).SetColor_ForRichText(EColor_ForRichText.red));
+            Debug.Log(nameof(ICanvas_MultiplePopup_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
 
             CanvasManager_Example.DoDestroy_Manager(true);
             Assert.AreEqual(UICommandHandle<Canvas_ForTest>.iInstanceCount, 0);
@@ -309,7 +309,7 @@ namespace StrixLibrary_Test
         [UnityTest]
         public IEnumerator ICanvas_GetShowedPopup_And_AllHide_Test()
         {
-            Debug.Log(nameof(ICanvas_GetShowedPopup_And_AllHide_Test).SetColor_ForRichText(EColor_ForRichText.red));
+            Debug.Log(nameof(ICanvas_GetShowedPopup_And_AllHide_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
 
             DoDestroy_Manager(true);
             Assert.AreEqual(UICommandHandle<Canvas_ForTest>.iInstanceCount, 0);
@@ -338,7 +338,7 @@ namespace StrixLibrary_Test
         [UnityTest]
         public IEnumerator CanvasManager_Destroy_And_Init_Loop()
         {
-            Debug.Log(nameof(ICanvas_GetShowedPopup_And_AllHide_Test).SetColor_ForRichText(EColor_ForRichText.red));
+            Debug.Log(nameof(ICanvas_GetShowedPopup_And_AllHide_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
             
             DoDestroy_Manager(true);
             Assert.IsNull(_instance);

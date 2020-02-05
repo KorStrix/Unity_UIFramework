@@ -63,9 +63,18 @@ namespace UIFramework
 
         /* protected & private - Field declaration  */
 
+        static List<RaycastResult> g_listHit = new List<RaycastResult>();
+
+        Inventory _pInventory;
+
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
+
+        public void DoInit(Inventory pInventory)
+        {
+            _pInventory = pInventory;
+        }
 
         public void DoSetData(object pData)
         {
@@ -119,7 +128,24 @@ namespace UIFramework
             if (bIsDebug)
                 Debug.Log($"{name}-{iSlotIndex} {nameof(OnEndDrag)}", this);
 
+            EventSystem.current.RaycastAll(eventData, g_listHit);
+            for(int i = 0; i < g_listHit.Count; i++)
+            {
+                InventorySlot pSlot = g_listHit[i].gameObject.GetComponent<InventorySlot>();
+                if (pSlot == null)
+                    continue;
+
+                Event_OnSwapSlot(this, pSlot);
+                break;
+            }
+
             OnDragEndSlot?.Invoke(this, eventData);
+        }
+
+        protected void Event_OnSwapSlot(InventorySlot pSlot_OnDraging, InventorySlot pSlot_Dest)
+        {
+            if(bIsDebug)
+                Debug.Log($"{nameof(Event_OnSwapSlot)} - pSlot_OnDraging : {pSlot_OnDraging.name} pSlot_Dest : {pSlot_Dest.name}", pSlot_OnDraging);
         }
 
         // ========================================================================== //

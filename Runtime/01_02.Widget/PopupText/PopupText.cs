@@ -38,7 +38,7 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
-        public Text pText { get; private set; }
+        public Text pText;
 
         public List<PopupupTextLogic> listLogic_Insert_OnAwake = new List<PopupupTextLogic>();
 
@@ -56,6 +56,9 @@ namespace UIFramework
 
         public void DoShow(string strText, Vector3 vecWorldPos)
         {
+            if (gameObject.activeSelf == false)
+                gameObject.SetActive(true);
+
             if (_pCoroutine != null)
                 StopCoroutine(_pCoroutine);
             _pCoroutine = StartCoroutine(OnPopupTextAnimation_Coroutine(strText, vecWorldPos));
@@ -94,7 +97,8 @@ namespace UIFramework
         {
             base.OnAwake();
 
-            pText = GetComponent<Text>();
+            if(pText == null)
+                pText = GetComponent<Text>();
 
             for(int i = 0; i < listLogic_Insert_OnAwake.Count; i++)
                 DoAddLogic(listLogic_Insert_OnAwake[i].eEventWhen, listLogic_Insert_OnAwake[i].pPopupTextLogic);

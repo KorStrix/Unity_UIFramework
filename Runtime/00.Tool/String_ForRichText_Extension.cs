@@ -9,7 +9,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Text.RegularExpressions;
 
 public enum EColor_ForRichText
 {
@@ -55,6 +55,20 @@ public static class String_ForRichText_Extension
     static public string ConvertRichText_SetFontSize(this string strText, int iFontSize)
     {
         return string.Format("<size={0}>{1}</size>", iFontSize, strText);
+    }
+
+    static public string Regex_Repace_SetRichText(this string strText, string strPattern, MatchEvaluator OnMatchEvaluator)
+    {
+        try
+        {
+            return Regex.Replace(strText, strPattern, OnMatchEvaluator);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Regex_Repace_SetRichText - strPattern : {strPattern}" + e);
+        }
+
+        return strText;
     }
 
     static public string AddNextLine(this string strText)

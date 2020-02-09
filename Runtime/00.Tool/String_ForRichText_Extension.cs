@@ -47,6 +47,11 @@ public static class String_ForRichText_Extension
         return "<color=#" + strColorHex + ">" + strText + "</color>";
     }
 
+    static public string ConvertRichText_SetColor(this string strText, Color sColorHex)
+    {
+        return "<color=#" + ColorUtility.ToHtmlStringRGB(sColorHex) + ">" + strText + "</color>";
+    }
+
     static public string ConvertRichText_SetColor(this string strText, EColor_ForRichText eColor)
     {
         return "<color=" + eColor.ToString() + ">" + strText + "</color>";

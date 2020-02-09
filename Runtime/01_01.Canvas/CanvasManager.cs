@@ -206,6 +206,11 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
             return eState != ECavnasState.Disable;
         }
 
+        public bool Check_IsDisable()
+        {
+            return eState == ECavnasState.Disable;
+        }
+
         public void Clear_Manager_UndoLogic()
         {
             foreach (var pUndoLogicList in mapUndoLogic.Values)
@@ -862,8 +867,9 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         }
         else
         {
-            // 싱글 팝업일 때 현재 쓰고있는 팝업이 없으면 인스턴스 생성
-            bCreateInstance = Get_MatchWrapperList(eName, (x) => x.Check_IsEnable()).Count == 0;
+            // 싱글 팝업일 때 현재 쓸 수 있는 팝업이 없으면 인스턴스 생성
+            // bCreateInstance = Get_MatchWrapperList(eName, (x) => x.Check_IsEnable()).Count == 0;
+            bCreateInstance = Get_MatchWrapperList(eName, (x) => x.Check_IsDisable()).Count == 0;
             if (bCreateInstance)
             {
                 if (_setProcessCreating.Contains(eName) == false)
@@ -871,7 +877,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
                     _setProcessCreating.Add(eName);
 
                     if (const_bIsDebug)
-                        Debug.LogWarning(name + " added Creating " + eName + " Count : " + Get_MatchWrapperList(eName, (x) => x.Check_IsEnable()).Count);
+                        Debug.LogWarning(name + " added Creating " + eName + " Count : " + Get_MatchWrapperList(eName, (x) => x.Check_IsDisable()).Count);
                 }
             }
             else

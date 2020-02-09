@@ -10,6 +10,11 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UIFramework
 {
@@ -60,6 +65,7 @@ namespace UIFramework
         }
 
         public event System.Action<Inventory_OnSelectChangeIndex_Msg> OnSelectChangeIndex;
+        public event System.Action<InventorySlot, UnityEngine.EventSystems.PointerEventData> OnClick_Slot;
 
         public IUIManager pUIManager { get; set; }
 
@@ -72,7 +78,6 @@ namespace UIFramework
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
-
         public void DoAddRange<T>(params T[] arrData)
             where T : IData
         {
@@ -171,10 +176,16 @@ namespace UIFramework
             for(int i = 0; i < _listSlot.Count; i++)
             {
                 InventorySlot pInventorySlot = _listSlot[i];
+                pInventorySlot.OnClickedSlot += OnClickedSlot;
                 pInventorySlot.OnDragSlot += Inventory_OnDragSlot;
                 pInventorySlot.OnDragEndSlot += Inventory_OnDragEndSlot;
                 pInventorySlot.DoInit(this);
             }
+        }
+
+        private void OnClickedSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
+        {
+            OnClick_Slot?.Invoke(arg1, arg2);
         }
 
         private void Inventory_OnDragSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
@@ -209,6 +220,72 @@ namespace UIFramework
             pSlot.DoClear();
             _mapSlot_ByData.Remove(iDataKey);
         }
+
+
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(Inventory))]
+        static public void CreateRadioButton(MenuCommand pCommand)
+        {
+            const float const_fPosX = 120f;
+
+            GameObject pObjectParents = pCommand.context as GameObject;
+            if (pObjectParents == null)
+            {
+                pObjectParents = new GameObject($"{nameof(Inventory)}");
+
+                // 생성된 오브젝트를 Undo 시스템에 등록한다.
+                Undo.RegisterCreatedObjectUndo(pObjectParents, "Create " + pObjectParents.name);
+            }
+
+            if (pObjectParents.GetComponent<Inventory>() == null)
+                Undo.AddComponent<Inventory>(pObjectParents);
+
+            var pLayoutGroup = pObjectParents.GetComponent<GridLayoutGroup>();
+            if (pLayoutGroup == null)
+                pLayoutGroup = Undo.AddComponent<GridLayoutGroup>(pObjectParents);
+
+
+            int iSlotCount = 5;
+            GameObject pObjectSlotLast = null;
+            for (int i = 0; i < iSlotCount; i++)
+            {
+                string strSlotName = $"Slot ({i + 1})";
+                pObjectSlotLast = new GameObject(strSlotName);
+                // 생성된 오브젝트를 Undo 시스템에 등록한다.
+                Undo.RegisterCreatedObjectUndo(pObjectSlotLast, "Create " + strSlotName);
+
+                GameObjectUtility.SetParentAndAlign(pObjectSlotLast, pObjectParents);
+                pObjectSlotLast.transform.position += new Vector3(const_fPosX * i, 0f);
+
+                Image pSlotIcon = pObjectSlotLast.AddComponent<Image>();
+                pSlotIcon.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+
+
+                GameObject pObjectSlotFrame = new GameObject($"Image_ItemFrame");
+                GameObjectUtility.SetParentAndAlign(pObjectSlotFrame, pObjectSlotLast);
+                Image pItemFrame = pObjectSlotFrame.AddComponent<Image>();
+                pItemFrame.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+                pItemFrame.rectTransform.SetAnchor(AnchorPresets.StretchAll);
+                pItemFrame.rectTransform.sizeDelta = Vector2.one * -20f;
+
+
+
+                GameObject pObjectItemIcon = new GameObject($"Image_ItemIcon");
+                GameObjectUtility.SetParentAndAlign(pObjectItemIcon, pObjectSlotLast);
+                Image pItemIcon = pObjectItemIcon.AddComponent<Image>();
+                pItemIcon.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+                pItemIcon.rectTransform.SetAnchor(AnchorPresets.StretchAll);
+                pItemIcon.rectTransform.sizeDelta = Vector2.one * -30f;
+
+
+
+                InventorySlot pSlot = pObjectSlotLast.AddComponent<InventorySlot>();
+                pSlot.iSlotIndex = i;
+            }
+
+            Selection.activeObject = pObjectSlotLast;
+        }
+#endif
 
         #endregion Private
     }

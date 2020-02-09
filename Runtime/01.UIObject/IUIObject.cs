@@ -63,6 +63,9 @@ public class UICommandHandle<T> : System.IDisposable
         g_pPool.DoPush(pHandle);
     }
 
+    /// <summary>
+    /// 호출한 직후는 null이며 한프레임 기다려야 합니다.
+    /// </summary>
     public T pUIObject { get; private set; }
     public int iID { get; private set; }
 

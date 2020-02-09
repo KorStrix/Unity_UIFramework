@@ -60,48 +60,6 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
     /* public - [Do] Function
      * 외부 객체가 호출(For External class call)*/
 
-#if UNITY_EDITOR
-    [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(RadioButton))]
-    static public void CreateRadioButton(MenuCommand pCommand)
-    {
-        const float const_fPosX = 120f;
-
-        GameObject pObjectParents = pCommand.context as GameObject;
-        if (pObjectParents == null)
-            pObjectParents = new GameObject($"{nameof(RadioButton)}Group");
-
-        GameObject pObjectButtonLast = null;
-        for (int i = 0; i < 3; i++)
-        {
-            string strButtonName = $"{nameof(RadioButton)}_{i + 1}";
-            pObjectButtonLast = new GameObject(strButtonName);
-            GameObjectUtility.SetParentAndAlign(pObjectButtonLast, pObjectParents);
-            pObjectButtonLast.transform.position += new Vector3(const_fPosX * i, 0f);
-
-            // 생성된 오브젝트를 Undo 시스템에 등록한다.
-            Undo.RegisterCreatedObjectUndo(pObjectButtonLast, "Create " + pObjectButtonLast.name);
-
-            Image pButtonImage = pObjectButtonLast.AddComponent<Image>();
-            pButtonImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-
-            GameObject pObjectText = new GameObject($"Text_{strButtonName}");
-            GameObjectUtility.SetParentAndAlign(pObjectText, pObjectButtonLast);
-
-            Text pButtonText = pObjectText.AddComponent<Text>();
-            pButtonText.rectTransform.SetAnchor(AnchorPresets.StretchAll);
-            pButtonText.rectTransform.sizeDelta = Vector2.one * -20f;
-            pButtonText.alignment = TextAnchor.MiddleCenter;
-            pButtonText.color = Color.black;
-            pButtonText.resizeTextForBestFit = true;
-            pButtonText.text = strButtonName;
-
-            RadioButton pRadioButton = pObjectButtonLast.AddComponent<RadioButton>();
-        }
-
-        Selection.activeObject = pObjectButtonLast;
-    }
-#endif
-
     public void DoClick_RadioButton()
     {
         HashSet<RadioButton> setButton;
@@ -186,6 +144,55 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
     #region Private
 
     #endregion Private
+
+
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(RadioButton))]
+    static public void CreateRadioButton(MenuCommand pCommand)
+    {
+        const float const_fPosX = 120f;
+
+        GameObject pObjectParents = pCommand.context as GameObject;
+        if (pObjectParents == null)
+        {
+            pObjectParents = new GameObject($"{nameof(RadioButton)}Group");
+
+            // 생성된 오브젝트를 Undo 시스템에 등록한다.
+            Undo.RegisterCreatedObjectUndo(pObjectParents, "Create " + pObjectParents.name);
+        }
+
+
+        GameObject pObjectButtonLast = null;
+        for (int i = 0; i < 3; i++)
+        {
+            string strButtonName = $"{nameof(RadioButton)}_{i + 1}";
+            pObjectButtonLast = new GameObject(strButtonName);
+            GameObjectUtility.SetParentAndAlign(pObjectButtonLast, pObjectParents);
+            pObjectButtonLast.transform.position += new Vector3(const_fPosX * i, 0f);
+
+            // 생성된 오브젝트를 Undo 시스템에 등록한다.
+            Undo.RegisterCreatedObjectUndo(pObjectButtonLast, "Create " + pObjectButtonLast.name);
+
+            Image pButtonImage = pObjectButtonLast.AddComponent<Image>();
+            pButtonImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+
+            GameObject pObjectText = new GameObject($"Text_{strButtonName}");
+            GameObjectUtility.SetParentAndAlign(pObjectText, pObjectButtonLast);
+
+            Text pButtonText = pObjectText.AddComponent<Text>();
+            pButtonText.rectTransform.SetAnchor(AnchorPresets.StretchAll);
+            pButtonText.rectTransform.sizeDelta = Vector2.one * -20f;
+            pButtonText.alignment = TextAnchor.MiddleCenter;
+            pButtonText.color = Color.black;
+            pButtonText.resizeTextForBestFit = true;
+            pButtonText.text = strButtonName;
+
+            RadioButton pRadioButton = pObjectButtonLast.AddComponent<RadioButton>();
+        }
+
+        Selection.activeObject = pObjectButtonLast;
+    }
+#endif
 
 }
 

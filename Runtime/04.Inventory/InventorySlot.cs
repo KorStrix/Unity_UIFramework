@@ -34,10 +34,12 @@ namespace UIFramework
             public InventorySlot pSlot { get; private set; }
             public object pData_Prev { get; private set; }
             public object pData_Current { get; private set; }
+            public bool bSlot_IsEmpty { get; private set; }
 
             public OnChangeSlotData_Msg(InventorySlot pSlot, object pData_Prev, object pData_Current)
             {
                 this.pSlot = pSlot; this.pData_Prev = pData_Prev; this.pData_Current = pData_Current;
+                bSlot_IsEmpty = pData_Current == null;
             }
         }
 
@@ -49,7 +51,8 @@ namespace UIFramework
         public event System.Action<InventorySlot, PointerEventData> OnDragSlot;
         public event System.Action<InventorySlot, PointerEventData> OnDragEndSlot;
 
-        public event System.Action<OnChangeSlotData_Msg> OnChangeSlotData;
+        public delegate void delOnChangeSlotData(OnChangeSlotData_Msg sMsg);
+        public event delOnChangeSlotData OnChangeSlotData;
 
         public object pData { get; private set; }
 

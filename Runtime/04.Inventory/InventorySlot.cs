@@ -43,6 +43,20 @@ namespace UIFramework
             }
         }
 
+        public struct OnSwapSlot_Msg
+        {
+            public Inventory pInventory_OnDraging;
+            public InventorySlot pSlot_OnDraging;
+
+            public Inventory pInventory_Dest;
+            public InventorySlot pSlot_Dest;
+
+            public OnSwapSlot_Msg(Inventory pInventory_OnDraging, InventorySlot pSlot_OnDraging, Inventory pInventory_Dest, InventorySlot pSlot_Dest)
+            {
+                this.pInventory_OnDraging = pInventory_OnDraging; this.pSlot_OnDraging = pSlot_OnDraging; this.pInventory_Dest = pInventory_Dest; this.pSlot_Dest = pSlot_Dest;
+            }
+        }
+
         /* public - Field declaration               */
 
         public event System.Action<InventorySlot, PointerEventData> OnClickedSlot;
@@ -51,9 +65,13 @@ namespace UIFramework
         public event System.Action<InventorySlot, PointerEventData> OnDragSlot;
         public event System.Action<InventorySlot, PointerEventData> OnDragEndSlot;
 
-        public delegate void delOnChangeSlotData(OnChangeSlotData_Msg sMsg);
-        public event delOnChangeSlotData OnChangeSlotData;
+        public event System.Action<OnSwapSlot_Msg> OnSwapSlot;
 
+        public delegate void delOnChangeSlotData(OnChangeSlotData_Msg sMsg);
+        public event delOnChangeSlotData OnChange_SlotData;
+        public event System.Action<bool> OnChange_IsSelected;
+
+        public bool bIsSelected { get; private set; }
         public object pData { get; private set; }
 
         [Header("µð¹ö±ë À¯¹«")]
@@ -77,6 +95,7 @@ namespace UIFramework
         public void DoInit(Inventory pInventory)
         {
             _pInventory = pInventory;
+            Event_SetSelected(false);
         }
 
         public void DoSetData(object pData)
@@ -84,7 +103,7 @@ namespace UIFramework
             if (bIsDebug)
                 Debug.Log($"{name}-{iSlotIndex} {nameof(DoSetData)} - {pData.ToString()}", this);
 
-            OnChangeSlotData?.Invoke(new OnChangeSlotData_Msg(this, this.pData, pData));
+            OnChange_SlotData?.Invoke(new OnChangeSlotData_Msg(this, this.pData, pData));
 
             this.pData = pData;
         }
@@ -94,7 +113,7 @@ namespace UIFramework
             if (bIsDebug)
                 Debug.Log($"{name}-{iSlotIndex} {nameof(DoClear)}", this);
 
-            OnChangeSlotData?.Invoke(new OnChangeSlotData_Msg(this, pData, null));
+            OnChange_SlotData?.Invoke(new OnChangeSlotData_Msg(this, pData, null));
 
             pData = null;
         }
@@ -138,17 +157,23 @@ namespace UIFramework
                 if (pSlot == null)
                     continue;
 
-                Event_OnSwapSlot(this, pSlot);
+                Event_OnSwapSlot(_pInventory, this, pSlot._pInventory, pSlot);
                 break;
             }
 
             OnDragEndSlot?.Invoke(this, eventData);
         }
 
-        protected void Event_OnSwapSlot(InventorySlot pSlot_OnDraging, InventorySlot pSlot_Dest)
+        public void Event_SetSelected(bool bIsSelected)
+        {
+            this.bIsSelected = bIsSelected;
+            OnChange_IsSelected?.Invoke(bIsSelected);
+        }
+
+        protected void Event_OnSwapSlot(Inventory pInventory_OnDraging, InventorySlot pSlot_OnDraging, Inventory pInventory_Dest, InventorySlot pSlot_Dest)
         {
             if(bIsDebug)
-                Debug.Log($"{nameof(Event_OnSwapSlot)} - pSlot_OnDraging : {pSlot_OnDraging.name} pSlot_Dest : {pSlot_Dest.name}", pSlot_OnDraging);
+                Debug.Log($"{nameof(Event_OnSwapSlot)} - pSlot_OnDraging : {pInventory_OnDraging.name}-{pSlot_OnDraging.name} => pSlot_Dest : {pInventory_Dest.name}-{pSlot_Dest.name}", pSlot_OnDraging);
         }
 
         // ========================================================================== //
@@ -186,6 +211,5 @@ namespace UIFramework
             }
         }
     }
-
 #endif
 }

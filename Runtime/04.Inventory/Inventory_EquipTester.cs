@@ -10,27 +10,29 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
+using static UIFramework.InventoryTester;
 
 namespace UIFramework
 {
+
     /// <summary>
     /// 
     /// </summary>
-    public class InventorySlot_TestDataDrawer : UIWidgetObjectBase
+    [RequireComponent(typeof(Inventory))]
+    public class Inventory_EquipTester : MonoBehaviour
     {
         /* const & readonly declaration             */
+
 
         /* enum & struct declaration                */
 
         /* public - Field declaration               */
 
-        public Image pImage_IsSelected;
-        public Image pImage_Icon;
+        public List<SomthingData> listSomthingData = new List<SomthingData>();
 
         /* protected & private - Field declaration  */
 
-        Text _pText_Name;
+        Inventory _pInventory;
 
         // ========================================================================== //
 
@@ -41,15 +43,18 @@ namespace UIFramework
 
         /* protected - [Override & Unity API]       */
 
-        protected override void OnAwake()
+        private void Awake()
         {
-            base.OnAwake();
+            _pInventory = GetComponent<Inventory>();
+        }
 
-            _pText_Name = GetComponentInChildren<Text>();
+        private void OnEnable()
+        {
+            if(_pInventory.bIsExecute_Awake == false)
+                _pInventory.EventAwake();
 
-            InventorySlot pSlot = GetComponent<InventorySlot>();
-            pSlot.OnChange_SlotData += OnChangeSlotData;
-            pSlot.OnChange_IsSelected += (bIsSelected) => pImage_IsSelected.enabled = bIsSelected;
+            _pInventory.DoClear();
+            _pInventory.DoAddRange(listSomthingData.ToArray());
         }
 
         /* protected - [abstract & virtual]         */
@@ -58,23 +63,6 @@ namespace UIFramework
         // ========================================================================== //
 
         #region Private
-
-        private void OnChangeSlotData(InventorySlot.OnChangeSlotData_Msg obj)
-        {
-            if (obj.pData_Current == null)
-            {
-                pImage_Icon.sprite = null;
-                pImage_Icon.color = new Color(0f, 0f, 0f, 0f);
-                _pText_Name.text = "";
-            }
-            else
-            {
-                InventoryTester.SomthingData pData = obj.pData_Current as InventoryTester.SomthingData;
-                pImage_Icon.sprite = pData.pSpriteIcon;
-                pImage_Icon.color = pData.pColor;
-                _pText_Name.text = pData.strName;
-            }
-        }
 
         #endregion Private
     }

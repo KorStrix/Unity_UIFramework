@@ -49,35 +49,38 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
-        public struct Inventory_OnSelectChangeIndex_Msg
+        public struct Inventory_OnChangeSelectSlot_Msg
         {
-            public int iSelectIndex_Prev { get; private set; }
-            public int iSelectIndex_Current { get; private set; }
+            public InventorySlot pSlot_Prev { get; private set; }
+            public InventorySlot pSlot_Current { get; private set; }
 
-            public object pObjectSelected_Prev { get; private set; }
-            public object pObjectSelected_Current { get; private set; }
-
-            public Inventory_OnSelectChangeIndex_Msg(int iSelectIndex_Prev, object pObjectSelected_Prev, int iSelectIndex_Current, object pObjectSelected_Current)
+            public Inventory_OnChangeSelectSlot_Msg(InventorySlot pSlot_Prev, InventorySlot pSlot_Current)
             {
-                this.iSelectIndex_Prev = iSelectIndex_Prev; this.iSelectIndex_Current = iSelectIndex_Current;
-                this.pObjectSelected_Prev = pObjectSelected_Prev; this.pObjectSelected_Current = pObjectSelected_Current;
+                this.pSlot_Prev = pSlot_Prev; this.pSlot_Current = pSlot_Current;
             }
         }
 
-        public event System.Action<Inventory_OnSelectChangeIndex_Msg> OnSelectChangeIndex;
+        public event System.Action<Inventory_OnChangeSelectSlot_Msg> OnSelectedSlot;
         public event System.Action<InventorySlot, UnityEngine.EventSystems.PointerEventData> OnClick_Slot;
 
         public IUIManager pUIManager { get; set; }
+
+        [Header("선택한 슬롯을 또 선택하면 선택 해제할지")]
+        public bool bPossible_SelectedSlotRelease_OnClick = true;
+
+        [Header("디버깅 유무")]
+        public bool bIsDebug = false;
 
         /* protected & private - Field declaration  */
 
         Dictionary<int, InventorySlot> _mapSlot_ByData = new Dictionary<int, InventorySlot>();
         List<InventorySlot> _listSlot = new List<InventorySlot>();
-        int _iSelectedIndex;
+        InventorySlot _pSlotSelected;
 
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
+
         public void DoAddRange<T>(params T[] arrData)
             where T : IData
         {
@@ -160,7 +163,12 @@ namespace UIFramework
                     Slot_ClearData(pSlot);
             }
 
-            _iSelectedIndex = -1;
+            _pSlotSelected = null;
+        }
+
+        public void Event_Set_SelectedSlot_IsNull(UnityEngine.EventSystems.PointerEventData pPointerEvent)
+        {
+            OnClickedSlot(null, pPointerEvent);
         }
 
         // ========================================================================== //
@@ -179,13 +187,37 @@ namespace UIFramework
                 pInventorySlot.OnClickedSlot += OnClickedSlot;
                 pInventorySlot.OnDragSlot += Inventory_OnDragSlot;
                 pInventorySlot.OnDragEndSlot += Inventory_OnDragEndSlot;
+
                 pInventorySlot.DoInit(this);
             }
         }
 
-        private void OnClickedSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
+        private void OnClickedSlot(InventorySlot pSlotSelectedNew, UnityEngine.EventSystems.PointerEventData arg2)
         {
-            OnClick_Slot?.Invoke(arg1, arg2);
+            OnClick_Slot?.Invoke(pSlotSelectedNew, arg2);
+
+            if(_pSlotSelected == pSlotSelectedNew && bPossible_SelectedSlotRelease_OnClick)
+            {
+                _pSlotSelected?.Event_SetSelected(false);
+                OnSelectedSlot?.Invoke(new Inventory_OnChangeSelectSlot_Msg(_pSlotSelected, null));
+                _pSlotSelected = null;
+            }
+            else if (_pSlotSelected != pSlotSelectedNew)
+            {
+                _pSlotSelected?.Event_SetSelected(false);
+                pSlotSelectedNew?.Event_SetSelected(true);
+
+                OnSelectedSlot?.Invoke(new Inventory_OnChangeSelectSlot_Msg(_pSlotSelected, pSlotSelectedNew));
+                _pSlotSelected = pSlotSelectedNew;
+            }
+
+            if(bIsDebug)
+            {
+                if(pSlotSelectedNew != null)
+                    Debug.Log($"{name}-{nameof(OnClickedSlot)} Slot : {pSlotSelectedNew.name}", this);
+                else
+                    Debug.Log($"{name}-{nameof(OnClickedSlot)} Slot : Null", this);
+            }
         }
 
         private void Inventory_OnDragSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)

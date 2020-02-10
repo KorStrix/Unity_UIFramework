@@ -152,7 +152,7 @@ namespace UIFramework
             Slot_ClearData(pSlot, pData.GetHashCode());
         }
 
-        public void DoClear()
+        public void DoClear(bool bClear_OnSelected = true)
         {
             for (int i = 0; i < _listSlot.Count; i++)
             {
@@ -163,7 +163,11 @@ namespace UIFramework
                     Slot_ClearData(pSlot);
             }
 
-            _pSlotSelected = null;
+            if(bClear_OnSelected && _pSlotSelected != null)
+            {
+                _pSlotSelected.Event_SetSelected(false);
+                _pSlotSelected = null;
+            }
         }
 
         public void Event_Set_SelectedSlot_IsNull(UnityEngine.EventSystems.PointerEventData pPointerEvent)
@@ -194,11 +198,10 @@ namespace UIFramework
 
         private void OnClickedSlot(InventorySlot pSlotSelectedNew, UnityEngine.EventSystems.PointerEventData arg2)
         {
-            OnClick_Slot?.Invoke(pSlotSelectedNew, arg2);
-
             if(_pSlotSelected == pSlotSelectedNew && bPossible_SelectedSlotRelease_OnClick)
             {
                 _pSlotSelected?.Event_SetSelected(false);
+
                 OnSelectedSlot?.Invoke(new Inventory_OnChangeSelectSlot_Msg(_pSlotSelected, null));
                 _pSlotSelected = null;
             }
@@ -218,6 +221,8 @@ namespace UIFramework
                 else
                     Debug.Log($"{name}-{nameof(OnClickedSlot)} Slot : Null", this);
             }
+
+            OnClick_Slot?.Invoke(pSlotSelectedNew, arg2);
         }
 
         private void Inventory_OnDragSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)

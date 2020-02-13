@@ -26,18 +26,6 @@ namespace UIFramework
         OverFlow,
     }
 
-    public interface IData
-    {
-        int GetUniqueID { get; }
-    }
-
-    public interface IData_IsPossible_Add_And_Subtract : IData
-    {
-        EDataCalculateResult OnAdd(object pObjectX, object pObjectY, out object pObjectSumResult);
-        EDataCalculateResult OnSubtract(object pObjectX, object pObjectY, out object pObjectSumResult);
-    }
-
-
     /// <summary>
     /// 
     /// </summary>
@@ -46,9 +34,6 @@ namespace UIFramework
         /* const & readonly declaration             */
 
         /* enum & struct declaration                */
-
-        /* public - Field declaration               */
-
         public struct Inventory_OnChangeSelectSlot_Msg
         {
             public InventorySlot pSlot_Prev { get; private set; }
@@ -60,10 +45,34 @@ namespace UIFramework
             }
         }
 
-        public event System.Action<Inventory_OnChangeSelectSlot_Msg> OnSelectedSlot;
+        public struct OnSwapSlot_Msg
+        {
+            public Inventory pInventory_OnDraging;
+            public InventorySlot pSlot_OnDraging;
+
+            public Inventory pInventory_Dest;
+            public InventorySlot pSlot_Dest;
+
+            public OnSwapSlot_Msg(Inventory pInventory_OnDraging, InventorySlot pSlot_OnDraging, Inventory pInventory_Dest, InventorySlot pSlot_Dest)
+            {
+                this.pInventory_OnDraging = pInventory_OnDraging; this.pSlot_OnDraging = pSlot_OnDraging; this.pInventory_Dest = pInventory_Dest; this.pSlot_Dest = pSlot_Dest;
+            }
+        }
+
+        /* public - Field declaration               */
+
+        public static HashSet<Inventory> g_setActiveInventory = new HashSet<Inventory>();
+
+        public event System.Action<Inventory_OnChangeSelectSlot_Msg> OnSelected_Slot;
+
+        public delegate void delOnSwap_Slot(InventorySlot pStart, InventorySlot pDest);
+        public event delOnSwap_Slot OnSwap_Slot;
+        public event System.Action<OnSwapSlot_Msg> OnSwap_Slot_OtherInventory;
         public event System.Action<InventorySlot, UnityEngine.EventSystems.PointerEventData> OnClick_Slot;
 
         public IUIManager pUIManager { get; set; }
+        public InventorySlot pSlotSelected { get; private set; }
+
 
         [Header("선택한 슬롯을 또 선택하면 선택 해제할지")]
         public bool bPossible_SelectedSlotRelease_OnClick = true;
@@ -75,32 +84,10 @@ namespace UIFramework
 
         Dictionary<int, InventorySlot> _mapSlot_ByData = new Dictionary<int, InventorySlot>();
         List<InventorySlot> _listSlot = new List<InventorySlot>();
-        InventorySlot _pSlotSelected;
 
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
-
-        public void DoAddRange<T>(params T[] arrData)
-            where T : IData
-        {
-            for (int i = 0; i < arrData.Length; i++)
-            {
-                IData pData = arrData[i];
-                InventorySlot pSlot;
-                if (_mapSlot_ByData.TryGetValue(pData.GetUniqueID, out pSlot) == false)
-                    return;
-
-                IData_IsPossible_Add_And_Subtract pDataIsFill = pData as IData_IsPossible_Add_And_Subtract;
-                if (pDataIsFill != null)
-                {
-                }
-                else
-                {
-
-                }
-            }
-        }
 
         public void DoAddRange(params object[] arrData)
         {
@@ -121,26 +108,9 @@ namespace UIFramework
             }
         }
 
-        public void DoAdd<T>(T pData)
-            where T : IData
-        {
-            DoAddRange(pData);
-        }
-
         public void DoAdd(object pData)
         {
             DoAddRange(pData);
-        }
-
-
-        public void DoRemove<T>(T pData)
-            where T : IData
-        {
-            InventorySlot pSlot;
-            if (_mapSlot_ByData.TryGetValue(pData.GetUniqueID, out pSlot) == false)
-                return;
-
-            Slot_ClearData(pSlot, pData.GetUniqueID);
         }
 
         public void DoRemove(object pData)
@@ -163,10 +133,10 @@ namespace UIFramework
                     Slot_ClearData(pSlot);
             }
 
-            if(bClear_OnSelected && _pSlotSelected != null)
+            if(bClear_OnSelected && pSlotSelected != null)
             {
-                _pSlotSelected.Event_SetSelected(false);
-                _pSlotSelected = null;
+                pSlotSelected.Event_SetSelected(false);
+                pSlotSelected = null;
             }
         }
 
@@ -189,6 +159,8 @@ namespace UIFramework
             {
                 InventorySlot pInventorySlot = _listSlot[i];
                 pInventorySlot.OnClickedSlot += OnClickedSlot;
+                pInventorySlot.OnSwapSlot += OnSwapSlot;
+
                 pInventorySlot.OnDragSlot += Inventory_OnDragSlot;
                 pInventorySlot.OnDragEndSlot += Inventory_OnDragEndSlot;
 
@@ -196,33 +168,59 @@ namespace UIFramework
             }
         }
 
-        private void OnClickedSlot(InventorySlot pSlotSelectedNew, UnityEngine.EventSystems.PointerEventData arg2)
+        private void OnEnable()
         {
-            if(_pSlotSelected == pSlotSelectedNew && bPossible_SelectedSlotRelease_OnClick)
-            {
-                _pSlotSelected?.Event_SetSelected(false);
+            g_setActiveInventory.Add(this);
+        }
 
-                OnSelectedSlot?.Invoke(new Inventory_OnChangeSelectSlot_Msg(_pSlotSelected, null));
-                _pSlotSelected = null;
-            }
-            else if (_pSlotSelected != pSlotSelectedNew)
+        protected override void OnDisableObject(bool bIsQuit_Application)
+        {
+            base.OnDisableObject(bIsQuit_Application);
+
+            g_setActiveInventory.Remove(this);
+        }
+
+        /* protected - [abstract & virtual]         */
+
+
+        // ========================================================================== //
+
+        #region Private
+
+        private void OnSwapSlot(OnSwapSlot_Msg obj)
+        {
+            if (obj.pInventory_OnDraging == obj.pInventory_Dest)
+                OnSwap_Slot?.Invoke(obj.pSlot_OnDraging, obj.pSlot_Dest);
+            else
+                OnSwap_Slot_OtherInventory?.Invoke(obj);
+        }
+        private void OnClickedSlot(InventorySlot pSlotSelectedNew, UnityEngine.EventSystems.PointerEventData pPointerData)
+        {
+            if (pSlotSelected == pSlotSelectedNew && bPossible_SelectedSlotRelease_OnClick)
             {
-                _pSlotSelected?.Event_SetSelected(false);
+                pSlotSelected?.Event_SetSelected(false);
+
+                OnSelected_Slot?.Invoke(new Inventory_OnChangeSelectSlot_Msg(pSlotSelected, null));
+                pSlotSelected = null;
+            }
+            else if (pSlotSelected != pSlotSelectedNew)
+            {
+                pSlotSelected?.Event_SetSelected(false);
                 pSlotSelectedNew?.Event_SetSelected(true);
 
-                OnSelectedSlot?.Invoke(new Inventory_OnChangeSelectSlot_Msg(_pSlotSelected, pSlotSelectedNew));
-                _pSlotSelected = pSlotSelectedNew;
+                OnSelected_Slot?.Invoke(new Inventory_OnChangeSelectSlot_Msg(pSlotSelected, pSlotSelectedNew));
+                pSlotSelected = pSlotSelectedNew;
             }
 
-            if(bIsDebug)
+            if (bIsDebug)
             {
-                if(pSlotSelectedNew != null)
+                if (pSlotSelectedNew != null)
                     Debug.Log($"{name}-{nameof(OnClickedSlot)} Slot : {pSlotSelectedNew.name}", this);
                 else
                     Debug.Log($"{name}-{nameof(OnClickedSlot)} Slot : Null", this);
             }
 
-            OnClick_Slot?.Invoke(pSlotSelectedNew, arg2);
+            OnClick_Slot?.Invoke(pSlotSelectedNew, pPointerData);
         }
 
         private void Inventory_OnDragSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
@@ -232,14 +230,6 @@ namespace UIFramework
         private void Inventory_OnDragEndSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
         {
         }
-
-
-        /* protected - [abstract & virtual]         */
-
-
-        // ========================================================================== //
-
-        #region Private
 
         private void Slot_SetData(InventorySlot pSlot, object pData, int iDataKey)
         {

@@ -43,20 +43,6 @@ namespace UIFramework
             }
         }
 
-        public struct OnSwapSlot_Msg
-        {
-            public Inventory pInventory_OnDraging;
-            public InventorySlot pSlot_OnDraging;
-
-            public Inventory pInventory_Dest;
-            public InventorySlot pSlot_Dest;
-
-            public OnSwapSlot_Msg(Inventory pInventory_OnDraging, InventorySlot pSlot_OnDraging, Inventory pInventory_Dest, InventorySlot pSlot_Dest)
-            {
-                this.pInventory_OnDraging = pInventory_OnDraging; this.pSlot_OnDraging = pSlot_OnDraging; this.pInventory_Dest = pInventory_Dest; this.pSlot_Dest = pSlot_Dest;
-            }
-        }
-
         /* public - Field declaration               */
 
         public event System.Action<InventorySlot, PointerEventData> OnClickedSlot;
@@ -65,7 +51,7 @@ namespace UIFramework
         public event System.Action<InventorySlot, PointerEventData> OnDragSlot;
         public event System.Action<InventorySlot, PointerEventData> OnDragEndSlot;
 
-        public event System.Action<OnSwapSlot_Msg> OnSwapSlot;
+        public event System.Action<Inventory.OnSwapSlot_Msg> OnSwapSlot;
 
         public delegate void delOnChangeSlotData(OnChangeSlotData_Msg sMsg);
         public event delOnChangeSlotData OnChange_SlotData;
@@ -96,6 +82,13 @@ namespace UIFramework
         {
             _pInventory = pInventory;
             Event_SetSelected(false);
+        }
+
+        public void DoSwapSlot(InventorySlot pSlotOrigin)
+        {
+            object pMyData = this.pData;
+            DoSetData(pSlotOrigin.pData);
+            pSlotOrigin.DoSetData(pMyData);
         }
 
         public void DoSetData(object pData)
@@ -167,6 +160,20 @@ namespace UIFramework
         public void Event_SetSelected(bool bIsSelected)
         {
             this.bIsSelected = bIsSelected;
+            if (bIsSelected && Inventory.g_setActiveInventory.Count >= 2)
+            {
+                foreach (Inventory pInventoryOther in Inventory.g_setActiveInventory)
+                {
+                    if (pInventoryOther == _pInventory)
+                        continue;
+
+                    if (pInventoryOther.pSlotSelected == null)
+                        continue;
+
+                    Event_OnSwapSlot(pInventoryOther, pInventoryOther.pSlotSelected, _pInventory, this);
+                }
+            }
+
             OnChange_IsSelected?.Invoke(bIsSelected);
         }
 
@@ -174,6 +181,8 @@ namespace UIFramework
         {
             if(bIsDebug)
                 Debug.Log($"{nameof(Event_OnSwapSlot)} - pSlot_OnDraging : {pInventory_OnDraging.name}-{pSlot_OnDraging.name} => pSlot_Dest : {pInventory_Dest.name}-{pSlot_Dest.name}", pSlot_OnDraging);
+
+            OnSwapSlot?.Invoke(new Inventory.OnSwapSlot_Msg(pInventory_OnDraging, pSlot_OnDraging, pInventory_Dest, pSlot_Dest));
         }
 
         // ========================================================================== //

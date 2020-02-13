@@ -48,6 +48,9 @@ namespace UIFramework
             _pText_Name = GetComponentInChildren<Text>();
 
             InventorySlot pSlot = GetComponent<InventorySlot>();
+            pImage_IsSelected.enabled = pSlot.bIsSelected;
+            OnChangeSlotData(new InventorySlot.OnChangeSlotData_Msg(pSlot, null, null));
+
             pSlot.OnChange_SlotData += OnChangeSlotData;
             pSlot.OnChange_IsSelected += (bIsSelected) => pImage_IsSelected.enabled = bIsSelected;
         }

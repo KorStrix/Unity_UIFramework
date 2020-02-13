@@ -62,6 +62,12 @@ namespace UIFramework
 
             _pInventory.DoClear();
             _pInventory.DoAddRange(listSomthingData.ToArray());
+            _pInventory.OnSwap_Slot += _pInventory_OnSwap_Slot;
+        }
+
+        private void _pInventory_OnSwap_Slot(InventorySlot pStart, InventorySlot pDest)
+        {
+            pStart.DoSwapSlot(pDest);
         }
 
         /* protected - [abstract & virtual]         */

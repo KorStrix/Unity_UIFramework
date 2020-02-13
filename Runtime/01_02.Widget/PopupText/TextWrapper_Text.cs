@@ -1,7 +1,7 @@
 #region Header
 /*	============================================
  *	Aurthor 			    : Strix
- *	Initial Creation Date 	: 2020-01-30
+ *	Initial Creation Date 	: 2020-02-13
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
    ============================================ */
@@ -10,29 +10,33 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using static UIFramework.InventoryTester;
+using UnityEngine.UI;
 
 namespace UIFramework
 {
-
     /// <summary>
     /// 
     /// </summary>
-    [RequireComponent(typeof(Inventory))]
-    public class Inventory_EquipTester : MonoBehaviour
+    public class TextWrapper_Text : UIWidgetObjectBase, ITextWrapperComponent
     {
         /* const & readonly declaration             */
-
 
         /* enum & struct declaration                */
 
         /* public - Field declaration               */
 
-        public List<SomthingData> listSomthingData = new List<SomthingData>();
+        public string strText
+        {
+            get  => _pText.text;
+            set => _pText.text = value; 
+        }
+
+        public Graphic[] arrGraphic => _arrGraphic;
 
         /* protected & private - Field declaration  */
 
-        Inventory _pInventory;
+        Graphic[] _arrGraphic;
+        Text _pText;
 
         // ========================================================================== //
 
@@ -43,25 +47,12 @@ namespace UIFramework
 
         /* protected - [Override & Unity API]       */
 
-        private void Awake()
+        protected override void OnAwake()
         {
-            _pInventory = GetComponent<Inventory>();
-        }
+            base.OnAwake();
 
-        private void OnEnable()
-        {
-            if(_pInventory.bIsExecute_Awake == false)
-                _pInventory.EventAwake();
-
-            _pInventory.DoClear();
-            _pInventory.DoAddRange(listSomthingData.ToArray());
-
-            _pInventory.OnSwap_Slot_OtherInventory += Inventory_OnSwap_Slot;
-        }
-
-        private void Inventory_OnSwap_Slot(Inventory.OnSwapSlot_Msg obj)
-        {
-            obj.pSlot_OnDraging.DoSwapSlot(obj.pSlot_Dest);
+            _pText = GetComponent<Text>();
+            _arrGraphic = new Graphic[1] { _pText };
         }
 
         /* protected - [abstract & virtual]         */

@@ -62,11 +62,11 @@ public static class String_ForRichText_Extension
         return string.Format("<size={0}>{1}</size>", iFontSize, strText);
     }
 
-    static public string Regex_Repace_SetRichText(this string strText, string strPattern, MatchEvaluator OnMatchEvaluator)
+    static public string Regex_Repace_SetRichText(this string strText, string strPattern, RegexOptions eRegexOption, MatchEvaluator OnMatchEvaluator)
     {
         try
         {
-            return Regex.Replace(strText, strPattern, OnMatchEvaluator);
+            return Regex.Replace(strText, strPattern, OnMatchEvaluator, eRegexOption);
         }
         catch (System.Exception e)
         {

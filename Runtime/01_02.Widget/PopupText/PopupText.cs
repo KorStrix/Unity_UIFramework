@@ -38,7 +38,7 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
-        public Text pText;
+        public ITextWrapperComponent pTextWrapper;
 
         public List<PopupupTextLogic> listLogic_Insert_OnAwake = new List<PopupupTextLogic>();
 
@@ -97,8 +97,8 @@ namespace UIFramework
         {
             base.OnAwake();
 
-            if(pText == null)
-                pText = GetComponent<Text>();
+            if(pTextWrapper == null)
+                pTextWrapper = GetComponentInChildren<ITextWrapperComponent>();
 
             for(int i = 0; i < listLogic_Insert_OnAwake.Count; i++)
                 DoAddLogic(listLogic_Insert_OnAwake[i].eEventWhen, listLogic_Insert_OnAwake[i].pPopupTextLogic);
@@ -113,7 +113,7 @@ namespace UIFramework
 
         IEnumerator OnPopupTextAnimation_Coroutine(string strText, Vector3 vecWorldPos)
         {
-            pText.text = strText;
+            pTextWrapper.strText = strText;
             transform.position = vecWorldPos;
 
             _listLogicCoroutine.Clear();

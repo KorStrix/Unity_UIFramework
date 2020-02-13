@@ -1890,7 +1890,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &611954237
@@ -2072,7 +2072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &623459565
@@ -2328,7 +2328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &742123272
@@ -2436,7 +2436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &762192609
@@ -2776,7 +2776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &825524506
@@ -3202,16 +3202,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 940402990}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8048f3a6f0dec66409fe49afdbd8112a, type: 3}
+  m_Script: {fileID: 11500000, guid: 4471758cc204f44438824ebe49146a09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  listSomthingData:
-  - strName: Black
-    pSpriteIcon: {fileID: 0}
-    pColor: {r: 0, g: 0, b: 0, a: 1}
-  - strName: White
-    pSpriteIcon: {fileID: 0}
-    pColor: {r: 1, g: 1, b: 1, a: 1}
+  listSomthingData: []
 --- !u!114 &940402993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3926,7 +3920,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1123776998
@@ -4108,7 +4102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1169274221
@@ -4216,7 +4210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1171675006
@@ -4472,7 +4466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1250915668
@@ -4659,7 +4653,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1283058645
@@ -4846,7 +4840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1296989364
@@ -6233,7 +6227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1728286845
@@ -6489,7 +6483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1782553901
@@ -6977,7 +6971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1911640254
@@ -7085,7 +7079,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1932800263
@@ -7258,7 +7252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 1
+  bIsDebug: 0
   bIsDragAble: 1
   iSlotIndex: 0
 --- !u!114 &1956028507

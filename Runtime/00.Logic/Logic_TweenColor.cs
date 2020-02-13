@@ -48,14 +48,17 @@ namespace UIFramework
             this.fDelaySecond = fDelaySecond;
         }
 
-        public IEnumerator ExecuteLogic_Coroutine(Graphic pTarget)
+        public IEnumerator ExecuteLogic_Coroutine(Graphic[] arrTarget)
         {
+            if (arrTarget.Length == 0)
+                yield break;
+
             yield return new WaitForSeconds(fDelaySecond);
 
             switch (eTweenHow)
             {
                 case ETweenHow.CurrentValue_To_Dest:
-                    this.pColorStart = pTarget.color;
+                    this.pColorStart = arrTarget[0].color;
                     break;
 
                 case ETweenHow.SettingValue_To_Dest:
@@ -65,12 +68,14 @@ namespace UIFramework
             float fProgress_0_1 = 0f;
             while (fProgress_0_1 < 1f)
             {
-                pTarget.color = Color.Lerp(pColorStart, pColorDest, pAnimationCurve.Evaluate(fProgress_0_1));
+                for(int i = 0; i < arrTarget.Length; i++)
+                    arrTarget[i].color = Color.Lerp(pColorStart, pColorDest, pAnimationCurve.Evaluate(fProgress_0_1));
                 fProgress_0_1 += Time.deltaTime / fDurationSecond;
                 yield return null;
             }
 
-            pTarget.color = pColorDest;
+            for (int i = 0; i < arrTarget.Length; i++)
+                arrTarget[i].color = pColorDest;
 
             yield break;
         }

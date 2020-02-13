@@ -41,7 +41,7 @@ namespace UIFramework
 
         public override IEnumerator OnAnimation(PopupText pTextOwner, string strText)
         {
-            yield return pLogic.ExecuteLogic_Coroutine(pTextOwner.pText);
+            yield return pLogic.ExecuteLogic_Coroutine(pTextOwner.pTextWrapper.arrGraphic);
         }
 
         /* protected - [abstract & virtual]         */

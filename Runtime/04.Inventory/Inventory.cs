@@ -73,6 +73,8 @@ namespace UIFramework
         public IUIManager pUIManager { get; set; }
         public InventorySlot pSlotSelected { get; private set; }
 
+        public IEnumerable<InventorySlot> arrSlot => _listSlot;
+
 
         [Header("선택한 슬롯을 또 선택하면 선택 해제할지")]
         public bool bPossible_SelectedSlotRelease_OnClick = true;
@@ -88,6 +90,33 @@ namespace UIFramework
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
+
+        public void DoInit_Slot(bool bInclude_Deactive = true)
+        {
+            for(int i = 0; i < _listSlot.Count; i++)
+            {
+                InventorySlot pInventorySlot = _listSlot[i];
+                pInventorySlot.OnClickedSlot -= OnClickedSlot;
+                pInventorySlot.OnSwapSlot -= OnSwapSlot;
+
+                pInventorySlot.OnDragSlot -= Inventory_OnDragSlot;
+                pInventorySlot.OnDragEndSlot -= Inventory_OnDragEndSlot;
+            }
+
+            GetComponentsInChildren(bInclude_Deactive, _listSlot);
+
+            for (int i = 0; i < _listSlot.Count; i++)
+            {
+                InventorySlot pInventorySlot = _listSlot[i];
+                pInventorySlot.OnClickedSlot += OnClickedSlot;
+                pInventorySlot.OnSwapSlot += OnSwapSlot;
+
+                pInventorySlot.OnDragSlot += Inventory_OnDragSlot;
+                pInventorySlot.OnDragEndSlot += Inventory_OnDragEndSlot;
+
+                pInventorySlot.DoInit(this);
+            }
+        }
 
         public void DoAddRange(params object[] arrData)
         {
@@ -152,20 +181,7 @@ namespace UIFramework
         protected override void OnAwake()
         {
             base.OnAwake();
-
-            GetComponentsInChildren(_listSlot);
-
-            for(int i = 0; i < _listSlot.Count; i++)
-            {
-                InventorySlot pInventorySlot = _listSlot[i];
-                pInventorySlot.OnClickedSlot += OnClickedSlot;
-                pInventorySlot.OnSwapSlot += OnSwapSlot;
-
-                pInventorySlot.OnDragSlot += Inventory_OnDragSlot;
-                pInventorySlot.OnDragEndSlot += Inventory_OnDragEndSlot;
-
-                pInventorySlot.DoInit(this);
-            }
+            DoInit_Slot();
         }
 
         private void OnEnable()

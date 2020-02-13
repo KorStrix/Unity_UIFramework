@@ -51,7 +51,7 @@ namespace UIFramework
         {
             base.OnAwake();
 
-            _pText = GetComponent<Text>();
+            _pText = GetComponentInChildren<Text>();
             _arrGraphic = new Graphic[1] { _pText };
         }
 

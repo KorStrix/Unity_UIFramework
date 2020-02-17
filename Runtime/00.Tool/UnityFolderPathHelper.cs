@@ -16,7 +16,7 @@ using UnityEditor;
 /// <summary>
 /// 자주 들어가는 폴더경로 모음
 /// </summary>
-public static class UnityPathHelper
+public static class UnityFolderPathHelper
 {
     [MenuItem("Tools/OpenFolder/Open Persistent Path")]
     static public void Open_PersistentPath()

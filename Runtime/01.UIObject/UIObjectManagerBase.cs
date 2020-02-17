@@ -70,6 +70,7 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
     /* protected & private - Field declaration         */
 
     static protected CLASS_DRIVEN_MANAGER _instance { get; private set; }
+    static protected bool _bIsDestroying { get; private set; } = false;
     static protected bool _bApplication_IsQuit { get; private set; } = false;
 
     // ========================================================================== //
@@ -99,7 +100,11 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
     /// </summary>
     static public void DoDestroy_Manager(bool bDeleteObject_Immediately = false)
     {
-        if(_instance.IsNull() == false)
+        if (_bIsDestroying)
+            return;
+        _bIsDestroying = true;
+
+        if (_instance.IsNull() == false)
         {
             _instance.OnDestroy_ManagerInstance();
 
@@ -110,6 +115,7 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
         }
 
         _instance = null;
+        _bIsDestroying = false;
     }
 
     // ========================================================================== //

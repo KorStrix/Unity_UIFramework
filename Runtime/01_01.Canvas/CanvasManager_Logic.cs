@@ -29,7 +29,8 @@ namespace UIWidgetContainerManager_Logic
     /// </summary>
     public interface ICanvasManager_Logic_IsPossible_Undo : ICanvasManager_Logic
     {
-        IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug);
+        IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug);
+        void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug);
     }
 
     public class CanvasManager_LogicUndo_Wrapper : ICanvasManager_Logic_IsPossible_Undo
@@ -48,9 +49,14 @@ namespace UIWidgetContainerManager_Logic
             yield return pLogic.Execute_LogicCoroutine(pManager, pCanvas, bIsDebug);
         }
 
-        public IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
-            yield return pLogic.Execute_UndoLogicCoroutine(pManager, pCanvas, bIsDebug);
+            yield return pLogic.Execute_UndoLogic_Coroutine(pManager, pCanvas, bIsDebug);
+        }
+
+        public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
+            pLogic.Execute_UndoLogic_NotCoroutine(pManager, pCanvas, bIsDebug);
         }
     }
     #endregion
@@ -120,10 +126,21 @@ namespace UIWidgetContainerManager_Logic
                 Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
         }
 
-        public IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
             if (mapShowObject.ContainsKey(pCanvas) == false)
                 yield break;
+
+            GameObject pObject = mapShowObject[pCanvas];
+            mapShowObject.Remove(pCanvas);
+
+            OnHideObject(pObject);
+        }
+
+        public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
+            if (mapShowObject.ContainsKey(pCanvas) == false)
+                return;
 
             GameObject pObject = mapShowObject[pCanvas];
             mapShowObject.Remove(pCanvas);
@@ -190,7 +207,7 @@ namespace UIWidgetContainerManager_Logic
                 Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
         }
 
-        public IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
             if (mapShowObject.ContainsKey(pCanvas) == false)
                 yield break;
@@ -200,7 +217,6 @@ namespace UIWidgetContainerManager_Logic
             if (pObject.IsNull())
                 yield break;
 
-            _bWaitAnimation = _eOption == EOption.WaitAnimation;
             var pHandle = pObject.DoHide();
             if (pHandle == null)
             {
@@ -211,11 +227,40 @@ namespace UIWidgetContainerManager_Logic
 
             if (bIsDebug)
                 Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " +  nameof(Execute_LogicCoroutine) + " Start");
-
+            
+            _bWaitAnimation = _eOption == EOption.WaitAnimation;
             while (_bWaitAnimation)
             {
                 yield return null;
             }
+
+            if (bIsDebug)
+                Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
+
+            OnHideObject(pObject);
+        }
+
+
+        public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
+            if (mapShowObject.ContainsKey(pCanvas) == false)
+                return;
+
+            T pObject = mapShowObject[pCanvas];
+            mapShowObject.Remove(pCanvas);
+            if (pObject.IsNull())
+                return;
+
+            var pHandle = pObject.DoHide();
+            if (pHandle == null)
+            {
+                Debug.LogWarning("Execute_UndoLogicCoroutine - pHandle == null");
+                return;
+            }
+            pHandle.Set_OnHide(OnFinishAnimation);
+
+            if (bIsDebug)
+                Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Start");
 
             if (bIsDebug)
                 Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
@@ -309,10 +354,10 @@ namespace UIWidgetContainerManager_Logic
             yield break;
         }
 
-        public IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
             if (bIsDebug)
-                Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogicCoroutine) + " 1");
+                Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
 
             if (_OnCheck_IsExecute(pCanvas) == false)
                 yield break;
@@ -349,9 +394,52 @@ namespace UIWidgetContainerManager_Logic
             }
 
             if (bIsDebug)
-                Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogicCoroutine) + " 2");
+                Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
 
             yield break;
+        }
+
+        public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
+            if (bIsDebug)
+                Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
+
+            if (_OnCheck_IsExecute(pCanvas) == false)
+                return;
+
+            if (pCanvas.IsNull())
+                return;
+
+            if (_mapSelectAble.ContainsKey(pCanvas) == false)
+                return;
+
+            List<SelectAble_OriginState> listSelectAble = _mapSelectAble[pCanvas];
+            _mapSelectAble.Remove(pCanvas);
+            if (listSelectAble == null)
+                return;
+
+            if (bIsDebug)
+            {
+                for (int i = 0; i < listSelectAble.Count; i++)
+                {
+                    if (listSelectAble[i].pSelectAble != null)
+                    {
+                        Debug.Log(nameof(Lock_AllInput) + " Canvas : " + pCanvas.gameObject.name + " - " + listSelectAble[i].pSelectAble.name + " Enable : " + listSelectAble[i].bEnableOrigin, listSelectAble[i].pSelectAble);
+                        listSelectAble[i].pSelectAble.enabled = listSelectAble[i].bEnableOrigin;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < listSelectAble.Count; i++)
+                {
+                    if (listSelectAble[i].pSelectAble != null)
+                        listSelectAble[i].pSelectAble.enabled = listSelectAble[i].bEnableOrigin;
+                }
+            }
+
+            if (bIsDebug)
+                Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
         }
     }
 }

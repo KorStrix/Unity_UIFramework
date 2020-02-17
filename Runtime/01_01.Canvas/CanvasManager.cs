@@ -171,16 +171,25 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
             return _listManager_CoroutineLogic.GetEnumerator_Safe();
         }
 
-        public IEnumerator DoExecute_Manager_UndoCoroutineLogic(MonoBehaviour pManager, ECavnasState eEvent)
+        public IEnumerator DoExecute_Manager_UndoLogic_Coroutine(MonoBehaviour pManager, ECavnasState eEvent)
         {
             List<CanvasManager_LogicUndo_Wrapper> listUndoLogic = mapUndoLogic[eEvent];
 
             _listManager_Coroutine_UndoLogic.Clear();
             for (int i = 0; i < listUndoLogic.Count; i++)
-                _listManager_Coroutine_UndoLogic.Add(_OnStartCoroutine(listUndoLogic[i].Execute_UndoLogicCoroutine(pManager, pInstance, const_bIsDebug)));
+                _listManager_Coroutine_UndoLogic.Add(_OnStartCoroutine(listUndoLogic[i].Execute_UndoLogic_Coroutine(pManager, pInstance, const_bIsDebug)));
             listUndoLogic.Clear();
 
             return _listManager_Coroutine_UndoLogic.GetEnumerator_Safe();
+        }
+
+        public void DoExecute_Manager_UndoLogic(MonoBehaviour pManager, ECavnasState eEvent)
+        {
+            List<CanvasManager_LogicUndo_Wrapper> listUndoLogic = mapUndoLogic[eEvent];
+
+            for (int i = 0; i < listUndoLogic.Count; i++)
+                listUndoLogic[i].Execute_UndoLogic_NotCoroutine(pManager, pInstance, const_bIsDebug);
+            listUndoLogic.Clear();
         }
 
         public void DoSet_State_IsEnable()
@@ -289,7 +298,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle = GetCommandHandle<CLASS_DRIVEN_CANVAS>(null);
-        pInstance.StartCoroutine(pInstance.CoProcess_Showing(eName, pHandle, false));
+        pInstance.StartCoroutine(pInstance.Process_ShowCoroutine(eName, pHandle, false));
 
         return pHandle;
     }
@@ -307,7 +316,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle = GetCommandHandle<CLASS_DRIVEN_CANVAS>(null);
-        pInstance.StartCoroutine(pInstance.CoProcess_Showing(eName, pHandle, true));
+        pInstance.StartCoroutine(pInstance.Process_ShowCoroutine(eName, pHandle, true));
 
         return pHandle;
     }
@@ -324,7 +333,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle = GetCommandHandle<CLASS_DRIVEN_CANVAS>(null);
-        pInstance.StartCoroutine(pInstance.CoProcess_Hiding(eName, pHandle));
+        pInstance.StartCoroutine(pInstance.Process_HideCoroutine(eName, pHandle));
 
         return pHandle;
     }
@@ -341,7 +350,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         UICommandHandle<ICanvas> pHandle = GetCommandHandle<ICanvas>(null);
-        pInstance.StartCoroutine(pInstance.CoProcess_Showing(eName, pHandle, false));
+        pInstance.StartCoroutine(pInstance.Process_ShowCoroutine(eName, pHandle, false));
 
         return pHandle;
     }
@@ -358,7 +367,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         UICommandHandle<ICanvas> pHandle = GetCommandHandle<ICanvas>(null);
-        pInstance.StartCoroutine(pInstance.CoProcess_Hiding(eName, pHandle));
+        pInstance.StartCoroutine(pInstance.Process_HideCoroutine(eName, pHandle));
 
         return pHandle;
     }
@@ -531,7 +540,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
     {
         base.OnDestroy_ManagerInstance();
         
-        // DoAllHide_ShowedCanvas(false);
+        DoAllHide_ShowedCanvas(false);
 
         CLASS_DRIVEN_MANAGER pInstance = instance;
         if (pInstance.IsNull())
@@ -572,7 +581,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (pUIObject.IsNull() == false)
         {
             GetWrapper_And_Handle(pUIObject, out pWrapper, out pHandle);
-            StartCoroutine(CoProcess_Showing(pWrapper, pHandle));
+            StartCoroutine(Process_ShowCoroutine(pWrapper, pHandle));
         }
 
         return pHandle;
@@ -586,7 +595,11 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (pUIObject.IsNull() == false)
         {
             GetWrapper_And_Handle(pUIObject, out pWrapper, out pHandle);
-            StartCoroutine(CoProcess_Hiding(pWrapper, pHandle, bPlayHideCoroutine));
+
+            if (bPlayHideCoroutine)
+                StartCoroutine(Process_HideCoroutine(pWrapper, pHandle));
+            else
+                Process_Hide(pWrapper, pHandle);
         }
 
         return pHandle;
@@ -654,7 +667,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
     #region Private
 
-    protected IEnumerator CoProcess_Showing<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+    protected IEnumerator Process_ShowCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
         where CLASS_DRIVEN_CANVAS : IUIObject
     {
         if (pWrapper == null || pWrapper.pInstance.IsNull())
@@ -677,13 +690,13 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         _list_CanvasShow.Add(pWrapper);
 
-        yield return Execute_ManagerLogic(ECavnasState.Process_Before_ShowCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_Before_ShowCoroutine, pWrapper);
         sUICommandHandle.Event_OnBeforeShow();
 
         Canvas pCanvas = GetParentCavnas(pWrapper.eName, pWrapper.pInstance);
         yield return pWrapper.DoExecute_ShowCoroutine(pCanvas, sUICommandHandle);
 
-        yield return Execute_ManagerLogic(ECavnasState.Process_After_ShowCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_After_ShowCoroutine, pWrapper);
         sUICommandHandle.Event_OnShow_AfterAnimation();
 
         OnShow_AfterAnimation(pWrapper.eName, pWrapper.pInstance);
@@ -693,7 +706,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         yield break;
     }
 
-    virtual protected IEnumerator CoProcess_Hiding<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle, bool bPlayHideCoroutine)
+    virtual protected IEnumerator Process_HideCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
         where CLASS_DRIVEN_CANVAS : IUIObject
     {
         if (pWrapper == null)
@@ -704,19 +717,19 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (pWrapper.eState == ECavnasState.Process_Before_HideCoroutine)
             yield break;
 
-        yield return Execute_ManagerLogic(ECavnasState.Process_Before_HideCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_Before_HideCoroutine, pWrapper);
 
-        if (bPlayHideCoroutine)
-            yield return pWrapper.DoExecute_HideCoroutine();
+        yield return pWrapper.DoExecute_HideCoroutine();
 
-        yield return Execute_ManagerLogic(ECavnasState.Process_After_HideCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_After_HideCoroutine, pWrapper);
 
         sUICommandHandle.Event_OnHide(true);
 
         int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
         OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
 
-        yield return Execute_ManagerLogic(ECavnasState.Disable, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(ECavnasState.Disable, pWrapper);
+
         pWrapper.DoSet_State_Is_Disable_Force();
         if (Check_Wrapper_IsNull(pWrapper))
             RemoveWrapper(pWrapper);
@@ -724,7 +737,36 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         yield break;
     }
 
-    IEnumerator CoProcess_Showing<T>(ENUM_CANVAS_NAME eName, UICommandHandle<T> sUICommandHandle, bool bIsMultiple)
+    virtual protected void Process_Hide<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+        where CLASS_DRIVEN_CANVAS : IUIObject
+    {
+        if (pWrapper == null)
+            return;
+
+        _list_CanvasShow.Remove(pWrapper);
+
+        if (pWrapper.eState == ECavnasState.Process_Before_HideCoroutine)
+            return;
+
+        Execute_ManagerUndoLogic(ECavnasState.Process_Before_HideCoroutine, pWrapper);
+
+        // pWrapper.DoExecute_HideCoroutine();
+
+        Execute_ManagerUndoLogic(ECavnasState.Process_After_HideCoroutine, pWrapper);
+
+        sUICommandHandle.Event_OnHide(true);
+
+        int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
+        OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
+
+        Execute_ManagerUndoLogic(ECavnasState.Disable, pWrapper);
+
+        pWrapper.DoSet_State_Is_Disable_Force();
+        if (Check_Wrapper_IsNull(pWrapper))
+            RemoveWrapper(pWrapper);
+    }
+
+    IEnumerator Process_ShowCoroutine<T>(ENUM_CANVAS_NAME eName, UICommandHandle<T> sUICommandHandle, bool bIsMultiple)
         where T : class, ICanvas
     {
         CanvasWrapper pWrapper = null;
@@ -759,10 +801,10 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         sUICommandHandle.Set_UIObject(pWrapper.pInstance as T);
 
-        yield return CoProcess_Showing(pWrapper, sUICommandHandle);
+        yield return Process_ShowCoroutine(pWrapper, sUICommandHandle);
     }
 
-    IEnumerator CoProcess_Hiding<T>(ENUM_CANVAS_NAME eName, UICommandHandle<T> sUICommandHandle)
+    IEnumerator Process_HideCoroutine<T>(ENUM_CANVAS_NAME eName, UICommandHandle<T> sUICommandHandle)
         where T : class, ICanvas
     {
         CanvasWrapper pWrapper = null;
@@ -778,7 +820,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         pWrapper.DoSet_State_IsEnable();
         sUICommandHandle.Set_UIObject(pWrapper.pInstance as T);
 
-        yield return CoProcess_Hiding(pWrapper, sUICommandHandle, true);
+        yield return Process_HideCoroutine(pWrapper, sUICommandHandle);
     }
 
     private static UICommandHandle<CLASS_DRIVEN_CANVAS> GetCommandHandle<CLASS_DRIVEN_CANVAS>(CLASS_DRIVEN_CANVAS pInstance_OrNull) where CLASS_DRIVEN_CANVAS : IUIObject
@@ -952,17 +994,25 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         }
     }
 
-    private IEnumerator Execute_ManagerLogic(ECavnasState eUIEvent, CanvasWrapper pContainerWrapper)
+    private IEnumerator Execute_ManagerLogicCoroutine(ECavnasState eUIEvent, CanvasWrapper pContainerWrapper)
     {
         pContainerWrapper.DoSet_State(eUIEvent);
 
         if (eUIEvent != ECavnasState.Process_Before_ShowCoroutine)
-            yield return pContainerWrapper.DoExecute_Manager_UndoCoroutineLogic(this, eUIEvent);
+            yield return pContainerWrapper.DoExecute_Manager_UndoLogic_Coroutine(this, eUIEvent);
 
         if (_mapManagerLogic.ContainsKey(eUIEvent) == false)
             yield break;
 
         yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, _mapManagerLogic[eUIEvent], GetUndoLogic, const_bIsDebug);
+    }
+
+    private void Execute_ManagerUndoLogic(ECavnasState eUIEvent, CanvasWrapper pContainerWrapper)
+    {
+        pContainerWrapper.DoSet_State(eUIEvent);
+
+        if (eUIEvent != ECavnasState.Process_Before_ShowCoroutine)
+            pContainerWrapper.DoExecute_Manager_UndoLogic(this, eUIEvent);
     }
 
     CanvasManager_LogicUndo_Wrapper GetUndoLogic(ICanvasManager_Logic pLogic)

@@ -126,12 +126,18 @@ namespace StrixLibrary_Test
             yield break;
         }
 
-        public IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
             Canvas_ForLogicTest pTest = pCanvas as Canvas_ForLogicTest;
             pTest.iValue = _iOriginValue;
 
             yield break;
+        }
+
+        public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
+            Canvas_ForLogicTest pTest = pCanvas as Canvas_ForLogicTest;
+            pTest.iValue = _iOriginValue;
         }
     }
 
@@ -151,7 +157,7 @@ namespace StrixLibrary_Test
             yield break;
         }
 
-        public IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
             if (_pTransformParents.childCount == 0)
                 yield break;
@@ -159,6 +165,14 @@ namespace StrixLibrary_Test
             GameObject.DestroyImmediate(_pTransformParents.GetChild(_pTransformParents.childCount - 1).gameObject);
 
             yield break;
+        }
+
+        public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
+            if (_pTransformParents.childCount == 0)
+                return;
+
+            GameObject.DestroyImmediate(_pTransformParents.GetChild(_pTransformParents.childCount - 1).gameObject);
         }
     }
 
@@ -173,7 +187,7 @@ namespace StrixLibrary_Test
             this.fWaitSecond = fWaitSecond; this.fWaitSecond_On_Undo = fWaitSecond_On_Undo;
         }
 
-        public IEnumerator Execute_UndoLogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
             yield return new WaitForSeconds(fWaitSecond);
         }
@@ -181,6 +195,10 @@ namespace StrixLibrary_Test
         public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
         {
             yield return new WaitForSeconds(fWaitSecond_On_Undo);
+        }
+
+        public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+        {
         }
     }
 
@@ -339,7 +357,7 @@ namespace StrixLibrary_Test
             int iRandomShow = Random.Range(3, 7);
             List<UICommandHandle<Canvas_ForLogicTest>> listHandle = new List<UICommandHandle<Canvas_ForLogicTest>>();
             for (int i = 0; i < iRandomShow; i++)
-                listHandle.Add(CanvasManager_ForLogicTest.DoShow_Multiple<Canvas_ForLogicTest>(CanvasManager_ForLogicTest.ECanvasName.Single));
+                listHandle.Add(CanvasManager_ForLogicTest.DoShow_Multiple<Canvas_ForLogicTest>(ECanvasName.Single));
 
             yield return listHandle[listHandle.Count - 1].Yield_WaitForAnimation();
 

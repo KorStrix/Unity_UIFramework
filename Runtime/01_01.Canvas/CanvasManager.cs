@@ -13,45 +13,6 @@ using System.Linq;
 
 using UIWidgetContainerManager_Logic;
 
-
-/// <summary>
-/// Canvas 상태
-/// </summary>
-public enum ECavnasState
-{
-    /// <summary>
-    /// Show Coroutine 플레이 직전
-    /// </summary>
-    Process_Before_ShowCoroutine,
-
-    /// <summary>
-    /// Show Coroutine 플레이 직후
-    /// </summary>
-    Process_After_ShowCoroutine,
-
-    /// <summary>
-    /// Show Animation 절차가 끝나고 현재 Cavnas가 보여지는 중인 상태
-    /// </summary>
-    Showing,
-
-    /// <summary>
-    /// Hide Coroutine 플레이 직전
-    /// </summary>
-    Process_Before_HideCoroutine,
-
-    /// <summary>
-    /// Hide Coroutine 플레이 직후
-    /// </summary>
-    Process_After_HideCoroutine,
-
-    /// <summary>
-    /// Hide Coroutine 후 현재 Canvas를 안쓰는 중인 상태
-    /// </summary>
-    Disable,
-
-    MAX,
-}
-
 /// <summary>
 /// 
 /// </summary>
@@ -70,24 +31,24 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
     /// <see cref="ICanvas"/> 래퍼
     /// <para>1. <see cref="ENUM_CANVAS_NAME"/> 관리</para>
     /// <para>2. <see cref="ICanvasManager_Logic"/> 관리</para>
-    /// <para>3. <see cref="ECavnasState"/> 관리</para>
+    /// <para>3. <see cref="EUIObjectState"/> 관리</para>
     /// <para>4. Show/Hide Coroutine 관리</para>
     /// </summary>
     public class CanvasWrapper
     {
-        public ECavnasState eState { get; private set; }
+        public EUIObjectState eState { get; private set; }
         public ENUM_CANVAS_NAME eName { get; private set; }
         public ICanvas pInstance { get; private set; }
 
         // 로직 캐싱 - 일일이 파싱체크 방지
-        Dictionary<ECavnasState, List<CanvasManager_LogicUndo_Wrapper>> mapUndoLogic = new Dictionary<ECavnasState, List<CanvasManager_LogicUndo_Wrapper>>()
+        Dictionary<EUIObjectState, List<CanvasManager_LogicUndo_Wrapper>> mapUndoLogic = new Dictionary<EUIObjectState, List<CanvasManager_LogicUndo_Wrapper>>()
         {
-            { ECavnasState.Process_Before_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { ECavnasState.Process_Before_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { ECavnasState.Process_After_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { ECavnasState.Process_After_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { ECavnasState.Showing, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { ECavnasState.Disable, new List<CanvasManager_LogicUndo_Wrapper>() },
+            { EUIObjectState.Process_Before_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+            { EUIObjectState.Process_Before_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+            { EUIObjectState.Process_After_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+            { EUIObjectState.Process_After_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+            { EUIObjectState.Showing, new List<CanvasManager_LogicUndo_Wrapper>() },
+            { EUIObjectState.Disable, new List<CanvasManager_LogicUndo_Wrapper>() },
         };
 
 
@@ -104,7 +65,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         {
             this.eName = eName; this.pInstance = pInstance; this._OnStartCoroutine = OnStartCoroutine; this._OnStopCoroutine = OnStopCoroutine;
 
-            DoSet_State(ECavnasState.Disable);
+            DoSet_State(EUIObjectState.Disable);
             _listChildrenWidget.Clear();
             pInstance.gameObject?.GetComponentsInChildren(true, _listChildrenWidget);
             for(int i = 0; i < _listChildrenWidget.Count; i++)
@@ -139,11 +100,11 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
             yield return _listCoroutine.GetEnumerator_Safe();
         }
 
-        public IEnumerator DoExecute_Manager_CoroutineLogic(MonoBehaviour pManager, ECavnasState eEvent, IEnumerable<ICanvasManager_Logic> listManagerLogic, System.Func<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper> GetUndoLogic, bool bIsDebug)
+        public IEnumerator DoExecute_Manager_CoroutineLogic(MonoBehaviour pManager, EUIObjectState eEvent, IEnumerable<ICanvasManager_Logic> listManagerLogic, System.Func<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper> GetUndoLogic, bool bIsDebug)
         {
             _listManager_CoroutineLogic.Clear();
 
-            if(eEvent == ECavnasState.Process_After_HideCoroutine)
+            if(eEvent == EUIObjectState.Process_After_HideCoroutine)
             {
                 foreach (ICanvasManager_Logic pLogic in listManagerLogic)
                 {
@@ -171,7 +132,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
             return _listManager_CoroutineLogic.GetEnumerator_Safe();
         }
 
-        public IEnumerator DoExecute_Manager_UndoLogic_Coroutine(MonoBehaviour pManager, ECavnasState eEvent)
+        public IEnumerator DoExecute_Manager_UndoLogic_Coroutine(MonoBehaviour pManager, EUIObjectState eEvent)
         {
             List<CanvasManager_LogicUndo_Wrapper> listUndoLogic = mapUndoLogic[eEvent];
 
@@ -183,7 +144,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
             return _listManager_Coroutine_UndoLogic.GetEnumerator_Safe();
         }
 
-        public void DoExecute_Manager_UndoLogic(MonoBehaviour pManager, ECavnasState eEvent)
+        public void DoExecute_Manager_UndoLogic(MonoBehaviour pManager, EUIObjectState eEvent)
         {
             List<CanvasManager_LogicUndo_Wrapper> listUndoLogic = mapUndoLogic[eEvent];
 
@@ -194,17 +155,17 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         public void DoSet_State_IsEnable()
         {
-            DoSet_State(ECavnasState.Showing);
+            DoSet_State(EUIObjectState.Showing);
         }
 
         public void DoSet_State_Is_Disable_Force()
         {
             if (pInstance.Equals(null) == false)
                 pInstance.gameObject?.SetActive(false);
-            DoSet_State(ECavnasState.Disable);
+            DoSet_State(EUIObjectState.Disable);
         }
 
-        public void DoSet_State(ECavnasState eState)
+        public void DoSet_State(EUIObjectState eState)
         {
             // Debug.LogError(eName + "State : " + eState, pInstance.gameObject);
             this.eState = eState;
@@ -212,12 +173,12 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         public bool Check_IsEnable()
         {
-            return eState != ECavnasState.Disable;
+            return eState != EUIObjectState.Disable;
         }
 
         public bool Check_IsDisable()
         {
-            return eState == ECavnasState.Disable;
+            return eState == EUIObjectState.Disable;
         }
 
         public void Clear_Manager_UndoLogic()
@@ -273,10 +234,10 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
     protected Dictionary<ENUM_CANVAS_NAME, List<CanvasWrapper>> _mapWrapper = new Dictionary<ENUM_CANVAS_NAME, List<CanvasWrapper>>();
     protected Dictionary<ICanvas, CanvasWrapper> _mapWrapper_Key_Is_Instance = new Dictionary<ICanvas, CanvasWrapper>();
 
-    Dictionary<ECavnasState, List<ICanvasManager_Logic>> _mapManagerLogic = new Dictionary<ECavnasState, List<ICanvasManager_Logic>>();
+    Dictionary<EUIObjectState, List<ICanvasManager_Logic>> _mapManagerLogic = new Dictionary<EUIObjectState, List<ICanvasManager_Logic>>();
     Dictionary<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper> _mapManagerUndoLogic_Parser = new Dictionary<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper>();
 
-    List<CanvasWrapper> _list_CanvasShow = new List<CanvasWrapper>();
+    List<ICanvas> _list_CanvasShowInstance = new List<ICanvas>();
     HashSet<ENUM_CANVAS_NAME> _setProcessCreating = new HashSet<ENUM_CANVAS_NAME>();
     SimplePool<CanvasWrapper> _pWrapperPool;
 
@@ -441,17 +402,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (_bApplication_IsQuit)
             return new List<ICanvas>();
 
-        CLASS_DRIVEN_MANAGER pInstance = instance;
-
-        List<CanvasWrapper> listCanvas_AlreadyShow = pInstance._list_CanvasShow;
-        List<ICanvas> listCanvas = new List<ICanvas>(listCanvas_AlreadyShow.Count);
-        for (int i = 0; i < listCanvas_AlreadyShow.Count; i++)
-        {
-            if (listCanvas_AlreadyShow[i].pInstance.IsNull() == false)
-                listCanvas.Add(listCanvas_AlreadyShow[i].pInstance);
-        }
-
-        return listCanvas;
+        return new List<ICanvas>(instance._list_CanvasShowInstance.Where(p => p.IsNull() == false));
     }
 
     /// <summary>
@@ -463,11 +414,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (pInstance.IsNull())
             return null;
 
-        List<CanvasWrapper> list_CanvasShow = pInstance._list_CanvasShow;
-        if (list_CanvasShow.Count == 0)
-            return null;
-        else
-            return list_CanvasShow[list_CanvasShow.Count - 1].pInstance;
+        return pInstance._list_CanvasShowInstance.LastOrDefault();
     }
 
     /// <summary>
@@ -488,7 +435,6 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         bool bGet_IsSuccess = true;
         CanvasWrapper pWrapper = null;
-
         if (pInstance._mapWrapper_Key_Is_Instance.TryGetValue(pObject, out pWrapper))
         {
             eName = pWrapper.eName;
@@ -519,14 +465,14 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
         // Null 체크를 안하기 위해, 개발편의를 위해 Empty List 삽입
         _mapManagerLogic.Clear();
-        int iLoopMax = (int)ECavnasState.MAX;
+        int iLoopMax = (int)EUIObjectState.MAX;
         for (int i = 0; i < iLoopMax; i++)
-            _mapManagerLogic.Add((ECavnasState)i, new List<ICanvasManager_Logic>());
+            _mapManagerLogic.Add((EUIObjectState)i, new List<ICanvasManager_Logic>());
 
         if(const_bIsDebug)
         {
             for (int i = 0; i < iLoopMax; i++)
-                _mapManagerLogic[(ECavnasState)i].Add(new Print_CanvasState((ECavnasState)i));
+                _mapManagerLogic[(EUIObjectState)i].Add(new Print_CanvasState((EUIObjectState)i));
         }
 
         OnInit_ManagerLogic(_mapManagerLogic);
@@ -562,7 +508,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         pInstance._mapWrapper_Key_Is_Instance.Clear();
 
         pInstance._setProcessCreating.Clear();
-        pInstance._list_CanvasShow.Clear();
+        pInstance._list_CanvasShowInstance.Clear();
 
         pInstance._mapManagerLogic.Clear();
         pInstance._mapManagerUndoLogic_Parser.Clear();
@@ -605,6 +551,16 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         return pHandle;
     }
 
+    public override EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
+    {
+        ICanvas pCanvas = pUIObject as ICanvas;
+        CanvasWrapper pCanvasWrapper;
+        if(_mapWrapper_Key_Is_Instance.TryGetValue(pCanvas, out pCanvasWrapper) == false)
+            return EUIObjectState.Error;
+
+        return pCanvasWrapper.eState;
+    }
+
     #endregion
 
     /* protected - [abstract & virtual]         */
@@ -614,7 +570,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
     /// <para>`로직`은 <see cref="ICanvasManager_Logic"/>을 상속받은 클래스입니다.</para>
     /// </summary>
     /// <param name="mapManagerLogic"></param>
-    abstract protected void OnInit_ManagerLogic(Dictionary<ECavnasState, List<ICanvasManager_Logic>> mapManagerLogic);
+    abstract protected void OnInit_ManagerLogic(Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic);
 
     /// <summary>
     /// 컨테이너의 인스턴스를 만드는 방법을 구현합니다.
@@ -688,15 +644,15 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
             yield break;
         }
 
-        _list_CanvasShow.Add(pWrapper);
+        _list_CanvasShowInstance.Add(pWrapper.pInstance);
 
-        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_Before_ShowCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_ShowCoroutine, pWrapper);
         sUICommandHandle.Event_OnBeforeShow();
 
         Canvas pCanvas = GetParentCavnas(pWrapper.eName, pWrapper.pInstance);
         yield return pWrapper.DoExecute_ShowCoroutine(pCanvas, sUICommandHandle);
 
-        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_After_ShowCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_ShowCoroutine, pWrapper);
         sUICommandHandle.Event_OnShow_AfterAnimation();
 
         OnShow_AfterAnimation(pWrapper.eName, pWrapper.pInstance);
@@ -712,23 +668,23 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (pWrapper == null)
             yield break;
 
-        _list_CanvasShow.Remove(pWrapper);
+        _list_CanvasShowInstance.Remove(pWrapper.pInstance);
 
-        if (pWrapper.eState == ECavnasState.Process_Before_HideCoroutine)
+        if (pWrapper.eState == EUIObjectState.Process_Before_HideCoroutine)
             yield break;
 
-        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_Before_HideCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_HideCoroutine, pWrapper);
 
         yield return pWrapper.DoExecute_HideCoroutine();
 
-        yield return Execute_ManagerLogicCoroutine(ECavnasState.Process_After_HideCoroutine, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_HideCoroutine, pWrapper);
 
         sUICommandHandle.Event_OnHide(true);
 
         int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
         OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
 
-        yield return Execute_ManagerLogicCoroutine(ECavnasState.Disable, pWrapper);
+        yield return Execute_ManagerLogicCoroutine(EUIObjectState.Disable, pWrapper);
 
         pWrapper.DoSet_State_Is_Disable_Force();
         if (Check_Wrapper_IsNull(pWrapper))
@@ -743,23 +699,23 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (pWrapper == null)
             return;
 
-        _list_CanvasShow.Remove(pWrapper);
+        _list_CanvasShowInstance.Remove(pWrapper.pInstance);
 
-        if (pWrapper.eState == ECavnasState.Process_Before_HideCoroutine)
+        if (pWrapper.eState == EUIObjectState.Process_Before_HideCoroutine)
             return;
 
-        Execute_ManagerUndoLogic(ECavnasState.Process_Before_HideCoroutine, pWrapper);
+        Execute_ManagerUndoLogic(EUIObjectState.Process_Before_HideCoroutine, pWrapper);
 
         // pWrapper.DoExecute_HideCoroutine();
 
-        Execute_ManagerUndoLogic(ECavnasState.Process_After_HideCoroutine, pWrapper);
+        Execute_ManagerUndoLogic(EUIObjectState.Process_After_HideCoroutine, pWrapper);
 
         sUICommandHandle.Event_OnHide(true);
 
         int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
         OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
 
-        Execute_ManagerUndoLogic(ECavnasState.Disable, pWrapper);
+        Execute_ManagerUndoLogic(EUIObjectState.Disable, pWrapper);
 
         pWrapper.DoSet_State_Is_Disable_Force();
         if (Check_Wrapper_IsNull(pWrapper))
@@ -994,11 +950,11 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         }
     }
 
-    private IEnumerator Execute_ManagerLogicCoroutine(ECavnasState eUIEvent, CanvasWrapper pContainerWrapper)
+    private IEnumerator Execute_ManagerLogicCoroutine(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper)
     {
         pContainerWrapper.DoSet_State(eUIEvent);
 
-        if (eUIEvent != ECavnasState.Process_Before_ShowCoroutine)
+        if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)
             yield return pContainerWrapper.DoExecute_Manager_UndoLogic_Coroutine(this, eUIEvent);
 
         if (_mapManagerLogic.ContainsKey(eUIEvent) == false)
@@ -1007,11 +963,11 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, _mapManagerLogic[eUIEvent], GetUndoLogic, const_bIsDebug);
     }
 
-    private void Execute_ManagerUndoLogic(ECavnasState eUIEvent, CanvasWrapper pContainerWrapper)
+    private void Execute_ManagerUndoLogic(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper)
     {
         pContainerWrapper.DoSet_State(eUIEvent);
 
-        if (eUIEvent != ECavnasState.Process_Before_ShowCoroutine)
+        if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)
             pContainerWrapper.DoExecute_Manager_UndoLogic(this, eUIEvent);
     }
 

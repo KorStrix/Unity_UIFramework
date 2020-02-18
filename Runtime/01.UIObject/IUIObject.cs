@@ -10,6 +10,47 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+
+/// <summary>
+/// Canvas 상태
+/// </summary>
+public enum EUIObjectState
+{
+    Error = -1,
+
+    /// <summary>
+    /// Show Coroutine 플레이 직전
+    /// </summary>
+    Process_Before_ShowCoroutine,
+
+    /// <summary>
+    /// Show Coroutine 플레이 직후
+    /// </summary>
+    Process_After_ShowCoroutine,
+
+    /// <summary>
+    /// Show Animation 절차가 끝나고 현재 Cavnas가 보여지는 중인 상태
+    /// </summary>
+    Showing,
+
+    /// <summary>
+    /// Hide Coroutine 플레이 직전
+    /// </summary>
+    Process_Before_HideCoroutine,
+
+    /// <summary>
+    /// Hide Coroutine 플레이 직후
+    /// </summary>
+    Process_After_HideCoroutine,
+
+    /// <summary>
+    /// Hide Coroutine 후 현재 Canvas를 안쓰는 중인 상태
+    /// </summary>
+    Disable,
+
+    MAX,
+}
+
 /// <summary>
 /// 이 프레임워크의 모든 오브젝트 베이스
 /// </summary>
@@ -209,5 +250,8 @@ public interface IUIManager : IUIObjectBase
         where CLASS_UIOBJECT : IUIObject;
 
     UICommandHandle<CLASS_UIOBJECT> IUIManager_Hide<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject, bool bPlayHideCoroutine)
+        where CLASS_UIOBJECT : IUIObject;
+
+    EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
         where CLASS_UIOBJECT : IUIObject;
 }

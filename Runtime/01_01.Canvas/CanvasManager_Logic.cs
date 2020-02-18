@@ -36,10 +36,10 @@ namespace UIWidgetContainerManager_Logic
     public class CanvasManager_LogicUndo_Wrapper : ICanvasManager_Logic_IsPossible_Undo
     {
         public ICanvasManager_Logic_IsPossible_Undo pLogic { get; private set; }
-        public ECavnasState eWhenUndo { get; private set; }
+        public EUIObjectState eWhenUndo { get; private set; }
 
 
-        public CanvasManager_LogicUndo_Wrapper(ICanvasManager_Logic_IsPossible_Undo pLogic, ECavnasState eWhenUndo)
+        public CanvasManager_LogicUndo_Wrapper(ICanvasManager_Logic_IsPossible_Undo pLogic, EUIObjectState eWhenUndo)
         {
             this.pLogic = pLogic; this.eWhenUndo = eWhenUndo;
         }
@@ -64,9 +64,9 @@ namespace UIWidgetContainerManager_Logic
 
     public class Print_CanvasState : ICanvasManager_Logic
     {
-        ECavnasState _eState;
+        EUIObjectState _eState;
 
-        public Print_CanvasState(ECavnasState eState)
+        public Print_CanvasState(EUIObjectState eState)
         {
             _eState = eState;
         }

@@ -178,6 +178,8 @@ abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : Mono
 
     abstract public UICommandHandle<CLASS_UIOBJECT> IUIManager_Hide<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject, bool bPlayAnimation)
         where CLASS_UIOBJECT : IUIObject;
+    abstract public EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
+        where CLASS_UIOBJECT : IUIObject;
 
     // ========================================================================== //
 

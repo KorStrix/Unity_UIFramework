@@ -59,7 +59,7 @@ namespace UIFramework
             _pCanvas = GetComponent<Canvas>();
         }
 
-        protected override void OnInit_ManagerLogic(Dictionary<ECavnasState, List<ICanvasManager_Logic>> mapManagerLogic)
+        protected override void OnInit_ManagerLogic(Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic)
         {
         }
 

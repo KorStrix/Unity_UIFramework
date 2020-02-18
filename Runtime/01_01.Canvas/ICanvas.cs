@@ -41,7 +41,7 @@ static public class ICanvasHelper
 
 #if UNITY_EDITOR
     [UnityEditor.MenuItem("GameObject/UI/Custom/" + "PopupBase")]
-    static public void CreateRadioButton(MenuCommand pCommand)
+    static public void CreatePopup(MenuCommand pCommand)
     {
         GameObject pObjectParents = pCommand.context as GameObject;
 
@@ -130,7 +130,7 @@ static public class ICanvasHelper
         if (pObject == null)
             return null;
 
-        if (pObject.pUIManager == null)
+        if (pObject.pUIManager.IsNull())
         {
             Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide), pObject);
             pObject.gameObject.SetActive(false);
@@ -147,10 +147,10 @@ static public class ICanvasHelper
     static public void DoHideOnly<T>(this T pObject)
         where T : ICanvas
     {
-        if (pObject == null)
+        if (pObject.IsNull())
             return;
 
-        if (pObject.pUIManager == null)
+        if (pObject.pUIManager.IsNull())
         {
             Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide), pObject);
             pObject.gameObject.SetActive(false);
@@ -167,17 +167,32 @@ static public class ICanvasHelper
     static public UICommandHandle<T> DoHide_NotPlayHideCoroutine<T>(this T pObject)
         where T : ICanvas
     {
-        if (pObject == null)
+        if (pObject.IsNull())
             return null;
 
-        if (pObject.pUIManager == null)
+        if (pObject.pUIManager.IsNull())
         {
-            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide), pObject);
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide_NotPlayHideCoroutine), pObject);
             pObject.gameObject.SetActive(false);
 
             return null;
         }
 
         return pObject.pUIManager.IUIManager_Hide(pObject, false);
+    }
+
+    static public EUIObjectState GetUIObjectState<T>(this T pObject)
+        where T : ICanvas
+    {
+        if (pObject.IsNull())
+            return EUIObjectState.Disable;
+
+        if (pObject.pUIManager.IsNull())
+        {
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(GetUIObjectState), pObject);
+            return EUIObjectState.Disable;
+        }
+
+        return pObject.pUIManager.IUIManager_GetUIObjectState(pObject);
     }
 }

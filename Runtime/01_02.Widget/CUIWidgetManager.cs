@@ -61,6 +61,13 @@ public class CUIWidgetManager : UIObjectManagerBase<CUIWidgetManager, IUIWidget_
         return sUICommandHandle;
     }
 
+    public override EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
+    {
+        Debug.Log($"아직 미지원.. {nameof(IUIManager_GetUIObjectState)} - {pUIObject.gameObject.name}");
+
+        return EUIObjectState.Error;
+    }
+
     /* protected - [abstract & virtual]         */
 
     // ========================================================================== //

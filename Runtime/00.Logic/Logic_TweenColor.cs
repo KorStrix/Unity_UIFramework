@@ -15,7 +15,7 @@ using UnityEngine.UI;
 namespace UIFramework
 {
     /// <summary>
-    /// 
+    /// 타겟의 색상을 특정 색상으로 보간하는 로직입니다.
     /// </summary>
     [System.Serializable]
     public class Logic_TweenColor

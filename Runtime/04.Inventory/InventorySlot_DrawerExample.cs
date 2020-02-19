@@ -17,7 +17,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public class InventorySlot_TestDataDrawer : UIWidgetObjectBase
+    public class InventorySlot_DrawerExample : UIWidgetObjectBase
     {
         /* const & readonly declaration             */
 
@@ -72,7 +72,7 @@ namespace UIFramework
             }
             else
             {
-                InventoryTester.SomthingData pData = obj.pData_Current as InventoryTester.SomthingData;
+                InventoryExample.SomthingData pData = obj.pData_Current as InventoryExample.SomthingData;
                 pImage_Icon.sprite = pData.pSpriteIcon;
                 pImage_Icon.color = pData.pColor;
                 _pText_Name.text = pData.strName;

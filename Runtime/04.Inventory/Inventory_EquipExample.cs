@@ -10,6 +10,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using static UIFramework.InventoryExample;
 
 namespace UIFramework
 {
@@ -18,20 +19,12 @@ namespace UIFramework
     /// 
     /// </summary>
     [RequireComponent(typeof(Inventory))]
-    public class InventoryTester : MonoBehaviour
+    public class Inventory_EquipExample : MonoBehaviour
     {
         /* const & readonly declaration             */
 
 
         /* enum & struct declaration                */
-
-        [System.Serializable]
-        public class SomthingData
-        {
-            public string strName;
-            public Sprite pSpriteIcon;
-            public Color pColor;
-        }
 
         /* public - Field declaration               */
 
@@ -60,14 +53,15 @@ namespace UIFramework
             if(_pInventory.bIsExecute_Awake == false)
                 _pInventory.EventAwake();
 
-            _pInventory.DoClear();
-            _pInventory.DoAddRange(listSomthingData.ToArray());
-            _pInventory.OnSwap_Slot += _pInventory_OnSwap_Slot;
+            _pInventory.DoClearData();
+            _pInventory.DoAddRangeData(listSomthingData.ToArray());
+
+            _pInventory.OnSwap_Slot_OtherInventory += Inventory_OnSwap_Slot;
         }
 
-        private void _pInventory_OnSwap_Slot(InventorySlot pStart, InventorySlot pDest)
+        private void Inventory_OnSwap_Slot(Inventory.OnSwapSlot_Msg obj)
         {
-            pStart.DoSwapSlot(pDest);
+            obj.pSlot_OnDraging.DoSwapSlot(obj.pSlot_Dest);
         }
 
         /* protected - [abstract & virtual]         */

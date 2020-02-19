@@ -76,16 +76,19 @@ namespace UIFramework
         public IEnumerable<InventorySlot> arrSlot => _listSlot;
 
 
-        [Header("º±≈√«— ΩΩ∑‘¿ª ∂« º±≈√«œ∏È º±≈√ «ÿ¡¶«“¡ˆ")]
+        [Header("ÏÑ†ÌÉùÌïú Ïä¨Î°ØÏùÑ Îòê ÏÑ†ÌÉùÌïòÎ©¥ ÏÑ†ÌÉù Ìï¥Ï†úÌï†ÏßÄ")]
         public bool bPossible_SelectedSlotRelease_OnClick = true;
 
-        [Header("µπˆ±Î ¿Øπ´")]
+        [Header("ÎîîÎ≤ÑÍπÖ Ïú†Î¨¥")]
         public bool bIsDebug = false;
 
         /* protected & private - Field declaration  */
 
         Dictionary<int, InventorySlot> _mapSlot_ByData = new Dictionary<int, InventorySlot>();
         List<InventorySlot> _listSlot = new List<InventorySlot>();
+
+        InventorySlotLogic_State.InventorySlot_StateLogic[] _arrSlotLogic_State = new InventorySlotLogic_State.InventorySlot_StateLogic[0];
+        InventorySlotLogic_Command.InventorySlot_CommandLogic[] _arrSlotLogic_Command = new InventorySlotLogic_Command.InventorySlot_CommandLogic[0];
 
         // ========================================================================== //
 
@@ -98,9 +101,6 @@ namespace UIFramework
                 InventorySlot pInventorySlot = _listSlot[i];
                 pInventorySlot.OnClickedSlot -= OnClickedSlot;
                 pInventorySlot.OnSwapSlot -= OnSwapSlot;
-
-                pInventorySlot.OnDragSlot -= Inventory_OnDragSlot;
-                pInventorySlot.OnDragEndSlot -= Inventory_OnDragEndSlot;
             }
 
             GetComponentsInChildren(bInclude_Deactive, _listSlot);
@@ -109,16 +109,31 @@ namespace UIFramework
             {
                 InventorySlot pInventorySlot = _listSlot[i];
                 pInventorySlot.OnClickedSlot += OnClickedSlot;
+                pInventorySlot.OnDragBeginSlot += OnClickedSlot;
                 pInventorySlot.OnSwapSlot += OnSwapSlot;
-
-                pInventorySlot.OnDragSlot += Inventory_OnDragSlot;
-                pInventorySlot.OnDragEndSlot += Inventory_OnDragEndSlot;
+                pInventorySlot.DoInit_SlotStateLogic(_arrSlotLogic_State);
+                pInventorySlot.DoInit_SlotCommandLogic(_arrSlotLogic_Command);
 
                 pInventorySlot.DoInit(this);
             }
         }
 
-        public void DoAddRange(params object[] arrData)
+        public void DoInit_SlotLogic_State(params InventorySlotLogic_State.InventorySlot_StateLogic[] arrSlotLogic)
+        {
+            _arrSlotLogic_State = arrSlotLogic;
+            for (int i = 0; i < _listSlot.Count; i++)
+                _listSlot[i].DoInit_SlotStateLogic(arrSlotLogic);
+        }
+
+        public void DoInit_SlotLogic_Command(params InventorySlotLogic_Command.InventorySlot_CommandLogic[] arrSlotLogic)
+        {
+            _arrSlotLogic_Command = arrSlotLogic;
+            for (int i = 0; i < _listSlot.Count; i++)
+                _listSlot[i].DoInit_SlotCommandLogic(arrSlotLogic);
+        }
+
+
+        public void DoAddRangeData(params object[] arrData)
         {
             int iDataIndex = 0;
             for (int i = 0; i < _listSlot.Count; i++)
@@ -137,12 +152,12 @@ namespace UIFramework
             }
         }
 
-        public void DoAdd(object pData)
+        public void DoAddData(object pData)
         {
-            DoAddRange(pData);
+            DoAddRangeData(pData);
         }
 
-        public void DoRemove(object pData)
+        public void DoRemoveData(object pData)
         {
             InventorySlot pSlot;
             if (_mapSlot_ByData.TryGetValue(pData.GetHashCode(), out pSlot) == false)
@@ -151,7 +166,7 @@ namespace UIFramework
             Slot_ClearData(pSlot, pData.GetHashCode());
         }
 
-        public void DoClear(bool bClear_OnSelected = true)
+        public void DoClearData(bool bClear_OnSelected = true)
         {
             for (int i = 0; i < _listSlot.Count; i++)
             {
@@ -206,10 +221,16 @@ namespace UIFramework
         private void OnSwapSlot(OnSwapSlot_Msg obj)
         {
             if (obj.pInventory_OnDraging == obj.pInventory_Dest)
+            {
                 OnSwap_Slot?.Invoke(obj.pSlot_OnDraging, obj.pSlot_Dest);
+                OnClickedSlot(obj.pSlot_Dest, null);
+            }
             else
+            {
                 OnSwap_Slot_OtherInventory?.Invoke(obj);
+            }
         }
+
         private void OnClickedSlot(InventorySlot pSlotSelectedNew, UnityEngine.EventSystems.PointerEventData pPointerData)
         {
             if (pSlotSelected == pSlotSelectedNew && bPossible_SelectedSlotRelease_OnClick)
@@ -239,13 +260,6 @@ namespace UIFramework
             OnClick_Slot?.Invoke(pSlotSelectedNew, pPointerData);
         }
 
-        private void Inventory_OnDragSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
-        {
-        }
-
-        private void Inventory_OnDragEndSlot(InventorySlot arg1, UnityEngine.EventSystems.PointerEventData arg2)
-        {
-        }
 
         private void Slot_SetData(InventorySlot pSlot, object pData, int iDataKey)
         {
@@ -276,7 +290,7 @@ namespace UIFramework
             {
                 pObjectParents = new GameObject($"{nameof(Inventory)}");
 
-                // ª˝º∫µ» ø¿∫Í¡ß∆Æ∏¶ Undo Ω√Ω∫≈€ø° µÓ∑œ«—¥Ÿ.
+                // ÏÉùÏÑ±Îêú Ïò§Î∏åÏ†ùÌä∏Î•º Undo ÏãúÏä§ÌÖúÏóê Îì±Î°ùÌïúÎã§.
                 Undo.RegisterCreatedObjectUndo(pObjectParents, "Create " + pObjectParents.name);
             }
 
@@ -294,7 +308,7 @@ namespace UIFramework
             {
                 string strSlotName = $"Slot ({i + 1})";
                 pObjectSlotLast = new GameObject(strSlotName);
-                // ª˝º∫µ» ø¿∫Í¡ß∆Æ∏¶ Undo Ω√Ω∫≈€ø° µÓ∑œ«—¥Ÿ.
+                // ÏÉùÏÑ±Îêú Ïò§Î∏åÏ†ùÌä∏Î•º Undo ÏãúÏä§ÌÖúÏóê Îì±Î°ùÌïúÎã§.
                 Undo.RegisterCreatedObjectUndo(pObjectSlotLast, "Create " + strSlotName);
 
                 GameObjectUtility.SetParentAndAlign(pObjectSlotLast, pObjectParents);

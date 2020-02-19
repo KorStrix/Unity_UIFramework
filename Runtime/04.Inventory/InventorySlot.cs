@@ -13,6 +13,8 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UIFramework.InventorySlotLogic_State;
+using UIFramework.InventorySlotLogic_Command;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,11 +25,34 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public class InventorySlot : UIWidgetObjectBase, IPointerEnterHandler, IPointerClickHandler, IDragHandler, IEndDragHandler
+    public class InventorySlot : UIWidgetObjectBase, IPointerEnterHandler, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         /* const & readonly declaration             */
 
         /* enum & struct declaration                */
+
+        public enum EInventorySlot_StateEvent
+        {
+            None,
+
+            OnFillSlot,
+            OnEmptySlot,
+
+            OnSwapSlot,
+            OnSelectedSlot,
+        }
+
+        public enum EInventorySlot_CommandEvent
+        {
+            None,
+
+            OnHover,
+            OnClick,
+
+            OnDragBegin,
+            OnDrag,
+            OnDragEnd,
+        }
 
         public struct OnChangeSlotData_Msg
         {
@@ -48,6 +73,7 @@ namespace UIFramework
         public event System.Action<InventorySlot, PointerEventData> OnClickedSlot;
         public event System.Action<InventorySlot, PointerEventData> OnHoverSlot;
 
+        public event System.Action<InventorySlot, PointerEventData> OnDragBeginSlot;
         public event System.Action<InventorySlot, PointerEventData> OnDragSlot;
         public event System.Action<InventorySlot, PointerEventData> OnDragEndSlot;
 
@@ -60,10 +86,10 @@ namespace UIFramework
         public bool bIsSelected { get; private set; }
         public object pData { get; private set; }
 
-        [Header("µð¹ö±ë À¯¹«")]
+        [Header("ë””ë²„ê¹… ìœ ë¬´")]
         public bool bIsDebug = false;
 
-        [Header("µå·¡±× À¯¹«")]
+        [Header("ë“œëž˜ê·¸ ìœ ë¬´")]
         public bool bIsDragAble = false;
 
         public int iSlotIndex;
@@ -71,6 +97,12 @@ namespace UIFramework
         /* protected & private - Field declaration  */
 
         static List<RaycastResult> g_listHit = new List<RaycastResult>();
+
+        Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>> _mapSlotLogic_State = new Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>>();
+        Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>> _mapSlotLogic_State_Undo = new Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>>();
+
+        Dictionary<EInventorySlot_CommandEvent, List<InventorySlot_CommandLogic>> _mapSlotLogic_Command = new Dictionary<EInventorySlot_CommandEvent, List<InventorySlot_CommandLogic>>();
+        Dictionary<EInventorySlot_CommandEvent, List<InventorySlot_CommandLogic>> _mapSlotLogic_Command_Undo = new Dictionary<EInventorySlot_CommandEvent, List<InventorySlot_CommandLogic>>();
 
         Inventory _pInventory;
 
@@ -81,7 +113,52 @@ namespace UIFramework
         public void DoInit(Inventory pInventory)
         {
             _pInventory = pInventory;
+
             Event_SetSelected(false);
+        }
+
+
+        public void DoInit_SlotStateLogic(InventorySlot_StateLogic[] arrSlotStateLogic)
+        {
+            _mapSlotLogic_State = arrSlotStateLogic.
+                GroupBy(p => p.eEvent).
+                ToDictionary(p => p.Key, p => p.ToList());
+
+            _mapSlotLogic_State_Undo = arrSlotStateLogic.
+                Where(p => p.eEvent_Undo != EInventorySlot_StateEvent.None).
+                GroupBy(p => p.eEvent_Undo).
+                ToDictionary(p => p.Key, p => p.ToList());
+
+            OnChange_SlotData -= ExecuteLogic_StateEvent_OnChangeData;
+            OnChange_SlotData += ExecuteLogic_StateEvent_OnChangeData;
+            OnChange_IsSelected -= ExecuteLogic_StateEvent_OnSelected;
+            OnChange_IsSelected += ExecuteLogic_StateEvent_OnSelected;
+            OnSwapSlot -= ExecuteLogic_StateEvent_OnSwap;
+            OnSwapSlot += ExecuteLogic_StateEvent_OnSwap;
+        }
+
+        public void DoInit_SlotCommandLogic(InventorySlot_CommandLogic[] arrSlotCommandLogic)
+        {
+            _mapSlotLogic_Command = arrSlotCommandLogic.
+                GroupBy(p => p.eEvent).
+                ToDictionary(p => p.Key, p => p.ToList());
+
+            _mapSlotLogic_Command_Undo = arrSlotCommandLogic.
+                Where(p => p.eEvent_Undo != EInventorySlot_CommandEvent.None).
+                GroupBy(p => p.eEvent_Undo).
+                ToDictionary(p => p.Key, p => p.ToList());
+
+            OnHoverSlot -= ExecuteLogic_CommandEvent_OnHover;
+            OnHoverSlot += ExecuteLogic_CommandEvent_OnHover;
+            OnClickedSlot -= ExecuteLogic_CommandEvent_OnClick;
+            OnClickedSlot += ExecuteLogic_CommandEvent_OnClick;
+
+            OnDragBeginSlot -= ExecuteLogic_CommandEvent_OnDragBegin;
+            OnDragBeginSlot += ExecuteLogic_CommandEvent_OnDragBegin;
+            OnDragSlot -= ExecuteLogic_CommandEvent_OnDrag;
+            OnDragSlot += ExecuteLogic_CommandEvent_OnDrag;
+            OnDragEndSlot -= ExecuteLogic_CommandEvent_OnDragEnd;
+            OnDragEndSlot += ExecuteLogic_CommandEvent_OnDragEnd;
         }
 
         public void DoSwapSlot(InventorySlot pSlotOrigin)
@@ -111,40 +188,16 @@ namespace UIFramework
             pData = null;
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (bIsDebug)
-                Debug.Log($"{name}-{iSlotIndex} {nameof(OnPointerClick)}", this);
+        public void OnPointerClick(PointerEventData eventData) { OnClickedSlot?.Invoke(this, eventData); }
+        public void OnPointerEnter(PointerEventData eventData) { OnHoverSlot?.Invoke(this, eventData); }
 
-            OnClickedSlot?.Invoke(this, eventData);
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (bIsDebug)
-                Debug.Log($"{name}-{iSlotIndex} {nameof(OnPointerEnter)}", this);
-
-            OnHoverSlot?.Invoke(this, eventData);
-        }
-
-        public void OnDrag(PointerEventData eventData)
-        {
-            if (bIsDebug)
-                Debug.Log($"{name}-{iSlotIndex} {nameof(OnDrag)}", this);
-
-            if (pData == null)
-                return;
-
-            OnDragSlot?.Invoke(this, eventData);
-        }
+        public void OnBeginDrag(PointerEventData eventData) { OnDragBeginSlot?.Invoke(this, eventData); }
+        public void OnDrag(PointerEventData eventData) { OnDragSlot?.Invoke(this, eventData); }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (bIsDebug)
-                Debug.Log($"{name}-{iSlotIndex} {nameof(OnEndDrag)}", this);
-
             EventSystem.current.RaycastAll(eventData, g_listHit);
-            for(int i = 0; i < g_listHit.Count; i++)
+            for (int i = 0; i < g_listHit.Count; i++)
             {
                 InventorySlot pSlot = g_listHit[i].gameObject.GetComponent<InventorySlot>();
                 if (pSlot == null)
@@ -179,7 +232,7 @@ namespace UIFramework
 
         protected void Event_OnSwapSlot(Inventory pInventory_OnDraging, InventorySlot pSlot_OnDraging, Inventory pInventory_Dest, InventorySlot pSlot_Dest)
         {
-            if(bIsDebug)
+            if (bIsDebug)
                 Debug.Log($"{nameof(Event_OnSwapSlot)} - pSlot_OnDraging : {pInventory_OnDraging.name}-{pSlot_OnDraging.name} => pSlot_Dest : {pInventory_Dest.name}-{pSlot_Dest.name}", pSlot_OnDraging);
 
             OnSwapSlot?.Invoke(new Inventory.OnSwapSlot_Msg(pInventory_OnDraging, pSlot_OnDraging, pInventory_Dest, pSlot_Dest));
@@ -196,6 +249,49 @@ namespace UIFramework
         // ========================================================================== //
 
         #region Private
+
+        void ExecuteLogic_StateEvent_OnChangeData(OnChangeSlotData_Msg sMsg) { ExecuteLogic_State(sMsg.bSlot_IsEmpty ? EInventorySlot_StateEvent.OnEmptySlot : EInventorySlot_StateEvent.OnFillSlot); }
+        void ExecuteLogic_StateEvent_OnSelected(bool bSelected) { ExecuteLogic_State(EInventorySlot_StateEvent.OnSelectedSlot); }
+        void ExecuteLogic_StateEvent_OnSwap(Inventory.OnSwapSlot_Msg sMsg) { ExecuteLogic_State(EInventorySlot_StateEvent.OnSwapSlot); }
+
+        void ExecuteLogic_CommandEvent_OnHover(InventorySlot arg1, PointerEventData arg2) { ExecuteLogic_Command(EInventorySlot_CommandEvent.OnHover, arg2); }
+        void ExecuteLogic_CommandEvent_OnClick(InventorySlot arg1, PointerEventData arg2) { ExecuteLogic_Command(EInventorySlot_CommandEvent.OnClick, arg2); }
+        void ExecuteLogic_CommandEvent_OnDragBegin(InventorySlot arg1, PointerEventData arg2) { ExecuteLogic_Command(EInventorySlot_CommandEvent.OnDragBegin, arg2); }
+        void ExecuteLogic_CommandEvent_OnDrag(InventorySlot arg1, PointerEventData arg2) { ExecuteLogic_Command(EInventorySlot_CommandEvent.OnDrag, arg2); }
+        void ExecuteLogic_CommandEvent_OnDragEnd(InventorySlot arg1, PointerEventData arg2) { ExecuteLogic_Command(EInventorySlot_CommandEvent.OnDragEnd, arg2); }
+
+
+        private void ExecuteLogic_State(EInventorySlot_StateEvent eEvent)
+        {
+            List<InventorySlot_StateLogic> listLogic;
+            if (_mapSlotLogic_State.TryGetValue(eEvent, out listLogic))
+            {
+                for (int i = 0; i < listLogic.Count; i++)
+                    listLogic[i].pLogic.IInventorySlot_StateLogic(this);
+            }
+
+            if (_mapSlotLogic_State_Undo.TryGetValue(eEvent, out listLogic))
+            {
+                for (int i = 0; i < listLogic.Count; i++)
+                    listLogic[i].pLogic.IInventorySlot_StateLogic_Undo(this);
+            }
+        }
+
+        private void ExecuteLogic_Command(EInventorySlot_CommandEvent eEvent, PointerEventData pPointerEventData)
+        {
+            List<InventorySlot_CommandLogic> listLogic;
+            if (_mapSlotLogic_Command.TryGetValue(eEvent, out listLogic))
+            {
+                for (int i = 0; i < listLogic.Count; i++)
+                    listLogic[i].pLogic.IInventorySlot_CommandLogic(this, pPointerEventData);
+            }
+
+            if (_mapSlotLogic_Command_Undo.TryGetValue(eEvent, out listLogic))
+            {
+                for (int i = 0; i < listLogic.Count; i++)
+                    listLogic[i].pLogic.IInventorySlot_CommandLogic_Undo(this, pPointerEventData);
+            }
+        }
 
         #endregion Private
     }

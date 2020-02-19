@@ -52,8 +52,14 @@ public enum PivotPresets
     BottomRight,
 }
 
+/// <summary>
+/// Rect Transform의 확장 함수 모음
+/// </summary>
 public static class RectTransformExtensions
 {
+    /// <summary>
+    /// UI Object의 Anchor를 세팅합니다.
+    /// </summary>
     public static void SetAnchor(this RectTransform source, AnchorPresets allign, int offsetX = 0, int offsetY = 0)
     {
         if (source == null)
@@ -167,6 +173,9 @@ public static class RectTransformExtensions
         }
     }
 
+    /// <summary>
+    /// UI Object의 Pivot을 세팅합니다.
+    /// </summary>
     public static void SetPivot(this RectTransform source, PivotPresets preset)
     {
         if (source == null)
@@ -223,7 +232,10 @@ public static class RectTransformExtensions
                 }
         }
     }
-
+    
+    /// <summary>
+    /// UI 오브젝트의 중앙 위치를 리턴합니다.
+    /// </summary>
     public static Vector3 GetUICenterPosition(this RectTransform pRectTransform)
     {
         if (pRectTransform == null)
@@ -263,6 +275,13 @@ public static class RectTransformExtensions
         return gameObject == null || ReferenceEquals(gameObject, null);
     }
 
+    /// <summary>
+    /// UI에 있는 오브젝트를 월드 위치로 변환합니다.
+    /// </summary>
+    /// <param name="pTarget">변환할 UI 오브젝트</param>
+    /// <param name="pUICamera">UI오브젝트를 그리는 카메라</param>
+    /// <param name="pWorldCamera">변환할 기준이 되는 월드 카메라</param>
+    /// <returns></returns>
     static public Vector3 Convert_UI_To_WorldScreenPos(this RectTransform pTarget, Camera pUICamera, Camera pWorldCamera)
     {
         Vector3 vecScreenPoint = pUICamera.WorldToScreenPoint(pTarget.position);

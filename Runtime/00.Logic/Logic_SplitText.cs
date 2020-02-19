@@ -14,13 +14,12 @@ using System.Collections.Generic;
 namespace UIFramework
 {
     /// <summary>
-    /// 
+    /// 숫자를 char array로 리턴하는 로직입니다.
     /// </summary>
     [System.Serializable]
     public class Logic_SplitText
     {
         static char[] const_ZeroChar = new char[0];
-
 
         List<char> listTemp = new List<char>();
 

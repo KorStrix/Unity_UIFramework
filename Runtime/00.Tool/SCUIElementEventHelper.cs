@@ -17,19 +17,37 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
 
+/// <summary>
+/// <see cref="Button"/>을 관리해주는 Interface입니다.
+/// </summary>
+/// <typeparam name="Enum_ButtonName">버튼 이름이 담긴 Enum 타입</typeparam>
 public interface IHas_UIButton<Enum_ButtonName>
 {
     void IHas_UIButton_OnClickButton(UIButtonMessage<Enum_ButtonName> sButtonMsg);
 }
 
+/// <summary>
+/// <see cref="Toggle"/>을 관리해주는 Interface입니다.
+/// </summary>
 public interface IHas_UIToggle
 {
     void IHas_UIToggle_OnToggle(UIToggleMessage sToggleMessage);
 }
 
+/// <summary>
+/// UI Button
+/// </summary>
+/// <typeparam name="Enum_ButtonName">버튼 이름이 담긴 Enum 타입</typeparam>
 public struct UIButtonMessage<Enum_ButtonName>
 {
+    /// <summary>
+    /// 클릭한 버튼의 이름입니다.
+    /// </summary>
     public Enum_ButtonName eButtonName { get; private set; }
+
+    /// <summary>
+    /// 클릭한 버튼의 인스턴스입니다. Null이 될 수 있습니다.
+    /// </summary>
     public Button pButtonInstance_OrNull { get; private set; }
 
     public UIButtonMessage(Enum_ButtonName eButtonName, Button pButton = null)

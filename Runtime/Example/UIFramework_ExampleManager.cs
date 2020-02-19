@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
 using UIWidgetContainerManager_Logic;
+using System.Linq;
 
 namespace UIFramework
 {
@@ -33,6 +34,7 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
+        public List<ECanvas> listShowCanvas = new List<ECanvas>();
 
         /* protected & private - Field declaration  */
 
@@ -52,11 +54,16 @@ namespace UIFramework
         {
             base.OnAwake();
 
+            _pCanvas = GetComponent<Canvas>();
+
             UIFramework_ExampleCanvasBase[] arrCanvas = GetComponentsInChildren<UIFramework_ExampleCanvasBase>();
+            _mapExampleCanvas = arrCanvas.ToDictionary(p => (ECanvas)System.Enum.Parse(typeof(ECanvas), p.name));
+
             for (int i = 0; i < arrCanvas.Length; i++)
                 arrCanvas[i].gameObject.SetActive(false);
 
-            _pCanvas = GetComponent<Canvas>();
+            for (int i = 0; i < listShowCanvas.Count; i++)
+                DoShowOnly(listShowCanvas[i]);
         }
 
         protected override void OnInit_ManagerLogic(Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic)
@@ -65,6 +72,8 @@ namespace UIFramework
 
         protected override IEnumerator OnCreate_Instance(ECanvas eName, Action<ICanvas> OnFinish)
         {
+            OnFinish(_mapExampleCanvas[eName]);
+
             yield break;
         }
 

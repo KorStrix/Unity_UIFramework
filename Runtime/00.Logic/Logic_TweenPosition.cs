@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace UIFramework
 {
     /// <summary>
-    /// 
+    /// 타겟의 위치를 특정 위치로 보간하는 로직입니다.
     /// </summary>
     [System.Serializable]
     public class Logic_TweenPosition

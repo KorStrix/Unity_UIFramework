@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace UIFramework
 {
     /// <summary>
-    /// 
+    /// 타겟의 크기를 특정 크기로 보간하는 로직입니다.
     /// </summary>
     [System.Serializable]
     public class Logic_TweenScale

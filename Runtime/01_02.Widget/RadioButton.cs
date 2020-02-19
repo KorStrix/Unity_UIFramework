@@ -18,7 +18,7 @@ using UnityEditor;
 
 /// <summary>
 /// 그룹 내에 특정 버튼을 클릭하면 다른 그룹의 버튼들은 클릭이 해제되는 버튼.
-/// 하이어라키 부모 기준으로 그룹이 형성됩니다
+/// 하이어라키 부모 기준으로 그룹이 형성됩니다.
 /// </summary>
 public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
 {
@@ -30,16 +30,21 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
 
     public struct RadioButtonEventMsg
     {
+        public IEnumerable<RadioButton> arrButtonGroup { get; private set; }
         public RadioButton pRadioButton { get; private set; }
         public bool bIsClick { get; private set; }
 
-        public RadioButtonEventMsg(RadioButton pRadioButton, bool bIsClick)
+        public RadioButtonEventMsg(IEnumerable<RadioButton> arrButtonGroup, RadioButton pRadioButton, bool bIsClick)
         {
-            this.pRadioButton = pRadioButton; this.bIsClick = bIsClick;
+            this.arrButtonGroup = arrButtonGroup; this.pRadioButton = pRadioButton; this.bIsClick = bIsClick;
         }
     }
 
     public delegate void delOnRadioButtonEvent(RadioButtonEventMsg sMsg);
+
+    /// <summary>
+    /// 그룹 내 라디오 버튼이 클릭되었을 경우
+    /// </summary>
     public event delOnRadioButtonEvent OnRadioButtonEvent;
 
 
@@ -48,6 +53,9 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
     [Header("처음 상태를 클릭한 채로")]
     public bool bDefaultClick = true;
 
+    /// <summary>
+    /// 현재 클릭되있는 상태인지
+    /// </summary>
     public bool bIsClick { get; private set; }
 
     /* protected & private - Field declaration         */
@@ -87,7 +95,11 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
             DoStateTransition(SelectionState.Normal, true);
 
         if (bNotify)
-            OnRadioButtonEvent?.Invoke(new RadioButtonEventMsg(this, bClick));
+        {
+            HashSet<RadioButton> setButton;
+            g_mapRadioButtonAll.TryGetValue(_pTransformParents, out setButton);
+            OnRadioButtonEvent?.Invoke(new RadioButtonEventMsg(setButton, this, bClick));
+        }
     }
 
     // ========================================================================== //

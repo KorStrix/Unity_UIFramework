@@ -10,10 +10,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UIFramework.PopupText_Logic;
 
 namespace UIFramework
 {
-
     /// <summary>
     /// 
     /// </summary>

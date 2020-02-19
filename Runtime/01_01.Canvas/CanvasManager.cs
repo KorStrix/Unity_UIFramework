@@ -382,15 +382,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         var listWrapper = pInstance.Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
-        List<CLASS_DRIVEN_CANVAS> listCanvas = new List<CLASS_DRIVEN_CANVAS>(listWrapper.Count);
-        for(int i = 0; i < listWrapper.Count; i++)
-        {
-            CLASS_DRIVEN_CANVAS pCanvasInstance = listWrapper[i].pInstance as CLASS_DRIVEN_CANVAS;
-            if (pCanvasInstance.Equals(null) == false)
-                listCanvas.Add(pCanvasInstance);
-        }
-
-        return listCanvas;
+        return listWrapper.Where(p => p.pInstance is CLASS_DRIVEN_CANVAS && p.pInstance.IsNull() == false).Select(p => p as CLASS_DRIVEN_CANVAS).ToList();
     }
 
     /// <summary>
@@ -957,10 +949,11 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)
             yield return pContainerWrapper.DoExecute_Manager_UndoLogic_Coroutine(this, eUIEvent);
 
-        if (_mapManagerLogic.ContainsKey(eUIEvent) == false)
+        List<ICanvasManager_Logic> listLogic;
+        if (_mapManagerLogic.TryGetValue(eUIEvent, out listLogic) == false)
             yield break;
 
-        yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, _mapManagerLogic[eUIEvent], GetUndoLogic, const_bIsDebug);
+        yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, listLogic, GetUndoLogic, const_bIsDebug);
     }
 
     private void Execute_ManagerUndoLogic(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper)
@@ -973,10 +966,10 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
 
     CanvasManager_LogicUndo_Wrapper GetUndoLogic(ICanvasManager_Logic pLogic)
     {
-        if (_mapManagerUndoLogic_Parser.ContainsKey(pLogic) == false)
-            return null;
+        CanvasManager_LogicUndo_Wrapper pWrapper;
+        _mapManagerUndoLogic_Parser.TryGetValue(pLogic, out pWrapper);
 
-        return _mapManagerUndoLogic_Parser[pLogic];
+        return pWrapper;
     }
 
     #endregion ManagerLogic

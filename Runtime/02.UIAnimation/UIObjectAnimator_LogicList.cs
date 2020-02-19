@@ -11,139 +11,142 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// 범용적인 UIAnimation 로직의 Base Interface
-/// <para><see cref="UIAnimation"/>에의해 관리되며 실행됩니다.</para>
-/// </summary>
-public interface IUIAnimationLogic
+namespace UIFramework
 {
-    void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
-    IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
-}
-
-/// <summary>
-/// UI Animation - Show 전용
-/// </summary>
-public interface IUIAnimationLogic_Show : IUIAnimationLogic { }
-
-/// <summary>
-/// UI Animation - Hide 전용
-/// </summary>
-public interface IUIAnimationLogic_Hide : IUIAnimationLogic { }
-
-[System.Serializable]
-public abstract class UIAnimationLogic_ComponentBase : MonoBehaviour, IUIAnimationLogic
-{
-    public abstract IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
-    public abstract void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
-}
-
-/// <summary>
-/// <see cref="IUIAnimationLogic"/> 컨테이너
-/// </summary>
-[System.Serializable]
-public class UIAnimation
-{
-    /* const & readonly declaration             */
-
-    /* enum & struct declaration                */
-
-    /* public - Field declaration            */
-
-    public List<IUIAnimationLogic> listUIAnimationLogic { get; private set; } = new List<IUIAnimationLogic>();
-
-    /* protected & private - Field declaration         */
-
-    List<Coroutine> _listExecuteCoroutine = new List<Coroutine>();
-
-    System.Func<IEnumerator, Coroutine> _OnStartCoroutine;
-    System.Action<Coroutine> _OnStopCoroutine;
-
-    IUIObject _pUIObject;
-
-    // ========================================================================== //
-
-    /* public - [Do] Function
-     * 외부 객체가 호출(For External class call)*/
-
-    public void DoInit(IUIObject pUIObject, System.Func<IEnumerator, Coroutine> OnStartCoroutine, System.Action<Coroutine> OnStopCoroutine, bool bClearLogicList = true)
+    /// <summary>
+    /// 범용적인 UIAnimation 로직의 Base Interface
+    /// <para><see cref="UIAnimation"/>에의해 관리되며 실행됩니다.</para>
+    /// </summary>
+    public interface IUIAnimationLogic
     {
-        _pUIObject = pUIObject;
-        _OnStartCoroutine = OnStartCoroutine;
-        _OnStopCoroutine = OnStopCoroutine;
+        void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
+        IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
+    }
 
-        if (bClearLogicList)
+    /// <summary>
+    /// UI Animation - Show 전용
+    /// </summary>
+    public interface IUIAnimationLogic_Show : IUIAnimationLogic { }
+
+    /// <summary>
+    /// UI Animation - Hide 전용
+    /// </summary>
+    public interface IUIAnimationLogic_Hide : IUIAnimationLogic { }
+
+    [System.Serializable]
+    public abstract class UIAnimationLogic_ComponentBase : MonoBehaviour, IUIAnimationLogic
+    {
+        public abstract IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
+        public abstract void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
+    }
+
+    /// <summary>
+    /// <see cref="IUIAnimationLogic"/> 컨테이너
+    /// </summary>
+    [System.Serializable]
+    public class UIAnimation
+    {
+        /* const & readonly declaration             */
+
+        /* enum & struct declaration                */
+
+        /* public - Field declaration            */
+
+        public List<IUIAnimationLogic> listUIAnimationLogic { get; private set; } = new List<IUIAnimationLogic>();
+
+        /* protected & private - Field declaration         */
+
+        List<Coroutine> _listExecuteCoroutine = new List<Coroutine>();
+
+        System.Func<IEnumerator, Coroutine> _OnStartCoroutine;
+        System.Action<Coroutine> _OnStopCoroutine;
+
+        IUIObject _pUIObject;
+
+        // ========================================================================== //
+
+        /* public - [Do] Function
+         * 외부 객체가 호출(For External class call)*/
+
+        public void DoInit(IUIObject pUIObject, System.Func<IEnumerator, Coroutine> OnStartCoroutine, System.Action<Coroutine> OnStopCoroutine, bool bClearLogicList = true)
+        {
+            _pUIObject = pUIObject;
+            _OnStartCoroutine = OnStartCoroutine;
+            _OnStopCoroutine = OnStopCoroutine;
+
+            if (bClearLogicList)
+                listUIAnimationLogic.Clear();
+        }
+
+        public void DoAdd_Animation(IUIAnimationLogic pAnimationLogic)
+        {
+            listUIAnimationLogic.Add(pAnimationLogic);
+            pAnimationLogic.IUIAnimationLogic_OnAwake(_pUIObject);
+        }
+
+        public void DoAdd_Animation_Collection<T>(IEnumerable<T> listAnimationLogic)
+            where T : IUIAnimationLogic
+        {
+            if (listAnimationLogic == null)
+                return;
+
+            foreach (T pLogic in listAnimationLogic)
+            {
+                if (pLogic == null)
+                    continue;
+
+                listUIAnimationLogic.Add(pLogic);
+                pLogic.IUIAnimationLogic_OnAwake(_pUIObject);
+            }
+        }
+
+        public void DoClear_AnimationLogic()
+        {
             listUIAnimationLogic.Clear();
-    }
-
-    public void DoAdd_Animation(IUIAnimationLogic pAnimationLogic)
-    {
-        listUIAnimationLogic.Add(pAnimationLogic);
-        pAnimationLogic.IUIAnimationLogic_OnAwake(_pUIObject);
-    }
-
-    public void DoAdd_Animation_Collection<T>(IEnumerable<T> listAnimationLogic)
-        where T : IUIAnimationLogic
-    {
-        if (listAnimationLogic == null)
-            return;
-
-        foreach(T pLogic in listAnimationLogic)
-        {
-            if (pLogic == null)
-                continue;
-
-            listUIAnimationLogic.Add(pLogic);
-            pLogic.IUIAnimationLogic_OnAwake(_pUIObject);
         }
-    }
 
-    public void DoClear_AnimationLogic()
-    {
-        listUIAnimationLogic.Clear();
-    }
-
-    /// <summary>
-    /// 애니메이션들을 동시에 재생
-    /// </summary>
-    public IEnumerator CoPlayAnimation_Concurrently(bool bIgnoreTimeScale)
-    {
-        for (int i = 0; i < _listExecuteCoroutine.Count; i++)
-            _OnStopCoroutine(_listExecuteCoroutine[i]);
-        _listExecuteCoroutine.Clear();
-
-        for (int i = 0; i < listUIAnimationLogic.Count; i++)
-            _listExecuteCoroutine.Add(_OnStartCoroutine(listUIAnimationLogic[i].IUIAnimationLogic_OnAnimation(_pUIObject, bIgnoreTimeScale)));
-        yield return _listExecuteCoroutine.GetEnumerator_Safe();
-    }
-
-    /// <summary>
-    /// 애니메이션을 하나씩 순차적으로 재생
-    /// </summary>
-    public IEnumerator CoPlayAnimation_Sequential(bool bIgnoreTimeScale)
-    {
-        for (int i = 0; i < _listExecuteCoroutine.Count; i++)
-            _OnStopCoroutine(_listExecuteCoroutine[i]);
-        _listExecuteCoroutine.Clear();
-
-        for (int i = 0; i < listUIAnimationLogic.Count; i++)
+        /// <summary>
+        /// 애니메이션들을 동시에 재생
+        /// </summary>
+        public IEnumerator CoPlayAnimation_Concurrently(bool bIgnoreTimeScale)
         {
-            if(listUIAnimationLogic[i] != null)
-                yield return _OnStartCoroutine(listUIAnimationLogic[i].IUIAnimationLogic_OnAnimation(_pUIObject, bIgnoreTimeScale));
+            for (int i = 0; i < _listExecuteCoroutine.Count; i++)
+                _OnStopCoroutine(_listExecuteCoroutine[i]);
+            _listExecuteCoroutine.Clear();
+
+            for (int i = 0; i < listUIAnimationLogic.Count; i++)
+                _listExecuteCoroutine.Add(_OnStartCoroutine(listUIAnimationLogic[i].IUIAnimationLogic_OnAnimation(_pUIObject, bIgnoreTimeScale)));
+            yield return _listExecuteCoroutine.GetEnumerator_Safe();
         }
+
+        /// <summary>
+        /// 애니메이션을 하나씩 순차적으로 재생
+        /// </summary>
+        public IEnumerator CoPlayAnimation_Sequential(bool bIgnoreTimeScale)
+        {
+            for (int i = 0; i < _listExecuteCoroutine.Count; i++)
+                _OnStopCoroutine(_listExecuteCoroutine[i]);
+            _listExecuteCoroutine.Clear();
+
+            for (int i = 0; i < listUIAnimationLogic.Count; i++)
+            {
+                if (listUIAnimationLogic[i] != null)
+                    yield return _OnStartCoroutine(listUIAnimationLogic[i].IUIAnimationLogic_OnAnimation(_pUIObject, bIgnoreTimeScale));
+            }
+        }
+
+        // ========================================================================== //
+
+        /* protected - Override & Unity API         */
+
+
+        /* protected - [abstract & virtual]         */
+
+
+        // ========================================================================== //
+
+        #region Private
+
+        #endregion Private
     }
-
-    // ========================================================================== //
-
-    /* protected - Override & Unity API         */
-
-
-    /* protected - [abstract & virtual]         */
-
-
-    // ========================================================================== //
-
-    #region Private
-
-    #endregion Private
 }

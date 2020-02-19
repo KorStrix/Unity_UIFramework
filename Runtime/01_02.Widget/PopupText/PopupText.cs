@@ -10,12 +10,14 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
+using UIFramework.PopupText_Logic;
 
 namespace UIFramework
 {
     /// <summary>
-    /// 
+    /// 인게임 데미지 표기 등에 사용하는 팝업 텍스트.
+    /// <para>주의) 이 객체는 바로 사용할 수 없습니다.</para>
+    /// <para><see cref="DoAddLogic"/>를 통해 로직을 Add하여 사용해야 합니다.</para>
     /// </summary>
     public class PopupText : UIWidgetObjectBase
     {
@@ -39,7 +41,6 @@ namespace UIFramework
         /* public - Field declaration               */
 
         public ITextWrapperComponent pTextWrapper;
-
         public List<PopupupTextLogic> listLogic_Insert_OnAwake = new List<PopupupTextLogic>();
 
         /* protected & private - Field declaration  */
@@ -54,6 +55,9 @@ namespace UIFramework
 
         /* public - [Do~Somthing] Function 	        */
 
+        /// <summary>
+        /// 이 팝업 Text를 출력합니다. 출력과 동시에 등록된 <see cref="IPopupText_Logic"/>을 실행합니다.
+        /// </summary>
         public void DoShow(string strText, Vector3 vecWorldPos)
         {
             if (gameObject.activeSelf == false)
@@ -64,6 +68,9 @@ namespace UIFramework
             _pCoroutine = StartCoroutine(OnPopupTextAnimation_Coroutine(strText, vecWorldPos));
         }
 
+        /// <summary>
+        /// 이 팝업 Text를 출력합니다. 출력과 동시에 등록된 <see cref="IPopupText_Logic"/>을 실행합니다.
+        /// </summary>
         public void DoShow(Canvas pCanvasParents, string strText, Vector3 vecWorldPos)
         {
             transform.SetParent(pCanvasParents.transform);
@@ -71,6 +78,9 @@ namespace UIFramework
             DoShow(strText, vecWorldPos);
         }
 
+        /// <summary>
+        /// 동작할 Logic을 Add합니다. 로직은 namespace UIFramework.AnimatedBarLogic를 참고바랍니다.
+        /// </summary>
         public void DoAddLogic(EEventWhen eEventWhen, IPopupText_Logic pPopupText_Logic)
         {
             switch (eEventWhen)

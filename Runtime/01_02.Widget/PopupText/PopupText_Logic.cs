@@ -13,13 +13,16 @@ using System.Collections.Generic;
 
 namespace UIFramework
 {
-    public interface IPopupText_Logic
+    namespace PopupText_Logic
     {
-        IEnumerator OnAnimation(PopupText pTextOwner, string strText);
-    }
+        public interface IPopupText_Logic
+        {
+            IEnumerator OnAnimation(PopupText pTextOwner, string strText);
+        }
 
-    public abstract class PopupText_Logic_ComponentBase : MonoBehaviour, IPopupText_Logic
-    {
-        abstract public IEnumerator OnAnimation(PopupText pTextOwner, string strText);
+        public abstract class PopupText_Logic_ComponentBase : MonoBehaviour, IPopupText_Logic
+        {
+            abstract public IEnumerator OnAnimation(PopupText pTextOwner, string strText);
+        }
     }
 }

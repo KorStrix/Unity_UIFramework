@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace UIFramework
 {
     /// <summary>
-    /// 
+    /// <see cref="IUIWidget"/>를 상속받은 <see cref="MonoBehaviour"/> 기반의 Base Class
     /// </summary>
     public class UIWidgetObjectBase : MonoBehaviour, IUIWidget
     {

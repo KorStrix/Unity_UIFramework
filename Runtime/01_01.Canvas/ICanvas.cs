@@ -181,6 +181,9 @@ static public class ICanvasHelper
         return pObject.pUIManager.IUIManager_Hide(pObject, false);
     }
 
+    /// <summary>
+    /// 이 오브젝트의 UI 상태를 얻습니다.
+    /// </summary>
     static public EUIObjectState GetUIObjectState<T>(this T pObject)
         where T : ICanvas
     {

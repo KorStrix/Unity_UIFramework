@@ -382,7 +382,7 @@ abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UI
         CLASS_DRIVEN_MANAGER pInstance = instance;
 
         var listWrapper = pInstance.Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
-        return listWrapper.Where(p => p.pInstance is CLASS_DRIVEN_CANVAS && p.pInstance.IsNull() == false).Select(p => p as CLASS_DRIVEN_CANVAS).ToList();
+        return listWrapper.Where(p => p.pInstance is CLASS_DRIVEN_CANVAS && p.pInstance.IsNull() == false).Select(p => p.pInstance as CLASS_DRIVEN_CANVAS).ToList();
     }
 
     /// <summary>

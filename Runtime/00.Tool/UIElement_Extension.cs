@@ -183,7 +183,12 @@ public static class UIElement_Extension
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Slider pSlider, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
     {
-        return pCoroutineExecuter.StartCoroutine(TweenSlider(pSlider, fValueStart, fValueDest, fDuration));
+        return pCoroutineExecuter.StartCoroutine(TweenSlider((fValue) => pSlider.value = fValue, fValueStart, fValueDest, fDuration));
+    }
+
+    static public Coroutine DoPlayTween(this UnityEngine.UI.Image pImage, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
+    {
+        return pCoroutineExecuter.StartCoroutine(TweenSlider((fValue) => pImage.fillAmount = fValue, fValueStart, fValueDest, fDuration));
     }
 
     //static public Coroutine DoPlayTween(this UnityEngine.UI.Image pSprite, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
@@ -191,17 +196,17 @@ public static class UIElement_Extension
     //    return pCoroutineExecuter.StartCoroutine(TweenSlider(pSprite, fValueStart, fValueDest, fDuration));
     //}
 
-    static private IEnumerator TweenSlider(UnityEngine.UI.Slider pSlider, float fValueStart, float fValueDest, float fDuration)
+    static private IEnumerator TweenSlider(System.Action<float> OnChangeValue, float fValueStart, float fValueDest, float fDuration)
     {
         float fProgress_0_1 = 0f;
         while (fProgress_0_1 < 1f)
         {
-            pSlider.value = Mathf.Lerp(fValueStart, fValueDest, fProgress_0_1);
+            OnChangeValue(Mathf.Lerp(fValueStart, fValueDest, fProgress_0_1));
             fProgress_0_1 += Time.deltaTime / fDuration;
 
             yield return null;
         }
 
-        pSlider.value = fValueDest;
+        OnChangeValue(fValueDest);
     }
 }

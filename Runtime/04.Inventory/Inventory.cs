@@ -182,6 +182,8 @@ namespace UIFramework
                 pSlotSelected.Event_SetSelected(false);
                 pSlotSelected = null;
             }
+
+            _mapSlot_ByData.Clear();
         }
 
         public void Event_Set_SelectedSlot_IsNull(UnityEngine.EventSystems.PointerEventData pPointerEvent)
@@ -196,7 +198,9 @@ namespace UIFramework
         protected override void OnAwake()
         {
             base.OnAwake();
+
             DoInit_Slot();
+            DoClearData();
         }
 
         private void OnEnable()

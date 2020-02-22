@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -25,8 +26,14 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
     /* const & readonly declaration             */
 
     /* enum & struct declaration                */
-
-    /* public - Field declaration            */
+    public enum ESelectionState
+    {
+        Normal = 0,
+        Highlighted = 1,
+        Pressed = 2,
+        Selected = 3,
+        Disabled = 4
+    }
 
     public struct RadioButtonEventMsg
     {
@@ -40,6 +47,15 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
         }
     }
 
+    [System.Serializable]
+    public class StateActiveObject
+    {
+        public bool bPressed;
+        public GameObject pObject;
+    }
+
+    /* public - Field declaration            */
+
     public delegate void delOnRadioButtonEvent(RadioButtonEventMsg sMsg);
 
     /// <summary>
@@ -47,11 +63,13 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
     /// </summary>
     public event delOnRadioButtonEvent OnRadioButtonEvent;
 
-
     static public Dictionary<Transform, HashSet<RadioButton>> g_mapRadioButtonAll = new Dictionary<Transform, HashSet<RadioButton>>();
+
 
     [Header("처음 상태를 클릭한 채로")]
     public bool bDefaultClick = true;
+
+    public List<StateActiveObject> listActiveObject_OnClicked = new List<StateActiveObject>();
 
     /// <summary>
     /// 현재 클릭되있는 상태인지
@@ -60,6 +78,7 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
 
     /* protected & private - Field declaration         */
 
+    Dictionary<bool, List<GameObject>> _mapOnStateActive = new Dictionary<bool, List<GameObject>>();
     bool _bApplicationIsQuit = false;
     Transform _pTransformParents;
 
@@ -115,10 +134,19 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
 
         if (bDefaultClick)
             DoClick_RadioButton();
+
+        _mapOnStateActive = listActiveObject_OnClicked.
+            GroupBy(p => p.bPressed).
+            ToDictionary(x => x.Key, y => y.Select(z => z.pObject).ToList());
     }
 
     protected override void DoStateTransition(SelectionState state, bool instant)
     {
+#if UNITY_EDITOR
+        if (Application.isPlaying == false)
+            return;
+#endif
+
         if (_bApplicationIsQuit)
             return;
 
@@ -126,6 +154,22 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
             state = SelectionState.Pressed;
 
         base.DoStateTransition(state, instant);
+
+        bool bIsPressed = state == SelectionState.Pressed;
+        foreach (var pOnStateActive in _mapOnStateActive)
+        {
+            List<GameObject> listObject = pOnStateActive.Value;
+            if (pOnStateActive.Key == bIsPressed)
+            {
+                for (int i = 0; i < listObject.Count; i++)
+                    listObject[i].SetActive(true);
+            }
+            else
+            {
+                for (int i = 0; i < listObject.Count; i++)
+                    listObject[i].SetActive(false);
+            }
+        }
     }
 
     public IEnumerator OnShowCoroutine()
@@ -210,6 +254,7 @@ public class RadioButton : Selectable, IPointerClickHandler, IUIWidget
 
 #if UNITY_EDITOR
 
+[CanEditMultipleObjects]
 [CustomEditor(typeof(RadioButton))]
 public class RadioButton_Inspector : Editor
 {

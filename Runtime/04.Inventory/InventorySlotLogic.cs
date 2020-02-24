@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using static UIFramework.InventorySlot;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace UIFramework
 {
@@ -85,11 +86,17 @@ namespace UIFramework
 
             System.Action<InventorySlot, PointerEventData> _OnSetSlotPos;
             System.Action<InventorySlot> _OnCloneSlot;
+            System.Func<InventorySlot, Transform> _GetCloneSlotParents;
 
-            public Instantiate_CloneSlot(System.Action<InventorySlot> OnCloneSlot_OrNull)
+            public Instantiate_CloneSlot(System.Action<InventorySlot> OnCloneSlot_OrNull, System.Func<InventorySlot, Transform> GetCloneSlotParents_OrNull)
             {
                 DoSetCallBack(GameObject.Instantiate, GameObject.Destroy);
                 _OnCloneSlot = OnCloneSlot_OrNull;
+
+                if (GetCloneSlotParents_OrNull == null)
+                    _GetCloneSlotParents = p => p.transform.parent;
+                else
+                    _GetCloneSlotParents = GetCloneSlotParents_OrNull;
             }
 
             public void DoSetCallBack(System.Func<InventorySlot, InventorySlot> OnInstantiate_CloneSlot, System.Action<GameObject> OnDestroy_CloneSlot)
@@ -101,6 +108,7 @@ namespace UIFramework
             {
                 _pSlotClone = _OnInstantiate_CloneSlot(pSlot);
                 _pSlotClone.DoSetData(pSlot.pData);
+                _pSlotClone.Event_OnSetClone();
 
                 Canvas pCanvas = pSlot.GetComponentInParent<Canvas>();
 
@@ -120,9 +128,14 @@ namespace UIFramework
                 RectTransform pTransformClone = _pSlotClone.transform as RectTransform;
 
                 _pTransform_Parents = pSlot.transform.parent as RectTransform;
-                pTransformClone.SetParent(pCanvas.transform);
+                pTransformClone.SetParent(_GetCloneSlotParents(pSlot));
                 pTransformClone.position = pSlot.transform.position;
+                pTransformClone.localScale = pSlot.transform.localScale;
                 pTransformClone.sizeDelta = pTransformOrigin.sizeDelta;
+
+                Graphic[] arrGraphic = pTransformClone.GetComponentsInChildren<Graphic>();
+                for (int i = 0; i < arrGraphic.Length; i++)
+                    arrGraphic[i].raycastTarget = false;
 
                 _OnCloneSlot?.Invoke(_pSlotClone);
             }
@@ -130,13 +143,12 @@ namespace UIFramework
             public void IInventorySlot_CommandLogic_Undo(InventorySlot pSlot, PointerEventData pPointerEventData)
             {
                 pSlot.OnDragSlot -= _OnSetSlotPos;
-
                 _OnDestroy_CloneSlot(_pSlotClone.gameObject);
             }
 
             void GetWorld_To_CameraScreenPoint(InventorySlot pSlot, PointerEventData pPointerEventData)
             {
-                _pSlotClone.transform.position = _pCamera.WorldToScreenPoint(new Vector3(pPointerEventData.position.x, pPointerEventData.position.y, _pCamera.nearClipPlane));
+                _pSlotClone.transform.position = _pCamera.ScreenToWorldPoint(new Vector3(pPointerEventData.position.x, pPointerEventData.position.y, _pCamera.nearClipPlane));
             }
 
             void GetWorld_To_ScreenPoint(InventorySlot pSlot, PointerEventData pPointerEventData)

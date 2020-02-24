@@ -57,11 +57,11 @@ namespace UIFramework
         public struct OnChangeSlotData_Msg
         {
             public InventorySlot pSlot { get; private set; }
-            public object pData_Prev { get; private set; }
-            public object pData_Current { get; private set; }
+            public IInventoryData pData_Prev { get; private set; }
+            public IInventoryData pData_Current { get; private set; }
             public bool bSlot_IsEmpty { get; private set; }
 
-            public OnChangeSlotData_Msg(InventorySlot pSlot, object pData_Prev, object pData_Current)
+            public OnChangeSlotData_Msg(InventorySlot pSlot, IInventoryData pData_Prev, IInventoryData pData_Current)
             {
                 this.pSlot = pSlot; this.pData_Prev = pData_Prev; this.pData_Current = pData_Current;
                 bSlot_IsEmpty = pData_Current == null;
@@ -84,13 +84,17 @@ namespace UIFramework
         public event System.Action<bool> OnChange_IsSelected;
 
         public bool bIsSelected { get; private set; }
-        public object pData { get; private set; }
+        public bool bIsClone { get; private set; } = false;
+        public IInventoryData pData { get; private set; }
 
         [Header("디버깅 유무")]
         public bool bIsDebug = false;
 
         [Header("드래그 유무")]
         public bool bIsDragAble = false;
+
+        [Header("선택 유무")]
+        public bool bIsSelectAble = true;
 
         public int iSlotIndex;
 
@@ -163,12 +167,12 @@ namespace UIFramework
 
         public void DoSwapSlot(InventorySlot pSlotOrigin)
         {
-            object pMyData = this.pData;
+            var pMyData = this.pData;
             DoSetData(pSlotOrigin.pData);
             pSlotOrigin.DoSetData(pMyData);
         }
 
-        public void DoSetData(object pData)
+        public void DoSetData(IInventoryData pData)
         {
             if (bIsDebug)
                 Debug.Log($"{name}-{iSlotIndex} {nameof(DoSetData)} - {pData.ToString()}", this);
@@ -199,8 +203,8 @@ namespace UIFramework
             EventSystem.current.RaycastAll(eventData, g_listHit);
             for (int i = 0; i < g_listHit.Count; i++)
             {
-                InventorySlot pSlot = g_listHit[i].gameObject.GetComponent<InventorySlot>();
-                if (pSlot == null)
+                InventorySlot pSlot = g_listHit[i].gameObject.GetComponentInParent<InventorySlot>();
+                if (pSlot == null || pSlot == this || pSlot.bIsClone)
                     continue;
 
                 Event_OnSwapSlot(_pInventory, this, pSlot._pInventory, pSlot);
@@ -213,21 +217,22 @@ namespace UIFramework
         public void Event_SetSelected(bool bIsSelected)
         {
             this.bIsSelected = bIsSelected;
-            if (bIsSelected && Inventory.g_setActiveInventory.Count >= 2)
-            {
-                foreach (Inventory pInventoryOther in Inventory.g_setActiveInventory)
-                {
-                    if (pInventoryOther == _pInventory)
-                        continue;
+            //if (bIsSelected && Inventory.g_setActiveInventory.Count >= 2)
+            //{
+            //    foreach (Inventory pInventoryOther in Inventory.g_setActiveInventory)
+            //    {
+            //        if (pInventoryOther == _pInventory)
+            //            continue;
 
-                    if (pInventoryOther.pSlotSelected == null)
-                        continue;
+            //        if (pInventoryOther.pSlotSelected == null)
+            //            continue;
 
-                    Event_OnSwapSlot(pInventoryOther, pInventoryOther.pSlotSelected, _pInventory, this);
-                }
-            }
+            //        Event_OnSwapSlot(pInventoryOther, pInventoryOther.pSlotSelected, _pInventory, this);
+            //    }
+            //}
 
-            OnChange_IsSelected?.Invoke(bIsSelected);
+            if(bIsSelectAble)
+                OnChange_IsSelected?.Invoke(bIsSelected);
         }
 
         protected void Event_OnSwapSlot(Inventory pInventory_OnDraging, InventorySlot pSlot_OnDraging, Inventory pInventory_Dest, InventorySlot pSlot_Dest)
@@ -236,6 +241,11 @@ namespace UIFramework
                 Debug.Log($"{nameof(Event_OnSwapSlot)} - pSlot_OnDraging : {pInventory_OnDraging.name}-{pSlot_OnDraging.name} => pSlot_Dest : {pInventory_Dest.name}-{pSlot_Dest.name}", pSlot_OnDraging);
 
             OnSwapSlot?.Invoke(new Inventory.OnSwapSlot_Msg(pInventory_OnDraging, pSlot_OnDraging, pInventory_Dest, pSlot_Dest));
+        }
+
+        public void Event_OnSetClone()
+        {
+            bIsClone = true;
         }
 
         // ========================================================================== //

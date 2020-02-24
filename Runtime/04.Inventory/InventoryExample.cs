@@ -27,11 +27,20 @@ namespace UIFramework
         /* enum & struct declaration                */
 
         [System.Serializable]
-        public class SomthingData
+        public class SomthingData : IInventoryData
         {
             public string strName;
             public Sprite pSpriteIcon;
             public Color pColor;
+
+            public string IInventoryData_Key => strName;
+
+            public int IInventoryData_Count => 1;
+
+            public IInventoryData IInventoryData_AddOrMinusCount(int iCount)
+            {
+                return this;
+            }
         }
 
         /* public - Field declaration               */
@@ -66,7 +75,7 @@ namespace UIFramework
             _pInventory.DoInit_SlotLogic_Command(
                 new InventorySlotLogic_Command.InventorySlot_CommandLogic(InventorySlot.EInventorySlot_CommandEvent.OnDragBegin, 
                                                                           InventorySlot.EInventorySlot_CommandEvent.OnDragEnd,
-                                                                          new InventorySlotLogic_Command.Instantiate_CloneSlot((p => p.GetComponent<Image>().enabled = false)))
+                                                                          new InventorySlotLogic_Command.Instantiate_CloneSlot((p => p.GetComponent<Image>().enabled = false), null))
                 );
 
             _pInventory.OnSwap_Slot += _pInventory_OnSwap_Slot;

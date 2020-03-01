@@ -50,7 +50,7 @@ namespace UIFramework
             }
         }
 
-        public Graphic[] arrGraphic => _arrImage;
+        public IEnumerable<Graphic> arrGraphic => _arrImage;
 
         public Image[] _arrImage;
 

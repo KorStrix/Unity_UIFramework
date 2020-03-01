@@ -11,6 +11,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Linq;
 
 namespace UIFramework
 {
@@ -48,9 +49,9 @@ namespace UIFramework
             this.fDelaySecond = fDelaySecond;
         }
 
-        public IEnumerator ExecuteLogic_Coroutine(Graphic[] arrTarget)
+        public IEnumerator ExecuteLogic_Coroutine(IEnumerable<Graphic> arrTarget)
         {
-            if (arrTarget.Length == 0)
+            if (arrTarget.Count() == 0)
                 yield break;
 
             yield return new WaitForSeconds(fDelaySecond);
@@ -58,7 +59,7 @@ namespace UIFramework
             switch (eTweenHow)
             {
                 case ETweenHow.CurrentValue_To_Dest:
-                    this.pColorStart = arrTarget[0].color;
+                    this.pColorStart = arrTarget.First().color;
                     break;
 
                 case ETweenHow.SettingValue_To_Dest:
@@ -68,14 +69,33 @@ namespace UIFramework
             float fProgress_0_1 = 0f;
             while (fProgress_0_1 < 1f)
             {
-                for(int i = 0; i < arrTarget.Length; i++)
-                    arrTarget[i].color = Color.Lerp(pColorStart, pColorDest, pAnimationCurve.Evaluate(fProgress_0_1));
+                foreach(var pGraphic in arrTarget)
+                    pGraphic.color = Color.Lerp(pColorStart, pColorDest, pAnimationCurve.Evaluate(fProgress_0_1));
                 fProgress_0_1 += Time.deltaTime / fDurationSecond;
+
                 yield return null;
             }
 
-            for (int i = 0; i < arrTarget.Length; i++)
-                arrTarget[i].color = pColorDest;
+            foreach (var pGraphic in arrTarget)
+                pGraphic.color = pColorDest;
+
+            yield break;
+        }
+
+        public IEnumerator ExecuteLogic_Coroutine(System.Action<Color> OnChangeColor)
+        {
+            yield return new WaitForSeconds(fDelaySecond);
+
+            float fProgress_0_1 = 0f;
+            while (fProgress_0_1 < 1f)
+            {
+                OnChangeColor.Invoke(Color.Lerp(pColorStart, pColorDest, pAnimationCurve.Evaluate(fProgress_0_1)));
+                fProgress_0_1 += Time.deltaTime / fDurationSecond;
+
+                yield return null;
+            }
+
+            OnChangeColor.Invoke(pColorDest);
 
             yield break;
         }

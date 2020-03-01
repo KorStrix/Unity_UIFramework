@@ -12,12 +12,13 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-using UIWidgetContainerManager_Logic;
 using static StrixLibrary_Test.CanvasManager_ForLogicTest;
+using UIFramework;
+using UIFramework.UIWidgetContainerManager_Logic;
 
 namespace StrixLibrary_Test
 {
-    public class CanvasManager_ForLogicTest : CanvasManager<CanvasManager_ForLogicTest, CanvasManager_ForLogicTest.ECanvasName>
+    public class CanvasManager_ForLogicTest : CanvasManager<CanvasManager_ForLogicTest, ECanvasName>
     {
         #region Canvas
         public class Canvas_ForLogicTest : MonoBehaviour, ICanvas
@@ -50,11 +51,11 @@ namespace StrixLibrary_Test
             Single,
         }
 
-        static Dictionary<EUIObjectState, List<ICanvasManager_Logic>> _mapManagerLogicTest = new Dictionary<EUIObjectState, List<ICanvasManager_Logic>>();
+        static CanvasManagerLogicFactory g_pLogicFactory = new CanvasManagerLogicFactory();
 
-        static public void DoInit(Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic)
+        static public void DoInit(CanvasManagerLogicFactory pLogicFactory)
         {
-            _mapManagerLogicTest = mapManagerLogic;
+            g_pLogicFactory = pLogicFactory;
         }
 
         protected override IEnumerator OnCreate_Instance(ECanvasName eName, System.Action<ICanvas> OnFinishCreate)
@@ -69,17 +70,19 @@ namespace StrixLibrary_Test
             yield break;
         }
 
-        protected override void OnInit_ManagerLogic(Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic)
+        protected override void OnInit_ManagerLogic(CanvasManagerLogicFactory pLogicFactory)
         {
-            if(mapManagerLogic.Count == 0)
+            if(g_pLogicFactory.mapLogicContainer.Count == 0)
             {
                 Debug.LogError("Error");
                 return;
             }
 
             Debug.Log(nameof(OnInit_ManagerLogic));
-            foreach(var pLogic in _mapManagerLogicTest)
-                mapManagerLogic[pLogic.Key].AddRange(pLogic.Value);
+
+
+            foreach (var pLogic in g_pLogicFactory.mapLogicContainer)
+                pLogicFactory.DoAddLogic(pLogic.Key, pLogic.Value.ToArray());
         }
 
         public override Canvas GetParentCavnas(ECanvasName eName, ICanvas pCanvas)
@@ -208,8 +211,6 @@ namespace StrixLibrary_Test
     [Category("StrixLibrary")]
     public class CanvasManagerLogics_Tester
     {
-        Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic;
-
         [UnityTest]
         public IEnumerator Logic_Is_Working()
         {
@@ -218,12 +219,12 @@ namespace StrixLibrary_Test
             CanvasManager_ForLogicTest.DoDestroy_Manager(true);
 
             // 로직은 string을 Canvas에 Set하는 기능입니다.
-            mapManagerLogic = CreateDictionary();
-            mapManagerLogic[EUIObjectState.Process_Before_ShowCoroutine].Add(new Logic_SetString_ForTest(nameof(EUIObjectState.Process_Before_ShowCoroutine)));
-            mapManagerLogic[EUIObjectState.Process_After_ShowCoroutine].Add(new Logic_SetString_ForTest(nameof(EUIObjectState.Process_After_ShowCoroutine)));
-            mapManagerLogic[EUIObjectState.Process_Before_HideCoroutine].Add(new Logic_SetString_ForTest(nameof(EUIObjectState.Process_Before_HideCoroutine)));
-            mapManagerLogic[EUIObjectState.Process_After_HideCoroutine].Add(new Logic_SetString_ForTest(nameof(EUIObjectState.Process_After_HideCoroutine)));
-            DoInit(mapManagerLogic);
+            CanvasManagerLogicFactory pLogicFactory = new CanvasManagerLogicFactory();
+            pLogicFactory.DoAddLogic(EUIObjectState.Process_Before_ShowCoroutine, new Logic_SetString_ForTest(nameof(EUIObjectState.Process_Before_ShowCoroutine)));
+            pLogicFactory.DoAddLogic(EUIObjectState.Process_After_ShowCoroutine, new Logic_SetString_ForTest(nameof(EUIObjectState.Process_After_ShowCoroutine)));
+            pLogicFactory.DoAddLogic(EUIObjectState.Process_Before_HideCoroutine, new Logic_SetString_ForTest(nameof(EUIObjectState.Process_Before_HideCoroutine)));
+            pLogicFactory.DoAddLogic(EUIObjectState.Process_After_HideCoroutine, new Logic_SetString_ForTest(nameof(EUIObjectState.Process_After_HideCoroutine)));
+            DoInit(pLogicFactory);
 
             var pHandle_Show = CanvasManager_ForLogicTest.DoShow<Canvas_ForLogicTest>(ECanvasName.Single);
             Assert.IsNull(pHandle_Show.pUIObject);
@@ -271,12 +272,10 @@ namespace StrixLibrary_Test
 
             // 로직은 실행되면 Canvas의 원래 값에 어떠한 값을 더하고,
             // 로직을 취소할 경우 원래값으로 복구합니다.
-            mapManagerLogic = CreateDictionary();
-            mapManagerLogic[EUIObjectState.Process_Before_ShowCoroutine].Add(
-                new CanvasManager_LogicUndo_Wrapper(
-                    pLogic: new Logic_Calculate_Add_And_Undo(iRandomValue),
-                    eWhenUndo: EUIObjectState.Process_Before_HideCoroutine));
-            DoInit(mapManagerLogic);
+            CanvasManagerLogicFactory pLogicFactory = new CanvasManagerLogicFactory();
+            pLogicFactory.DoAddLogic_PossibleUndo(EUIObjectState.Process_Before_ShowCoroutine, EUIObjectState.Process_Before_HideCoroutine, new Logic_Calculate_Add_And_Undo(iRandomValue));
+
+            DoInit(pLogicFactory);
 
             int iOriginValue = Random.Range(int.MinValue + iRandomRange, int.MaxValue - iRandomRange);
 
@@ -307,12 +306,9 @@ namespace StrixLibrary_Test
 
             // 로직은 실행되면 Canvas의 원래 값에 어떠한 값을 더하고,
             // 로직을 취소할 경우 원래값으로 복구합니다.
-            mapManagerLogic = CreateDictionary();
-            mapManagerLogic[EUIObjectState.Process_After_ShowCoroutine].Add(
-                new CanvasManager_LogicUndo_Wrapper(
-                    pLogic: new Logic_WaitForSecond(fWaitSecond, fWaitSecond_Undo),
-                    eWhenUndo: EUIObjectState.Process_After_HideCoroutine));
-            DoInit(mapManagerLogic);
+            CanvasManagerLogicFactory pLogicFactory = new CanvasManagerLogicFactory();
+            pLogicFactory.DoAddLogic_PossibleUndo(EUIObjectState.Process_After_ShowCoroutine, EUIObjectState.Process_After_HideCoroutine, new Logic_WaitForSecond(fWaitSecond, fWaitSecond_Undo));
+            DoInit(pLogicFactory);
 
             System.Diagnostics.Stopwatch pWatch = new System.Diagnostics.Stopwatch();
 
@@ -347,12 +343,9 @@ namespace StrixLibrary_Test
 
             // 로직은 실행되면 특정 트렌스폼에 차일드 게임오브젝트를 붙이고
             // 로직을 취소할 경우 마지막 차일드 오브젝트를 Destroy합니다.
-            mapManagerLogic = CreateDictionary();
-            mapManagerLogic[EUIObjectState.Process_Before_ShowCoroutine].Add(
-                new CanvasManager_LogicUndo_Wrapper(
-                    pLogic: new Logic_CreateObject_And_SetParents_And_Undo_Is_Destroy(pTransformParents),
-                    eWhenUndo: EUIObjectState.Process_Before_HideCoroutine));
-            DoInit(mapManagerLogic);
+            CanvasManagerLogicFactory pLogicFactory = new CanvasManagerLogicFactory();
+            pLogicFactory.DoAddLogic_PossibleUndo(EUIObjectState.Process_Before_ShowCoroutine, EUIObjectState.Process_Before_HideCoroutine, new Logic_CreateObject_And_SetParents_And_Undo_Is_Destroy(pTransformParents));
+            DoInit(pLogicFactory);
 
             int iRandomShow = Random.Range(3, 7);
             List<UICommandHandle<Canvas_ForLogicTest>> listHandle = new List<UICommandHandle<Canvas_ForLogicTest>>();
@@ -368,18 +361,6 @@ namespace StrixLibrary_Test
             Assert.AreEqual(pTransformParents.childCount, 0);
 
             yield break;
-        }
-
-        // =======================================================================================
-
-        static Dictionary<EUIObjectState, List<ICanvasManager_Logic>> CreateDictionary()
-        {
-            Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapReturn = new Dictionary<EUIObjectState, List<ICanvasManager_Logic>>();
-            int iMax = (int)EUIObjectState.MAX;
-            for(int i = 0; i < iMax; i++)
-                mapReturn.Add((EUIObjectState)i, new List<ICanvasManager_Logic>());
-
-            return mapReturn;
         }
     }
 }

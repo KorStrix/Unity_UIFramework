@@ -4,8 +4,7 @@ using UnityEngine;
 
 using UnityEngine.TestTools;
 using NUnit.Framework;
-
-using UIWidgetContainerManager_Logic;
+using UIFramework;
 
 namespace StrixLibrary_Test
 {
@@ -32,7 +31,7 @@ namespace StrixLibrary_Test
             yield break;
         }
 
-        protected override void OnInit_ManagerLogic(Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic)
+        protected override void OnInit_ManagerLogic(CanvasManagerLogicFactory pLogicFactory)
         {
         }
 

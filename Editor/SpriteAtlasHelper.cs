@@ -40,7 +40,7 @@ public class SpriteAtlasHelper
     /* public - [Do] Function
      * 외부 객체가 호출(For External class call)*/
 
-    [MenuItem("Assets/Create SpriteAtlas for selected Sprites.")]
+    // [MenuItem("Assets/Create SpriteAtlas for selected Sprites.")]
     public static void DoCreateAtlas_ForSelectedSprites()
     {
         SpriteAtlas pSpriteAtlas = CreateSpriteAtlas();

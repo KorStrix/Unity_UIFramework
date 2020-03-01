@@ -16,7 +16,7 @@ namespace UIFramework
     /// 
     /// </summary>
     [ExecuteInEditMode]
-    public class ChildBackground : MonoBehaviour
+    public class TextBackground : MonoBehaviour
     {
         /* const & readonly declaration             */
 
@@ -34,6 +34,7 @@ namespace UIFramework
 
         /* public - Field declaration            */
 
+        public bool bIsCall_ByUpdate = true;
         public RectTransform pTransformChild;
         public TextMargin pTextMargin;
         
@@ -46,6 +47,18 @@ namespace UIFramework
         /* public - [Do] Function
          * 외부 객체가 호출(For External class call)*/
 
+        public void DoUpdateSize()
+        {
+            DoUpdateSize(pTransformChild.sizeDelta);
+        }
+
+        public void DoUpdateSize(Vector2 vecSize)
+        {
+            vecSize.x += pTextMargin.Left + pTextMargin.Right;
+            vecSize.y += pTextMargin.Top + pTextMargin.Bottom;
+
+            _pTransformMe.sizeDelta = vecSize;
+        }
 
         // ========================================================================== //
 
@@ -59,14 +72,13 @@ namespace UIFramework
 
         private void Update()
         {
+            if (bIsCall_ByUpdate == false)
+                return;
+
             if (pTransformChild == null)
                 return;
 
-            Vector2 vecSizeDelta = pTransformChild.sizeDelta;
-            vecSizeDelta.x += pTextMargin.Left + pTextMargin.Right;
-            vecSizeDelta.y += pTextMargin.Top + pTextMargin.Bottom;
-
-            _pTransformMe.sizeDelta = vecSizeDelta;
+            DoUpdateSize();
         }
 
         /* protected - [abstract & virtual]         */

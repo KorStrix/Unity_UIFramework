@@ -40,7 +40,13 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
+        [Header("팝업 텍스트가 조작하는 TextWrapper 컴포넌트")]
         public ITextWrapperComponent pTextWrapper;
+
+        [Header("로직을 다 끝낸 뒤 사라질때까지 기다리는 시간")]
+        public float fWaitDisableSec = 0f;
+
+        [Space(10)]
         public List<PopupupTextLogic> listLogic_Insert_OnAwake = new List<PopupupTextLogic>();
 
         /* protected & private - Field declaration  */
@@ -50,10 +56,18 @@ namespace UIFramework
         List<Coroutine> _listLogicCoroutine = new List<Coroutine>();
         Coroutine _pCoroutine;
 
-
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
+
+        /// <summary>
+        /// 이 팝업 Text를 출력합니다. 출력과 동시에 등록된 <see cref="IPopupText_Logic"/>을 실행합니다.
+        /// </summary>
+        public void DoShow(string strText)
+        {
+            DoShow(strText, transform.position);
+        }
+
 
         /// <summary>
         /// 이 팝업 Text를 출력합니다. 출력과 동시에 등록된 <see cref="IPopupText_Logic"/>을 실행합니다.
@@ -73,7 +87,8 @@ namespace UIFramework
         /// </summary>
         public void DoShow(Canvas pCanvasParents, string strText, Vector3 vecWorldPos)
         {
-            transform.SetParent(pCanvasParents.transform);
+            if(pCanvasParents != null)
+                transform.SetParent(pCanvasParents.transform);
 
             DoShow(strText, vecWorldPos);
         }
@@ -137,6 +152,8 @@ namespace UIFramework
                 _listLogicCoroutine.Add(StartCoroutine(_listPopupTextLogic_OnHide[i].OnAnimation(this, strText)));
 
             yield return _listLogicCoroutine.GetEnumerator_Safe();
+
+            yield return new WaitForSeconds(fWaitDisableSec);
 
             gameObject.SetActive(false);
             yield break;

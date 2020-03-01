@@ -12,7 +12,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
-using UIWidgetContainerManager_Logic;
 using System.Linq;
 
 namespace UIFramework
@@ -66,7 +65,7 @@ namespace UIFramework
                 DoShowOnly(listShowCanvas[i]);
         }
 
-        protected override void OnInit_ManagerLogic(Dictionary<EUIObjectState, List<ICanvasManager_Logic>> mapManagerLogic)
+        protected override void OnInit_ManagerLogic(CanvasManagerLogicFactory pLogicFactory)
         {
         }
 

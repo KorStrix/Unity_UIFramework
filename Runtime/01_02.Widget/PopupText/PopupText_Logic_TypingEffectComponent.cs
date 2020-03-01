@@ -1,7 +1,7 @@
 #region Header
 /*	============================================
  *	Aurthor 			    : Strix
- *	Initial Creation Date 	: 2020-02-13
+ *	Initial Creation Date 	: 2020-02-04
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
    ============================================ */
@@ -10,14 +10,14 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
+using UIFramework.PopupText_Logic;
 
 namespace UIFramework
 {
     /// <summary>
     /// 
     /// </summary>
-    public class TextWrapper_Text : UIWidgetObjectBase, ITextWrapperComponent
+    public class PopupText_Logic_TypingEffectComponent : PopupText_Logic_ComponentBase
     {
         /* const & readonly declaration             */
 
@@ -25,40 +25,23 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
-        public string strText
-        {
-            get  => pText.text;
-            set => pText.text = value; 
-        }
-
-        public IEnumerable<Graphic> arrGraphic => _arrGraphic;
-
-        public Text pText { get; private set; }
+        public Logic_TextTyping pLogic = new Logic_TextTyping(1f);
 
         /* protected & private - Field declaration  */
 
-        Graphic[] _arrGraphic;
 
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
 
-        public void DoSetText(Text pText)
-        {
-            this.pText = pText;
-            _arrGraphic = new Graphic[1] { pText };
-        }
 
         // ========================================================================== //
 
         /* protected - [Override & Unity API]       */
 
-        protected override void OnAwake()
+        public override IEnumerator OnAnimation(PopupText pTextOwner, string strText)
         {
-            base.OnAwake();
-
-            if(pText == null)
-                DoSetText(GetComponentInChildren<Text>());
+            yield return pLogic.ExecuteLogic_Coroutine(pTextOwner.pTextWrapper, strText);
         }
 
         /* protected - [abstract & virtual]         */
@@ -69,5 +52,6 @@ namespace UIFramework
         #region Private
 
         #endregion Private
+
     }
 }

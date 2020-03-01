@@ -23,6 +23,6 @@ namespace UIFramework
         Transform transform { get; }
         string strText { get; set; }
 
-        Graphic[] arrGraphic { get; }
+        IEnumerable<Graphic> arrGraphic { get; }
     }
 }

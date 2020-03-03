@@ -17,7 +17,7 @@ namespace UIFramework
     /// <summary>
     /// 체력바, 경험치바 등에 사용하는 애니메이션 바.
     /// <para>주의) 이 객체는 바로 사용할 수 없습니다.</para>
-    /// <para><see cref="DoAddLogic"/>를 통해 로직을 Add하여 사용해야 합니다.</para>
+    /// <para><see cref="DoInit"/>를 통해 로직을 Add하여 사용해야 합니다.</para>
     /// </summary>
     public class CUIAnimatedBar : UIWidgetObjectBase
     {
@@ -60,31 +60,35 @@ namespace UIFramework
          * 외부 객체가 호출(For External class call)*/
 
         /// <summary>
-        /// Fill Image를 세팅합니다.
+        /// 동작할 Logic을 Add합니다. 로직은 namespace UIFramework.AnimatedBarLogic를 참고바랍니다.
         /// </summary>
-        /// <param name="pImage_Fill"></param>
-        public void DoInit(Image pImage_Fill)
+        public void DoInit(AnimatedBarLogicLogicFactory pLogicFactory)
         {
-            this._pImage_Fill = pImage_Fill;
+            _listLogic_OnIncrease.Clear();
+            _listLogic_OnDecrease.Clear();
+
+            foreach (var pLogicPair in pLogicFactory.mapLogicContainer)
+            {
+                switch (pLogicPair.Key)
+                {
+                    case EDirection.Increase: _listLogic_OnIncrease.AddRange(pLogicPair.Value); break;
+                    case EDirection.Decrease: _listLogic_OnDecrease.AddRange(pLogicPair.Value); break;
+
+                    case EDirection.Both:
+                        _listLogic_OnIncrease.AddRange(pLogicPair.Value);
+                        _listLogic_OnDecrease.AddRange(pLogicPair.Value);
+                        break;
+                }
+            }
         }
 
         /// <summary>
-        /// 동작할 Logic을 Add합니다. 로직은 namespace UIFramework.AnimatedBarLogic를 참고바랍니다.
+        /// Fill Image를 세팅합니다.
         /// </summary>
-        public void DoAddLogic(IAnimatedBarLogic pLogic, Image pTargetImage, EDirection eDirection)
+        /// <param name="pImage_Fill"></param>
+        public void DoSet_FillImage(Image pImage_Fill)
         {
-            pLogic.IAnimatedBarLogic_OnAwake(pTargetImage);
-
-            switch (eDirection)
-            {
-                case EDirection.Increase: _listLogic_OnIncrease.Add(pLogic); break;
-                case EDirection.Decrease: _listLogic_OnDecrease.Add(pLogic); break;
-
-                case EDirection.Both:
-                    _listLogic_OnIncrease.Add(pLogic);
-                    _listLogic_OnDecrease.Add(pLogic);
-                    break;
-            }
+            this._pImage_Fill = pImage_Fill;
         }
 
         /// <summary>

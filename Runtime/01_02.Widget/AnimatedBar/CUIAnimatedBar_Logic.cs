@@ -11,8 +11,42 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
+using static UIFramework.CUIAnimatedBar;
+using UIFramework.AnimatedBarLogic;
+
 namespace UIFramework
 {
+    public enum EAnimatedBarLogicName
+    {
+        AnimatedBarLogic_Blink_Image,
+        AnimatedBarLogic_Shirink,
+    }
+
+    public class AnimatedBarLogicLogicFactory
+    {
+        public Dictionary<EDirection, List<IAnimatedBarLogic>> mapLogicContainer = new Dictionary<EDirection, List<IAnimatedBarLogic>>();
+
+        public IAnimatedBarLogic DoCreate_LibraryLogic(EDirection eDirectionWhen, EAnimatedBarLogicName eLogic, Image pTargetImage)
+        {
+            IAnimatedBarLogic pLogic = null;
+            switch (eLogic)
+            {
+                case EAnimatedBarLogicName.AnimatedBarLogic_Blink_Image: pLogic = new AnimatedBarLogic_Blink_Image(); break;
+                case EAnimatedBarLogicName.AnimatedBarLogic_Shirink: pLogic = new AnimatedBarLogic_Shirink(); break;
+
+                default: Debug.LogError("Error - Not Found Logic"); return null;
+            }
+            pLogic.IAnimatedBarLogic_OnAwake(pTargetImage);
+
+            if (mapLogicContainer.ContainsKey(eDirectionWhen) == false)
+                mapLogicContainer.Add(eDirectionWhen, new List<IAnimatedBarLogic>());
+            mapLogicContainer[eDirectionWhen].Add(pLogic);
+
+            return pLogic;
+        }
+    }
+
+
     namespace AnimatedBarLogic
     {
         /// <summary>

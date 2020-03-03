@@ -19,6 +19,8 @@ namespace UIFramework
     {
         Print_CanvasState,
         SetTransform_LastSibling,
+        Show_Object,
+        Lock_AllInput,
     }
 
     public class CanvasManagerLogicFactory
@@ -32,7 +34,8 @@ namespace UIFramework
             {
                 case ECanvasManagerLogicName.Print_CanvasState: pLogic = new Print_CanvasState(eState); break;
                 case ECanvasManagerLogicName.SetTransform_LastSibling: pLogic = new SetTransform_LastSibling(); break;
-
+                case ECanvasManagerLogicName.Show_Object: pLogic = new Show_Object(); break;
+                case ECanvasManagerLogicName.Lock_AllInput: pLogic = new Lock_AllInput(); break;
 
                 default: Debug.LogError("Error - Not Found Logic"); return null;
             }
@@ -148,7 +151,7 @@ namespace UIFramework
             System.Func<GameObject, ICanvas, GameObject> OnRequireObject;
             System.Action<GameObject> OnHideObject;
 
-            public Show_Object(GameObject pObject, System.Func<GameObject, ICanvas, GameObject> OnRequireObject, System.Action<GameObject> OnHideObject)
+            public void DoInit(GameObject pObject, System.Func<GameObject, ICanvas, GameObject> OnRequireObject, System.Action<GameObject> OnHideObject)
             {
                 this.pObject = pObject; this.OnRequireObject = OnRequireObject; this.OnHideObject = OnHideObject;
             }

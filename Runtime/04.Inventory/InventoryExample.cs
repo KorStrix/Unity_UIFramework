@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UIFramework.InventorySlotLogic;
 
 namespace UIFramework
 {
@@ -72,12 +73,13 @@ namespace UIFramework
 
             _pInventory.DoClearData();
             _pInventory.DoAddRangeData(listSomthingData.ToArray());
-            _pInventory.DoInit_SlotLogic_Command(
-                new InventorySlotLogic_Command.InventorySlot_CommandLogic(InventorySlot.EInventorySlot_CommandEvent.OnDragBegin, 
-                                                                          InventorySlot.EInventorySlot_CommandEvent.OnDragEnd,
-                                                                          new InventorySlotLogic_Command.Instantiate_CloneSlot((p => p.GetComponent<Image>().enabled = false), null))
-                );
 
+            InventoryLogicFactory pLogicFactory = new InventoryLogicFactory();
+            var pLogic = pLogicFactory.DoCreate_LibraryLogic_Command(InventorySlot.EInventorySlot_CommandEvent.OnDragBegin, EInventory_CommandLogicName.Instantiate_CloneSlot, InventorySlot.EInventorySlot_CommandEvent.OnDragEnd);
+            Instantiate_CloneSlot pInstantiateLogic = pLogic as Instantiate_CloneSlot;
+            pInstantiateLogic.DoInit((p => p.GetComponent<Image>().enabled = false), null);
+
+            _pInventory.DoInit_SlotLogic(pLogicFactory);
             _pInventory.OnSwap_Slot += _pInventory_OnSwap_Slot;
         }
 

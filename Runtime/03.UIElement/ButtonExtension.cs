@@ -67,7 +67,12 @@ namespace UIFramework
                 case SelectionState.Normal: OnStateTransition_Color?.Invoke((ESelectionState)(int)state, this.colors.normalColor, this.colors.fadeDuration); break;
                 case SelectionState.Highlighted: OnStateTransition_Color?.Invoke((ESelectionState)(int)state, this.colors.highlightedColor, this.colors.fadeDuration); break;
                 case SelectionState.Pressed: OnStateTransition_Color?.Invoke((ESelectionState)(int)state, this.colors.pressedColor, this.colors.fadeDuration); break;
+
+#if UNITY_2019
                 case SelectionState.Selected: OnStateTransition_Color?.Invoke((ESelectionState)(int)state, this.colors.selectedColor, this.colors.fadeDuration); break;
+#endif
+
+
                 case SelectionState.Disabled: OnStateTransition_Color?.Invoke((ESelectionState)(int)state, this.colors.disabledColor, this.colors.fadeDuration); break;
             }
         }

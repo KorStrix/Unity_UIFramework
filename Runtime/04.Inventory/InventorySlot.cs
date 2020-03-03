@@ -13,8 +13,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UIFramework.InventorySlotLogic_State;
-using UIFramework.InventorySlotLogic_Command;
+using UIFramework.InventorySlotLogic;
 
 #if UNITY_EDITOR
 using UnityEditor;

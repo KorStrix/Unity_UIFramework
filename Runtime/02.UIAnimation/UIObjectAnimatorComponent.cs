@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-18 오후 5:20:18
@@ -15,7 +15,7 @@ namespace UIFramework
     /// <summary>
     /// UI Widget용 애니메이션 실행기
     /// </summary>
-    public class UIObjectAnimator : MonoBehaviour, IUIWidget_Managed
+    public class UIObjectAnimatorComponent : MonoBehaviour, IUIWidget_Managed
     {
         /* const & readonly declaration             */
 
@@ -74,19 +74,28 @@ namespace UIFramework
                 return;
             _bIsExecute_Awake = true;
 
-            pAnimation_Show.DoInit(this, StartCoroutine, StopCoroutine);
 
+            UIAnimationLogicFactory pLogicFactory_Show = new UIAnimationLogicFactory();
+            UIAnimationLogicFactory pLogicFactory_Hide = new UIAnimationLogicFactory();
+
+            // 로직이 이미 있으면 그 로직을 전부 사용하고,
+            // 로직이 하나도 없으면 GetComponents를 이용해서 얻어오는데,
+            // 리펙토링이 필요하다..
             if (listAnimationLogic_Show.Count != 0)
-                pAnimation_Show.DoAdd_Animation_Collection(listAnimationLogic_Show);
+                pLogicFactory_Show.DoAdd_Animation_Collection(listAnimationLogic_Show);
             else
-                pAnimation_Show.DoAdd_Animation_Collection(GetComponents<IUIAnimationLogic_Show>());
-
-            pAnimation_Hide.DoInit(this, StartCoroutine, StopCoroutine);
+                pLogicFactory_Show.DoAdd_Animation_Collection(GetComponents<IUIAnimationLogic_Show>());
 
             if (listAnimationLogic_Hide.Count != 0)
-                pAnimation_Hide.DoAdd_Animation_Collection(listAnimationLogic_Hide);
+                pLogicFactory_Hide.DoAdd_Animation_Collection(listAnimationLogic_Hide);
             else
-                pAnimation_Hide.DoAdd_Animation_Collection(GetComponents<IUIAnimationLogic_Hide>());
+                pLogicFactory_Hide.DoAdd_Animation_Collection(GetComponents<IUIAnimationLogic_Hide>());
+
+            pAnimation_Show.DoInit(this, StartCoroutine, StopCoroutine);
+            pAnimation_Show.DoInit_Animation(pLogicFactory_Show);
+
+            pAnimation_Hide.DoInit(this, StartCoroutine, StopCoroutine);
+            pAnimation_Hide.DoInit_Animation(pLogicFactory_Hide);
         }
 
         private void OnEnable()

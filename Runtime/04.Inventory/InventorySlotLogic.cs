@@ -13,10 +13,56 @@ using System.Collections.Generic;
 using static UIFramework.InventorySlot;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UIFramework.InventorySlotLogic;
 
 namespace UIFramework
 {
-    namespace InventorySlotLogic_State
+    public enum EInventory_StateLogicName
+    {
+    }
+
+    public enum EInventory_CommandLogicName
+    {
+        Instantiate_CloneSlot,
+    }
+
+    public class InventoryLogicFactory
+    {
+        public List<InventorySlot_StateLogic> list_StateLogic = new List<InventorySlot_StateLogic>();
+        public List<InventorySlot_CommandLogic> list_CommandLogic = new List<InventorySlot_CommandLogic>();
+
+        public IInventorySlot_StateLogic DoCreate_LibraryLogic_State(EInventorySlot_StateEvent eEvent, EInventory_StateLogicName eLogic, EInventorySlot_StateEvent eEventUndo = EInventorySlot_StateEvent.None)
+        {
+            IInventorySlot_StateLogic pLogic = null;
+            switch (eLogic)
+            {
+                default: Debug.LogError("Error - Not Found Logic"); return null;
+            }
+
+            if(pLogic != null)
+                list_StateLogic.Add(new InventorySlot_StateLogic(eEvent, eEventUndo, pLogic));
+
+            return pLogic;
+        }
+
+        public IInventorySlot_CommandLogic DoCreate_LibraryLogic_Command(EInventorySlot_CommandEvent eEvent, EInventory_CommandLogicName eLogic, EInventorySlot_CommandEvent eEventUndo = EInventorySlot_CommandEvent.None)
+        {
+            IInventorySlot_CommandLogic pLogic = null;
+            switch (eLogic)
+            {
+                case EInventory_CommandLogicName.Instantiate_CloneSlot: pLogic = new Instantiate_CloneSlot(); break;
+
+                default: Debug.LogError("Error - Not Found Logic"); return null;
+            }
+
+            if (pLogic != null)
+                list_CommandLogic.Add(new InventorySlot_CommandLogic(eEvent, eEventUndo, pLogic));
+
+            return pLogic;
+        }
+    }
+
+    namespace InventorySlotLogic
     {
         /// <summary>
         /// 
@@ -44,10 +90,7 @@ namespace UIFramework
                 this.eEvent = eStateEvent; this.pLogic = pStateLogic; this.eEvent_Undo = eStateEvent_Undo;
             }
         }
-    }
 
-    namespace InventorySlotLogic_Command
-    {
         /// <summary>
         /// 
         /// </summary>
@@ -88,7 +131,7 @@ namespace UIFramework
             System.Action<InventorySlot> _OnCloneSlot;
             System.Func<InventorySlot, Transform> _GetCloneSlotParents;
 
-            public Instantiate_CloneSlot(System.Action<InventorySlot> OnCloneSlot_OrNull, System.Func<InventorySlot, Transform> GetCloneSlotParents_OrNull)
+            public void DoInit(System.Action<InventorySlot> OnCloneSlot_OrNull, System.Func<InventorySlot, Transform> GetCloneSlotParents_OrNull)
             {
                 DoSetCallBack(GameObject.Instantiate, GameObject.Destroy);
                 _OnCloneSlot = OnCloneSlot_OrNull;

@@ -13,6 +13,27 @@ using System.Linq;
 
 namespace UIFramework
 {
+    public class UIAnimationLogicFactory
+    { 
+        public List<IUIAnimationLogic> listUIAnimationLogic { get; private set; } = new List<IUIAnimationLogic>();
+
+        public void DoAdd_Animation_Collection<T>(IEnumerable<T> listAnimationLogic)
+            where T : IUIAnimationLogic
+        {
+            if (listAnimationLogic == null)
+                return;
+
+            foreach (T pLogic in listAnimationLogic)
+            {
+                if (pLogic == null)
+                    continue;
+
+                listUIAnimationLogic.Add(pLogic);
+            }
+        }
+    }
+
+
     /// <summary>
     /// 범용적인 UIAnimation 로직의 Base Interface
     /// <para><see cref="UIAnimation"/>에의해 관리되며 실행됩니다.</para>
@@ -78,26 +99,16 @@ namespace UIFramework
                 listUIAnimationLogic.Clear();
         }
 
-        public void DoAdd_Animation(IUIAnimationLogic pAnimationLogic)
+        public void DoInit_Animation(UIAnimationLogicFactory pLogicFactory)
         {
-            listUIAnimationLogic.Add(pAnimationLogic);
-            pAnimationLogic.IUIAnimationLogic_OnAwake(_pUIObject);
+            listUIAnimationLogic.AddRange(pLogicFactory.listUIAnimationLogic);
+            pLogicFactory.listUIAnimationLogic.ForEach(p => p.IUIAnimationLogic_OnAwake(_pUIObject));
         }
 
-        public void DoAdd_Animation_Collection<T>(IEnumerable<T> listAnimationLogic)
-            where T : IUIAnimationLogic
+        public void DoAdd_Animation(IUIAnimationLogic pLogic)
         {
-            if (listAnimationLogic == null)
-                return;
-
-            foreach (T pLogic in listAnimationLogic)
-            {
-                if (pLogic == null)
-                    continue;
-
-                listUIAnimationLogic.Add(pLogic);
-                pLogic.IUIAnimationLogic_OnAwake(_pUIObject);
-            }
+            listUIAnimationLogic.Add(pLogic);
+            pLogic.IUIAnimationLogic_OnAwake(_pUIObject);
         }
 
         public void DoClear_AnimationLogic()

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Linq;
+using UIFramework.InventorySlotLogic;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -94,8 +95,8 @@ namespace UIFramework
         Dictionary<string, InventorySlot> _mapSlot_ByDataKey = new Dictionary<string, InventorySlot>();
         List<InventorySlot> _listSlot = new List<InventorySlot>();
 
-        InventorySlotLogic_State.InventorySlot_StateLogic[] _arrSlotLogic_State = new InventorySlotLogic_State.InventorySlot_StateLogic[0];
-        InventorySlotLogic_Command.InventorySlot_CommandLogic[] _arrSlotLogic_Command = new InventorySlotLogic_Command.InventorySlot_CommandLogic[0];
+        InventorySlot_StateLogic[] _arrSlotLogic_State = new InventorySlot_StateLogic[0];
+        InventorySlot_CommandLogic[] _arrSlotLogic_Command = new InventorySlot_CommandLogic[0];
 
         // ========================================================================== //
 
@@ -131,20 +132,16 @@ namespace UIFramework
             }
         }
 
-        public void DoInit_SlotLogic_State(params InventorySlotLogic_State.InventorySlot_StateLogic[] arrSlotLogic)
+        public void DoInit_SlotLogic(InventoryLogicFactory pLogicFactory)
         {
-            _arrSlotLogic_State = arrSlotLogic;
+            _arrSlotLogic_State = pLogicFactory.list_StateLogic.ToArray();
             for (int i = 0; i < _listSlot.Count; i++)
-                _listSlot[i].DoInit_SlotStateLogic(arrSlotLogic);
-        }
+                _listSlot[i].DoInit_SlotStateLogic(_arrSlotLogic_State);
 
-        public void DoInit_SlotLogic_Command(params InventorySlotLogic_Command.InventorySlot_CommandLogic[] arrSlotLogic)
-        {
-            _arrSlotLogic_Command = arrSlotLogic;
+            _arrSlotLogic_Command = pLogicFactory.list_CommandLogic.ToArray();
             for (int i = 0; i < _listSlot.Count; i++)
-                _listSlot[i].DoInit_SlotCommandLogic(arrSlotLogic);
+                _listSlot[i].DoInit_SlotCommandLogic(_arrSlotLogic_Command);
         }
-
 
         public void DoAddRangeData(params IInventoryData[] arrData)
         {

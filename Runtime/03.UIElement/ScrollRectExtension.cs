@@ -52,6 +52,8 @@ public class ScrollRectExtension : ScrollRect
     public event System.Action<DragEventMsg> OnOtherSide_DragBegin;
     public event System.Action<DragEventMsg> OnOtherSide_DragEnd;
 
+    public RectTransform pMaskTransform { get; private set; }
+
     /* protected & private - Field declaration  */
 
     RectTransform _pRectTransform;
@@ -79,6 +81,8 @@ public class ScrollRectExtension : ScrollRect
     protected override void Awake()
     {
         _pRectTransform = GetComponent<RectTransform>();
+
+        pMaskTransform = GetComponentInChildren<Mask>().rectTransform;
     }
 
     public override void OnDrag(UnityEngine.EventSystems.PointerEventData eventData)

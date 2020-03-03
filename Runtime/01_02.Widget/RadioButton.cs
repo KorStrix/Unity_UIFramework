@@ -29,14 +29,6 @@ namespace UIFramework
         /* const & readonly declaration             */
 
         /* enum & struct declaration                */
-        public enum ESelectionState
-        {
-            Normal = 0,
-            Highlighted = 1,
-            Pressed = 2,
-            Selected = 3,
-            Disabled = 4
-        }
 
         public struct RadioButtonEventMsg
         {

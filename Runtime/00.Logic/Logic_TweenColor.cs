@@ -1,4 +1,4 @@
-#region Header
+ï»¿#region Header
 /*	============================================
  *	Aurthor 			    : Strix
  *	Initial Creation Date 	: 2020-02-04
@@ -16,7 +16,7 @@ using System.Linq;
 namespace UIFramework
 {
     /// <summary>
-    /// Å¸°ÙÀÇ »ö»óÀ» Æ¯Á¤ »ö»óÀ¸·Î º¸°£ÇÏ´Â ·ÎÁ÷ÀÔ´Ï´Ù.
+    /// íƒ€ê²Ÿì˜ ìƒ‰ìƒì„ íŠ¹ì • ìƒ‰ìƒìœ¼ë¡œ ë³´ê°„í•˜ëŠ” ë¡œì§ì…ë‹ˆë‹¤.
     /// </summary>
     [System.Serializable]
     public class Logic_TweenColor

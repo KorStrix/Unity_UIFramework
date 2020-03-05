@@ -1,4 +1,4 @@
-#region Header
+ï»¿#region Header
 /*	============================================
  *	Aurthor 			    : Strix
  *	Initial Creation Date 	: 2020-02-04
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace UIFramework
 {
     /// <summary>
-    /// Å¸°ÙÀÇ Å©±â¸¦ Æ¯Á¤ Å©±â·Î º¸°£ÇÏ´Â ·ÎÁ÷ÀÔ´Ï´Ù.
+    /// íƒ€ê²Ÿì˜ í¬ê¸°ë¥¼ íŠ¹ì • í¬ê¸°ë¡œ ë³´ê°„í•˜ëŠ” ë¡œì§ì…ë‹ˆë‹¤.
     /// </summary>
     [System.Serializable]
     public class Logic_TweenScale

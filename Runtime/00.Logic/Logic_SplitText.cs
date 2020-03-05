@@ -1,4 +1,4 @@
-#region Header
+ï»¿#region Header
 /*	============================================
  *	Aurthor 			    : Strix
  *	Initial Creation Date 	: 2020-02-04
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace UIFramework
 {
     /// <summary>
-    /// ¼ıÀÚ¸¦ char array·Î ¸®ÅÏÇÏ´Â ·ÎÁ÷ÀÔ´Ï´Ù.
+    /// ìˆ«ìë¥¼ char arrayë¡œ ë¦¬í„´í•˜ëŠ” ë¡œì§ì…ë‹ˆë‹¤.
     /// </summary>
     [System.Serializable]
     public class Logic_SplitText

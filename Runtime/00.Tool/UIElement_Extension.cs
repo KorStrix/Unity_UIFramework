@@ -288,6 +288,7 @@ public static class UIElement_Extension
         var localPosition = target.localPosition + pivotOffset;
         return target.parent.TransformPoint(localPosition);
     }
+
     static private Vector3 GetWorldPointInWidget(RectTransform target, Vector3 worldPoint)
     {
         return target.InverseTransformPoint(worldPoint);

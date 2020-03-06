@@ -31,7 +31,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public class Inventory : UIFramework.UIWidgetObjectBase, IUIWidget_Managed
+    public class Inventory : UIWidgetObjectBase, IUIWidget_Managed
     {
         /* const & readonly declaration             */
 

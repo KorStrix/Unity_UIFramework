@@ -51,7 +51,6 @@ namespace UIFramework
             OnAwake();
         }
 
-
         private void OnApplicationQuit()
         {
             _bIsQuit_Application = true;
@@ -72,6 +71,10 @@ namespace UIFramework
         /* protected - [abstract & virtual]         */
 
         virtual protected void OnAwake() { }
+
+        virtual public void IUIWidget_OnBeforeShow()
+        {
+        }
 
         // ========================================================================== //
 

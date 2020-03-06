@@ -169,6 +169,10 @@ namespace UIFramework
             yield break;
         }
 
+        public void IUIWidget_OnBeforeShow()
+        {
+        }
+
         public override void OnPointerClick(PointerEventData eventData)
         {
             base.OnPointerClick(eventData);
@@ -238,7 +242,6 @@ namespace UIFramework
             Selection.activeObject = pObjectButtonLast;
         }
 #endif
-
     }
 
 #if UNITY_EDITOR

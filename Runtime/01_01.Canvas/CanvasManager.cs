@@ -84,21 +84,23 @@ namespace UIFramework
                 if (pInstance.IsNull())
                     yield break;
 
+                _listChildrenWidget.ForEach(p => p.IUIWidget_OnBeforeShow());
                 SettingUI(pCanvas);
 
                 sUICommandHandle.Event_OnShow_BeforeAnimation();
                 StartCoroutine_Show();
+
                 yield return _listCoroutine.GetEnumerator_Safe();
             }
 
             public IEnumerator DoExecute_HideCoroutine()
             {
                 StopCoroutine();
-
                 if (pInstance.IsNull())
                     yield break;
 
                 StartCoroutine_Hide();
+
                 yield return _listCoroutine.GetEnumerator_Safe();
             }
 

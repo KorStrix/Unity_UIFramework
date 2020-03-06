@@ -41,6 +41,7 @@ namespace UIFramework
     public interface IUIAnimationLogic
     {
         void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
+        void IUIAnimationLogic_OnBeforeShow(IUIObject pUIObject);
         IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
     }
 
@@ -57,8 +58,9 @@ namespace UIFramework
     [System.Serializable]
     public abstract class UIAnimationLogic_ComponentBase : MonoBehaviour, IUIAnimationLogic
     {
-        public abstract IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
         public abstract void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
+        public abstract void IUIAnimationLogic_OnBeforeShow(IUIObject pUIObject);
+        public abstract IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
     }
 
     /// <summary>
@@ -116,10 +118,15 @@ namespace UIFramework
             listUIAnimationLogic.Clear();
         }
 
+        public void Event_OnBeforeShow()
+        {
+            listUIAnimationLogic.ForEach(p => p.IUIAnimationLogic_OnBeforeShow(_pUIObject));
+        }
+
         /// <summary>
         /// 애니메이션들을 동시에 재생
         /// </summary>
-        public IEnumerator CoPlayAnimation_Concurrently(bool bIgnoreTimeScale)
+        public IEnumerator PlayAnimationCoroutine_Concurrently(bool bIgnoreTimeScale)
         {
             for (int i = 0; i < _listExecuteCoroutine.Count; i++)
                 _OnStopCoroutine(_listExecuteCoroutine[i]);
@@ -133,7 +140,7 @@ namespace UIFramework
         /// <summary>
         /// 애니메이션을 하나씩 순차적으로 재생
         /// </summary>
-        public IEnumerator CoPlayAnimation_Sequential(bool bIgnoreTimeScale)
+        public IEnumerator PlayAnimationCoroutine_Sequential(bool bIgnoreTimeScale)
         {
             for (int i = 0; i < _listExecuteCoroutine.Count; i++)
                 _OnStopCoroutine(_listExecuteCoroutine[i]);
@@ -142,7 +149,7 @@ namespace UIFramework
             for (int i = 0; i < listUIAnimationLogic.Count; i++)
             {
                 if (listUIAnimationLogic[i] != null)
-                    yield return _OnStartCoroutine(listUIAnimationLogic[i].IUIAnimationLogic_OnAnimation(_pUIObject, bIgnoreTimeScale));
+                    yield return listUIAnimationLogic[i].IUIAnimationLogic_OnAnimation(_pUIObject, bIgnoreTimeScale);
             }
         }
 

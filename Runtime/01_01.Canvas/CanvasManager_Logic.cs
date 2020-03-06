@@ -124,7 +124,10 @@ namespace UIFramework
 
             public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
             {
-                Debug.Log(pCanvas.gameObject.name + " ECavnasState : " + _eState, pCanvas.gameObject);
+                if(pCanvas.IsNull())
+                    Debug.Log(nameof(Print_CanvasState) + "Object is Null /// ECavnasState : " + _eState);
+                else
+                    Debug.Log(nameof(Print_CanvasState) + " " + pCanvas.gameObject.name + "// ECavnasState : " + _eState, pCanvas.gameObject);
 
                 yield break;
             }
@@ -359,7 +362,7 @@ namespace UIFramework
             public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
             {
                 if (bIsDebug)
-                    Debug.Log(nameof(Lock_AllInput) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " 1");
+                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " 1");
 
                 if (_OnCheck_IsExecute(pCanvas) == false)
                     yield break;
@@ -400,7 +403,7 @@ namespace UIFramework
                 }
 
                 if (bIsDebug)
-                    Debug.Log(nameof(Lock_AllInput) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " 2");
+                    Debug.Log(nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " 2");
 
                 yield break;
             }
@@ -408,7 +411,7 @@ namespace UIFramework
             public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
             {
                 if (bIsDebug)
-                    Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
+                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
 
                 if (_OnCheck_IsExecute(pCanvas) == false)
                     yield break;
@@ -445,7 +448,7 @@ namespace UIFramework
                 }
 
                 if (bIsDebug)
-                    Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
+                    Debug.Log(nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
 
                 yield break;
             }

@@ -15,7 +15,7 @@ namespace UIFramework
     /// <summary>
     /// UI Widget용 애니메이션 실행기
     /// </summary>
-    public class UIObjectAnimatorComponent : MonoBehaviour, IUIWidget_Managed
+    public class UIObjectAnimatorComponent_UnManaged : UIWidgetObjectBase
     {
         /* const & readonly declaration             */
 
@@ -41,8 +41,9 @@ namespace UIFramework
         public UIAnimation pAnimation_Hide { get; private set; } = new UIAnimation();
 
 
+        const bool bIsDebug = false;
+
         public EAnimationPlayHow eAnimationPlayHow = EAnimationPlayHow.Sequential;
-        public bool bIsPlay_ShowAnimation_OnEnable = true;
         public bool bIgnoreTimeScale = false;
 
         public List<UIAnimationLogic_ComponentBase> listAnimationLogic_Show = new List<UIAnimationLogic_ComponentBase>();
@@ -51,7 +52,6 @@ namespace UIFramework
 
         /* protected & private - Field declaration         */
 
-        bool _bIsExecute_Awake = false;
 
         // ========================================================================== //
 
@@ -68,12 +68,9 @@ namespace UIFramework
 
         /* protected - Override & Unity API         */
 
-        public void Awake()
+        protected override void OnAwake()
         {
-            if (_bIsExecute_Awake)
-                return;
-            _bIsExecute_Awake = true;
-
+            base.OnAwake();
 
             UIAnimationLogicFactory pLogicFactory_Show = new UIAnimationLogicFactory();
             UIAnimationLogicFactory pLogicFactory_Hide = new UIAnimationLogicFactory();
@@ -98,40 +95,66 @@ namespace UIFramework
             pAnimation_Hide.DoInit_Animation(pLogicFactory_Hide);
         }
 
-        private void OnEnable()
+
+        //IEnumerator OnEnableCoroutine()
+        //{
+        //    yield return null;
+
+        //    if (bIsPlay_ShowAnimation_OnEnable)
+        //        this.DoShow();
+        //}
+
+        public override void IUIWidget_OnBeforeShow()
         {
-            if (bIsPlay_ShowAnimation_OnEnable)
-                this.DoShow();
+            base.IUIWidget_OnBeforeShow();
+
+            pAnimation_Show.Event_OnBeforeShow();
         }
 
-        public IEnumerator OnShowCoroutine()
+        public override IEnumerator OnShowCoroutine()
         {
+            if (bIsDebug)
+                Debug.Log($"{name} - {nameof(OnShowCoroutine)} Start - eAnimationPlayHow : {eAnimationPlayHow}", this);
+
+
             if (gameObject.activeSelf == false)
                 yield break;
 
             switch (eAnimationPlayHow)
             {
-                case EAnimationPlayHow.Sequential: yield return pAnimation_Show.CoPlayAnimation_Sequential(bIgnoreTimeScale); break;
-                case EAnimationPlayHow.Concurrently: yield return pAnimation_Show.CoPlayAnimation_Concurrently(bIgnoreTimeScale); break;
+                case EAnimationPlayHow.Sequential: yield return pAnimation_Show.PlayAnimationCoroutine_Sequential(bIgnoreTimeScale); break;
+                case EAnimationPlayHow.Concurrently: yield return pAnimation_Show.PlayAnimationCoroutine_Concurrently(bIgnoreTimeScale); break;
 
                 default:
                     yield break;
             }
+
+
+            if (bIsDebug)
+                Debug.Log($"{name} - {nameof(OnShowCoroutine)} Finish - eAnimationPlayHow : {eAnimationPlayHow}", this);
         }
 
-        public IEnumerator OnHideCoroutine()
+        public override IEnumerator OnHideCoroutine()
         {
+            if (bIsDebug)
+                Debug.Log($"{name} - {nameof(OnHideCoroutine)} Start - eAnimationPlayHow : {eAnimationPlayHow}", this);
+
+
             if (gameObject.activeSelf == false)
                 yield break;
 
             switch (eAnimationPlayHow)
             {
-                case EAnimationPlayHow.Sequential: yield return pAnimation_Hide.CoPlayAnimation_Sequential(bIgnoreTimeScale); break;
-                case EAnimationPlayHow.Concurrently: yield return pAnimation_Hide.CoPlayAnimation_Concurrently(bIgnoreTimeScale); break;
+                case EAnimationPlayHow.Sequential: yield return pAnimation_Hide.PlayAnimationCoroutine_Sequential(bIgnoreTimeScale); break;
+                case EAnimationPlayHow.Concurrently: yield return pAnimation_Hide.PlayAnimationCoroutine_Concurrently(bIgnoreTimeScale); break;
 
                 default:
                     yield break;
             }
+
+
+            if (bIsDebug)
+                Debug.Log($"{name} - {nameof(OnHideCoroutine)} Finish - eAnimationPlayHow : {eAnimationPlayHow}", this);
         }
 
         /* protected - [abstract & virtual]         */

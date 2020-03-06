@@ -16,6 +16,7 @@ using System.Collections.Generic;
 /// </summary>
 public interface IUIWidget : IUIObject
 {
+    void IUIWidget_OnBeforeShow();
 }
 
 public interface IUIWidget_Managed : IUIWidget, IUIObject_Managed

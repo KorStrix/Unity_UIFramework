@@ -22,7 +22,7 @@ namespace UIFramework
         AnimatedBarLogic_Shirink,
     }
 
-    public class AnimatedBarLogicLogicFactory
+    public class AnimatedBarLogicFactory
     {
         public Dictionary<EDirection, List<IAnimatedBarLogic>> mapLogicContainer = new Dictionary<EDirection, List<IAnimatedBarLogic>>();
 

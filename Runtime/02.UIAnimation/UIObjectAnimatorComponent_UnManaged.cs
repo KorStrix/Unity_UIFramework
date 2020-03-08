@@ -18,6 +18,8 @@ namespace UIFramework
     public class UIObjectAnimatorComponent_UnManaged : UIWidgetObjectBase
     {
         /* const & readonly declaration             */
+        
+        readonly bool bIsDebug = false;
 
         /* enum & struct declaration                */
 
@@ -40,8 +42,6 @@ namespace UIFramework
         public UIAnimation pAnimation_Show { get; private set; } = new UIAnimation();
         public UIAnimation pAnimation_Hide { get; private set; } = new UIAnimation();
 
-
-        const bool bIsDebug = false;
 
         public EAnimationPlayHow eAnimationPlayHow = EAnimationPlayHow.Sequential;
         public bool bIgnoreTimeScale = false;

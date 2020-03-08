@@ -753,7 +753,7 @@ namespace UIFramework
 
                 if (pInstance.IsNull())
                 {
-                    Debug.LogError(name + " CoProcess_Showing - eName : " + eName + "pInstance == null", this);
+                    Debug.LogError(name + " CoProcess_Showing - eName : " + eName + " pInstance == null", this);
                     yield break;
                 }
 

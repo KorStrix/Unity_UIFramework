@@ -120,6 +120,10 @@ namespace UIFramework
             Event_SetSelected(false);
         }
 
+        public void DoUpdateIndex_IsSibling()
+        {
+            iSlotIndex = transform.GetSiblingIndex();
+        }
 
         public void DoInit_SlotStateLogic(InventorySlot_StateLogic[] arrSlotStateLogic)
         {
@@ -321,7 +325,7 @@ namespace UIFramework
             if (GUILayout.Button("Update Slot Index - by Sibling"))
             {
                 foreach (var pSlot in arrTarget)
-                    pSlot.iSlotIndex = pSlot.transform.GetSiblingIndex();
+                    pSlot.DoUpdateIndex_IsSibling();
             }
         }
     }

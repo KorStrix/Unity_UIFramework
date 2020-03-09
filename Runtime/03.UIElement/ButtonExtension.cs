@@ -41,9 +41,6 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
-        public delegate void delOnStateTransition(ESelectionState state, bool instant);
-        public event delOnStateTransition OnStateTransition;
-
         public delegate void delOnStateTransition_Color(ESelectionState state, Color sColorBase, float fDuration);
         public event delOnStateTransition_Color OnStateTransition_Color;
 

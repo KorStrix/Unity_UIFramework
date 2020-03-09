@@ -62,7 +62,7 @@ namespace UIFramework
         /// <summary>
         /// 동작할 Logic을 Add합니다. 로직은 namespace UIFramework.AnimatedBarLogic를 참고바랍니다.
         /// </summary>
-        public void DoInit(AnimatedBarLogicLogicFactory pLogicFactory)
+        public void DoInit(AnimatedBarLogicFactory pLogicFactory)
         {
             _listLogic_OnIncrease.Clear();
             _listLogic_OnDecrease.Clear();

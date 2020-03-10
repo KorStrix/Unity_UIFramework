@@ -99,22 +99,23 @@ public static class SCUIElementEventHelper
             return;
 
         System.Type pType_EnumButtonName = pType_InterfaceHasButton.GetGenericArguments()[0];
+        HashSet<string> setEnumName = new HashSet<string>(System.Enum.GetNames(pType_EnumButtonName));
+
         Button[] arrButton = pOwner.GetComponentsInChildren<Button>(true);
         for (int i = 0; i < arrButton.Length; i++)
         {
             Button pButton = arrButton[i];
+            if (setEnumName.Contains(pButton.name) == false)
+                continue;
 
-            bool bParseSuccess;
-            object pEnum;
-            Parsing_NameToEnum(pType_EnumButtonName, pButton, out bParseSuccess, out pEnum);
-
-            if (bParseSuccess == false)
+            object pEnumValue;
+            if (TryParsing_NameToEnum(pType_EnumButtonName, pButton, out pEnumValue) == false)
                 continue;
 
             UnityEngine.Events.UnityAction pAction = () => 
             {
                 System.Type pButtonMessageGenericType = typeof(UIButtonMessage<>).MakeGenericType(pType_EnumButtonName);
-                object pButtonMsg = System.Activator.CreateInstance(pButtonMessageGenericType, pEnum, pButton);
+                object pButtonMsg = System.Activator.CreateInstance(pButtonMessageGenericType, pEnumValue, pButton);
                 pOwner.SendMessage(nameof(IHas_UIButton<object>.IHas_UIButton_OnClickButton), pButtonMsg, SendMessageOptions.DontRequireReceiver); 
             };
 
@@ -132,11 +133,6 @@ public static class SCUIElementEventHelper
         {
             Toggle pToggle = arrToggle[i];
 
-            bool bParseSuccess = true;
-
-            if (bParseSuccess == false)
-                continue;
-
             UnityEngine.Events.UnityAction<bool> pAction = (bool bIsOn) =>
             {
                 pOwner.SendMessage(nameof(IHas_UIToggle.IHas_UIToggle_OnToggle), new UIToggleMessage(pToggle, bIsOn), SendMessageOptions.DontRequireReceiver);
@@ -146,9 +142,9 @@ public static class SCUIElementEventHelper
         }
     }
 
-    private static void Parsing_NameToEnum(System.Type pType_EnumButtonName, Component pButton, out bool bParseSuccess, out object pEnum)
+    private static bool TryParsing_NameToEnum(System.Type pType_EnumButtonName, Component pButton, out object pEnum)
     {
-        bParseSuccess = true;
+        bool bResult = true;
         pEnum = null;
         if (pType_EnumButtonName.IsEnum)
         {
@@ -158,11 +154,12 @@ public static class SCUIElementEventHelper
             }
             catch
             {
-                bParseSuccess = false;
+                bResult = false;
             }
         }
         else
             pEnum = pButton.name;
-    }
 
+        return bResult;
+    }
 }

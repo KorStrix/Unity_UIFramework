@@ -18,7 +18,7 @@ using UnityEngine.UI;
 using System.Linq;
 
 /// <summary>
-/// <see cref="Button"/>을 관리해주는 Interface입니다.
+/// <see cref="Button"/>을 관리해주는 Interface입니다
 /// </summary>
 /// <typeparam name="Enum_ButtonName">버튼 이름이 담긴 Enum 타입</typeparam>
 public interface IHas_UIButton<Enum_ButtonName>

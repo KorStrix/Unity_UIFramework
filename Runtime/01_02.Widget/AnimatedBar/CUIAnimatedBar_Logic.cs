@@ -18,7 +18,14 @@ namespace UIFramework
 {
     public enum EAnimatedBarLogicName
     {
+        /// <summary>
+        /// 바가 깜빡이는 로직
+        /// </summary>
         AnimatedBarLogic_Blink_Image,
+
+        /// <summary>
+        /// 증가, 감소를 스무스하게 연출해주는 로직
+        /// </summary>
         AnimatedBarLogic_Shirink,
     }
 

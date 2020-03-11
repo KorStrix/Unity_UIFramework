@@ -29,9 +29,19 @@ namespace UIFramework
         {
             None,
 
+            /// <summary>
+            /// 증가했을 때
+            /// </summary>
             Increase = 1 << 0,
+
+            /// <summary>
+            /// 감소했을 때
+            /// </summary>
             Decrease = 1 << 1,
 
+            /// <summary>
+            /// 증가 및 감소 둘다 해당됐을 때
+            /// </summary>
             Both = Increase + Decrease,
         }
 
@@ -60,7 +70,7 @@ namespace UIFramework
          * 외부 객체가 호출(For External class call)*/
 
         /// <summary>
-        /// 동작할 Logic을 Add합니다. 로직은 namespace UIFramework.AnimatedBarLogic를 참고바랍니다.
+        /// 동작할 Logic을 Add합니다. 로직은 namespace <see cref="IAnimatedBarLogic"/>를 참고바랍니다.
         /// </summary>
         public void DoInit(AnimatedBarLogicFactory pLogicFactory)
         {

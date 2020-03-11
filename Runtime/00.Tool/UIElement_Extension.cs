@@ -199,6 +199,7 @@ public static class UIElement_Extension
 
     static private IEnumerator TweenSlider(System.Action<float> OnChangeValue, float fValueStart, float fValueDest, float fDuration)
     {
+        // 진행도
         float fProgress_0_1 = 0f;
         while (fProgress_0_1 < 1f)
         {
@@ -208,6 +209,7 @@ public static class UIElement_Extension
             yield return null;
         }
 
+        // 마지막에 목적값?을 대입해줍니다.
         OnChangeValue(fValueDest);
     }
 

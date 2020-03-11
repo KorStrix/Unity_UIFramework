@@ -38,6 +38,12 @@ namespace UIFramework
             Awake();
         }
 
+        public void EventAwake_Force()
+        {
+            bIsExecute_Awake = false;
+            Awake();
+        }
+
         // ========================================================================== //
 
         /* protected - [Override & Unity API]       */

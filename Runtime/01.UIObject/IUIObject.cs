@@ -19,6 +19,11 @@ public enum EUIObjectState
     Error = -1,
 
     /// <summary>
+    /// 인스턴스 생성중
+    /// </summary>
+    Creating,
+
+    /// <summary>
     /// Show Coroutine 플레이 직전
     /// </summary>
     Process_Before_ShowCoroutine,

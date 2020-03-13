@@ -278,9 +278,9 @@ namespace StrixLibrary_Test
         }
 
         [UnityTest]
-        public IEnumerator ICanvas_MultiplePopup_Test()
+        public IEnumerator 캔버스매니져의_ShowMuiple함수는_인스턴스여러개를_띄울수있습니다()
         {
-            Debug.Log(nameof(ICanvas_MultiplePopup_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
+            Debug.Log(nameof(캔버스매니져의_ShowMuiple함수는_인스턴스여러개를_띄울수있습니다).ConvertRichText_SetColor(EColor_ForRichText.red));
 
             CanvasManager_Example.DoDestroy_Manager(true);
             Assert.AreEqual(UICommandHandle<Canvas_ForTest>.iInstanceCount, 0);
@@ -338,14 +338,22 @@ namespace StrixLibrary_Test
         public IEnumerator CanvasManager_Destroy_And_Init_Loop()
         {
             Debug.Log(nameof(ICanvas_GetShowedPopup_And_AllHide_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
-            
+
+
+            // Arrange
             DoDestroy_Manager(true);
             Assert.IsNull(_instance);
             Assert.IsTrue(_instance.IsNull());
 
             int iMultipleOpenCount = Random.Range(10, 20);
+
+            
+            // Act
             yield return MultiplePopup_ShowHideTest(iMultipleOpenCount, 2, false);
 
+            
+            
+            // Assert
             Assert.AreEqual(GetAlreadyShow_CanvasList().Count, iMultipleOpenCount);
 
             DoDestroy_Manager(false);
@@ -354,6 +362,24 @@ namespace StrixLibrary_Test
 
             yield break;
         }
+
+        [UnityTest]
+        public IEnumerator 캔버스매니져의_Show함수는_인스턴스한개만_띄워야합니다()
+        {
+            // Arrange
+            var pHandle = DoShowOnly(ECanvasName.Single);
+            var pHandle2 = DoShowOnly(ECanvasName.Single);
+
+            // Act
+            yield return pHandle.Yield_WaitForSetUIObject();
+            yield return pHandle.Yield_WaitForSetUIObject();
+
+            // Assert
+            Assert.AreEqual(pHandle.pUIObject, pHandle2.pUIObject);
+
+            yield break;
+        }
+
 
         // ================================================================================================================
 
@@ -365,7 +391,7 @@ namespace StrixLibrary_Test
             {
                 int iWaitFrameCount = i % iMaxFrame;
 
-                var pHandle = CanvasManager_Example.DoShow_Multiple<Canvas_ForTest>(CanvasManager_Example.ECanvasName.Single).
+                var pHandle = DoShow_Multiple<Canvas_ForTest>(ECanvasName.Single).
                     Set_OnBeforeShow(x => x.DoSetWaitFrameCount(iWaitFrameCount));
 
                 listCommandHandle.Add(pHandle);

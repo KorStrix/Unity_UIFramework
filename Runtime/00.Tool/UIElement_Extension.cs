@@ -21,6 +21,15 @@ public static class UIElement_Extension
     delegate T GetLerp<T>(T iNumberStart, T iNumberDest, float fProgress_0_1);
     public delegate string ToString<T>(T iNumber, string strFormat_Or_Null);
 
+    /// <summary>
+    /// Text컴포넌트에서 어떤 텍스트 애니메이션을 실행시키기 용도
+    /// <para>예시) 숫자 1에서 10까지 천천히 올리고 싶을 때 사용</para>
+    /// </summary>
+    /// <param name="pCoroutineExecuter">코루틴 실행자</param>
+    /// <param name="iNumberStart">시작 숫자</param>
+    /// <param name="iNumberDest"></param>
+    /// <param name="fDuration"></param>
+    /// <returns></returns>
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration)
     {
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Int, ToString_Int_NotUseFormat));
@@ -87,6 +96,17 @@ public static class UIElement_Extension
     }
 
 
+    /// <summary>
+    /// 텍스트 애니메이션
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="pText">애니메이션 타겟</param>
+    /// <param name="iNumberStart">시작 숫자</param>
+    /// <param name="iNumberDest">끝 숫자</param>
+    /// <param name="fDuration">애니메이션 총 걸리는 시간</param>
+    /// <param name="strFormat">텍스트를 출력할 포멧</param>
+    /// <param name="GetLerp">보간 로직</param>
+    /// <param name="ToString">텍스트 출력 함수</param>
     static private IEnumerator TweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fDuration, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
     {
         float fProgress_0_1 = 0f;
@@ -102,8 +122,23 @@ public static class UIElement_Extension
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="pText"></param>
+    /// <param name="iNumberStart"></param>
+    /// <param name="iNumberDest"></param>
+    /// <param name="fSeekPos_0_1"></param>
+    /// <param name="strFormat"></param>
+    /// <param name="GetLerp"></param>
+    /// <param name="ToString"></param>
     static private void SeekTweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fSeekPos_0_1, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
     {
+        int iVAlue = 1000;
+        iVAlue.ToString(); // =1000
+        iVAlue.ToString("n0");  //=1,000
+
         pText.text = ToString(GetLerp(iNumberStart, iNumberDest, fSeekPos_0_1), strFormat);
     }
 

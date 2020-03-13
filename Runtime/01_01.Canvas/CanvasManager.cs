@@ -22,7 +22,7 @@ namespace UIFramework
     {
         /* const & readonly declaration             */
 
-        static readonly bool const_bIsDebug = true;
+        static readonly bool const_bIsDebug = false;
 
         /* enum & struct declaration                */
 

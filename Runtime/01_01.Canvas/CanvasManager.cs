@@ -980,7 +980,8 @@ namespace UIFramework
             if (_mapWrapper.ContainsKey(pWrapper.eName))
                 _mapWrapper[pWrapper.eName].Remove(pWrapper);
 
-            _mapWrapper_Key_Is_Instance.Remove(pWrapper.pInstance);
+            if(pWrapper.pInstance != null)
+                _mapWrapper_Key_Is_Instance.Remove(pWrapper.pInstance);
 
             _pWrapperPool.DoPush(pWrapper);
         }

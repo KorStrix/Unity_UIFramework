@@ -5,8 +5,9 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-namespace StrixLibrary_Test
+namespace UIFramework_Test
 {
+    [Category("UIFramework")]
     public class UIElementExtension_Tester
     {
         [UnityTest]
@@ -20,7 +21,7 @@ namespace StrixLibrary_Test
 
             pText.text = iStartNumber.ToString();
 
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 float fSeek_0_1 = Random.Range(0.01f, 0.9f);
                 pText.DoSeekTween(iStartNumber, iDestNumber, fSeek_0_1);

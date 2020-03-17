@@ -10,10 +10,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UIFramework;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
+
 
 /// <summary>
 /// 관리받는(관리자(<see cref="IUIManager"/>가 있는) <see cref="IUIObject"/> 
@@ -30,11 +33,6 @@ public interface ICanvas : IUIObject, IUIObject_Managed
 {
     // UIWidgetContainer pWidgetContainer { get; }
 }
-
-//public class UIWidgetContainer
-//{
-
-//}
 
 static public class ICanvasHelper
 {

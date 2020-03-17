@@ -7,8 +7,9 @@ using NUnit.Framework;
 using UIFramework;
 using System.Linq;
 
-namespace StrixLibrary_Test
+namespace UIFramework_Test
 {
+    [Category("UIFramework")]
     public class Inventory_Tester
     {
         const int const_iTestSlotCount = 5;
@@ -18,7 +19,7 @@ namespace StrixLibrary_Test
         {
             GameObject pObjectInventory = new GameObject(nameof(Inventory_Test));
 
-            for(int i = 0; i < const_iTestSlotCount; i++)
+            for (int i = 0; i < const_iTestSlotCount; i++)
             {
                 InventorySlot pSlot = new GameObject($"{nameof(InventorySlot)}_{i + 1}").AddComponent<InventorySlot>();
                 pSlot.transform.SetParent(pObjectInventory.transform);

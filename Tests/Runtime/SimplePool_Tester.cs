@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-namespace StrixLibrary_Test
+namespace UIFramework_Test
 {
-    [Category("StrixLibrary")]
+    [Category("UIFramework")]
     public class SimplePool_Tester
     {
         public class TestObject
@@ -57,7 +57,7 @@ namespace StrixLibrary_Test
                 OnCreateItem: iCount => new TestObject(iCount),
                 OnDestroyItem: (pTestObject) => pTestObject.OnDestroy(),
                 iPrePoolCount: iMaxPoolCount);
-                
+
 
             Assert.AreEqual(pPool.iAllInstanceCount, iMaxPoolCount);
             Assert.AreEqual(pPool.iUsedInstanceCount, 0);

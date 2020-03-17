@@ -9,18 +9,22 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UIFramework;
 
-/// <summary>
-/// <see cref="ICanvas"/> 제외하고, 고유한 객체로 동작하는 작은 UI Object
-/// <para>예시) <see cref="CUIAnimatedBar"/></para>
-/// </summary>
-public interface IUIWidget : IUIObject
+namespace UIFramework
 {
-    void IUIWidget_OnBeforeShow();
-}
+    /// <summary>
+    /// <see cref="ICanvas"/> 제외하고, 고유한 객체로 동작하는 작은 UI Object
+    /// <para>예시) <see cref="CUIAnimatedBar"/></para>
+    /// </summary>
+    public interface IUIWidget : IUIObject
+    {
+        void IUIWidget_OnBeforeShow();
+    }
 
-public interface IUIWidget_Managed : IUIWidget, IUIObject_Managed
-{
+    public interface IUIWidget_Managed : IUIWidget, IUIObject_Managed
+    {
+    }
 }
 
 

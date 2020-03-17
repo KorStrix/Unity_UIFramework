@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-namespace StrixLibrary_Test
+namespace UIFramework_Test
 {
     /// <summary>
     /// 버튼을 가지고 있는 테스트용 Monobehaviour
@@ -49,7 +49,7 @@ namespace StrixLibrary_Test
         }
     }
 
-    [Category("StrixLibrary")]
+    [Category("UIFramework")]
     public class UIElementHelper_Tester : MonoBehaviour
     {
         [Test]
@@ -142,5 +142,4 @@ namespace StrixLibrary_Test
             Assert.AreEqual(pTestScript.eLastClickToggle, HasToggle_TestObject.EToggleObjectName.ToggleB);
         }
     }
-
 }

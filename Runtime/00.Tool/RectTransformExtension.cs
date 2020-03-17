@@ -256,26 +256,6 @@ public static class RectTransformExtensions
     }
 
     /// <summary>
-    /// 오브젝트가 파괴되었는지 null인지 확실하게 체크, 비용이 무겁습니다
-    /// </summary>
-    public static bool IsNull(this IUIObjectBase pObject)
-    {
-        MonoBehaviour pMono = pObject as MonoBehaviour;
-        if (pObject is MonoBehaviour)
-            return pMono == null || ReferenceEquals(pMono, null) || pMono.gameObject.IsNull();
-        else
-            return pObject == null || ReferenceEquals(pObject, null) || pObject.gameObject.IsNull();
-    }
-
-    /// <summary>
-    /// 오브젝트가 파괴되었는지 null인지 확실하게 체크, 비용이 무겁습니다
-    /// </summary>
-    static bool IsNull(this GameObject gameObject)
-    {
-        return gameObject == null || ReferenceEquals(gameObject, null);
-    }
-
-    /// <summary>
     /// UI에 있는 오브젝트를 월드 위치로 변환합니다.
     /// </summary>
     /// <param name="pTarget">변환할 UI 오브젝트</param>

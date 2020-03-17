@@ -9,6 +9,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UIFramework;
 
 /// <summary>
 /// Owner Canvas가 없는 Widget를 관리하는 관리자

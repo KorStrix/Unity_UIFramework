@@ -41,7 +41,7 @@ public class UICommandHandle<T> : System.IDisposable
 
 
 
-    public System.Action<T> OnBeforeShow;
+    public event System.Action<T> OnBeforeShow;
 
     public delegate IEnumerator delOnChecking_IsShow(System.Action<bool> OnCheck_IsShow);
     public delOnChecking_IsShow OnChecking_IsShow;
@@ -121,11 +121,6 @@ public class UICommandHandle<T> : System.IDisposable
         ReturnInstance(this);
     }
 
-    public void Event_OnDisable()
-    {
-        bIsDisable = true;
-    }
-
     public IEnumerator Yield_WaitForSetUIObject()
     {
         while (pUIObject == null)
@@ -137,14 +132,6 @@ public class UICommandHandle<T> : System.IDisposable
     public IEnumerator Yield_WaitForAnimation()
     {
         while (bIsFinish_Animation == false)
-        {
-            yield return null;
-        }
-    }
-
-    public IEnumerator Yield_WaitForDisable()
-    {
-        while (bIsDisable == false)
         {
             yield return null;
         }
@@ -174,7 +161,8 @@ public static class UICommandHandleHelper
         if (pHandle.bIsExecute_BeforeShow)
             OnBeforeShow(pHandle.pUIObject);
         else
-            pHandle.OnBeforeShow = OnBeforeShow;
+            pHandle.OnBeforeShow += OnBeforeShow;
+
         return pHandle;
     }
 

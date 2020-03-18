@@ -722,7 +722,7 @@ namespace UIFramework
 
             yield return Execute_ManagerLogicCoroutine(EUIObjectState.Disable, pWrapper);
 
-            DisableWrapper(pWrapper, sUICommandHandle);
+            DisableWrapper(pWrapper);
         }
 
         virtual protected void Process_Hide<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
@@ -749,7 +749,7 @@ namespace UIFramework
 
             Execute_ManagerUndoLogic(EUIObjectState.Disable, pWrapper);
 
-            DisableWrapper(pWrapper, sUICommandHandle);
+            DisableWrapper(pWrapper);
         }
 
 
@@ -813,14 +813,11 @@ namespace UIFramework
             pUICommandHandle.Set_UIObject(pWrapper.pInstance as T);
         }
 
-        private void DisableWrapper<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle) where CLASS_DRIVEN_CANVAS : IUIObject
+        private void DisableWrapper(CanvasWrapper pWrapper)
         {
             pWrapper.DoSet_State_Is_Disable_Force();
             if (Check_Wrapper_IsNull(pWrapper))
-            {
-                sUICommandHandle.Event_OnDisable();
                 RemoveWrapper(pWrapper);
-            }
         }
 
         private static UICommandHandle<CLASS_DRIVEN_CANVAS> GetCommandHandle<CLASS_DRIVEN_CANVAS>(CLASS_DRIVEN_CANVAS pInstance_OrNull) where CLASS_DRIVEN_CANVAS : IUIObject

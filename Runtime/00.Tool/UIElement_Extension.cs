@@ -283,30 +283,24 @@ public static class UIElement_Extension
         RectTransform mScrollTransform = pScroll.GetComponent<RectTransform>();
         RectTransform mContent = pScroll.content;
 
-        // Item is here
-        var itemCenterPositionInScroll = GetWorldPointInWidget(mScrollTransform, GetWidgetWorldPoint(pCenterItem));
-        // But must be here
-        var targetPositionInScroll = GetWorldPointInWidget(mScrollTransform, GetWidgetWorldPoint(pScrollMask));
-        // So it has to move this distance
-        var difference = targetPositionInScroll - itemCenterPositionInScroll;
-        difference.z = 0f;
+        Vector2 vecTargetItemPos = GetWorldPoint_InWidget(mScrollTransform, GetWorldPoint(pCenterItem));
+        Vector2 vecScrollCenterPos = GetWorldPoint_InWidget(mScrollTransform, GetWorldPoint(pScrollMask));
+        Vector2 fTargetDistance = vecScrollCenterPos - vecTargetItemPos;
 
-        //clear axis data that is not enabled in the scrollrect
-        if (!pScroll.horizontal)
-        {
-            difference.x = 0f;
-        }
-        if (!pScroll.vertical)
-        {
-            difference.y = 0f;
-        }
+        if (pScroll.horizontal == false)
+            fTargetDistance.x = 0f;
+
+        if (pScroll.vertical == false)
+            fTargetDistance.y = 0f;
+
+        Vector3 vecSizeOffset = mContent.rect.size - mScrollTransform.rect.size;
 
         var normalizedDifference = new Vector2(
-            difference.x / (mContent.rect.size.x - mScrollTransform.rect.size.x),
-            difference.y / (mContent.rect.size.y - mScrollTransform.rect.size.y));
+            fTargetDistance.x / vecSizeOffset.x,
+            fTargetDistance.y / vecSizeOffset.y);
 
         var newNormalizedPosition = pScroll.normalizedPosition - normalizedDifference;
-        if (pScroll.movementType != ScrollRect.MovementType.Unrestricted)
+        // if (pScroll.movementType != ScrollRect.MovementType.Unrestricted)
         {
             newNormalizedPosition.x = Mathf.Clamp01(newNormalizedPosition.x);
             newNormalizedPosition.y = Mathf.Clamp01(newNormalizedPosition.y);
@@ -315,18 +309,18 @@ public static class UIElement_Extension
         return newNormalizedPosition;
     }
 
-    static private Vector3 GetWidgetWorldPoint(RectTransform target)
+    static private Vector3 GetWorldPoint(RectTransform target)
     {
         //pivot position + item size has to be included
         var pivotOffset = new Vector3(
             (0.5f - target.pivot.x) * target.rect.size.x,
-            (0.5f - target.pivot.y) * target.rect.size.y,
-            0f);
+            (0.5f - target.pivot.y) * target.rect.size.y);
+
         var localPosition = target.localPosition + pivotOffset;
         return target.parent.TransformPoint(localPosition);
     }
 
-    static private Vector3 GetWorldPointInWidget(RectTransform target, Vector3 worldPoint)
+    static private Vector3 GetWorldPoint_InWidget(RectTransform target, Vector3 worldPoint)
     {
         return target.InverseTransformPoint(worldPoint);
     }

@@ -98,7 +98,7 @@ namespace UIFramework
             var pMask = GetComponentInChildren<Mask>();
             pMaskTransform = pMask?.rectTransform;
             if (pMaskTransform == null)
-                pMaskTransform = content;
+                pMaskTransform = content.parent as RectTransform;
 
             DoUpdateScrollItemList();
         }

@@ -297,8 +297,9 @@ namespace UIFramework_Test
             }
 
             [UnityTest]
-            public IEnumerator UndoLogic_WaitForSecond()
+            public IEnumerator 캔버스의_Undologic_기능테스트_YieldSecond()
             {
+                // Arrange
                 // 이걸 안하면 테스트를 동시에 여러번 했을 때 
                 // 인스턴스가 이미 있기 때문에 OnInit_ManagerLogic을 호출하지 않습니다.
                 CanvasManager_ForLogicTest.DoDestroy_Manager(true);
@@ -306,6 +307,9 @@ namespace UIFramework_Test
                 float fWaitSecond = Random.Range(0.1f, 0.2f);
                 float fWaitSecond_Undo = Random.Range(0.1f, 0.2f);
 
+
+
+                // Action
                 // 로직은 실행되면 Canvas의 원래 값에 어떠한 값을 더하고,
                 // 로직을 취소할 경우 원래값으로 복구합니다.
                 CanvasManagerLogicFactory pLogicFactory = new CanvasManagerLogicFactory();
@@ -319,9 +323,11 @@ namespace UIFramework_Test
                 yield return pHandle_Show.Yield_WaitForAnimation();
                 pWatch.Stop();
 
+                float fTimeOffset = (Time.deltaTime * 2f);
+
                 // 기다렸는지 체크하는 로직은
                 // 실제 기다리는 시간을 지정한 시간의 +- 오차 time.DeltaTime이면 True
-                Assert.Greater(pWatch.Elapsed.TotalSeconds, fWaitSecond - Time.deltaTime);
+                Assert.Greater(pWatch.Elapsed.TotalSeconds, fWaitSecond - fTimeOffset);
                 // Assert.Less(pWatch.Elapsed.TotalSeconds, fWaitSecond + Time.deltaTime);
 
                 pWatch.Reset();
@@ -330,7 +336,7 @@ namespace UIFramework_Test
                 yield return pHandle_Hide.Yield_WaitForAnimation();
                 pWatch.Stop();
 
-                Assert.Greater(pWatch.Elapsed.TotalSeconds, fWaitSecond_Undo - Time.deltaTime);
+                Assert.Greater(pWatch.Elapsed.TotalSeconds, fWaitSecond_Undo - fTimeOffset);
                 // Assert.Less(pWatch.Elapsed.TotalSeconds, fWaitSecond + Time.deltaTime);
             }
 

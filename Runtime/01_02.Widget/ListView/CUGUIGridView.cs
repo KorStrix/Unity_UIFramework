@@ -51,6 +51,9 @@ public class CUGUIGridView : UIBehaviour, ICollectionView /*, ICanvasElement, IL
 
     public void ICollectionView_UpdateItem(int iItemCount)
     {
+        if (_pPool == null)
+            return;
+
         while (_listChildrenObject.Count < iItemCount)
         {
             GameObject pObjectCopy = _pPool.DoPop();

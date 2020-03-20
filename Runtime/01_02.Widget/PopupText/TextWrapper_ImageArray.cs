@@ -15,7 +15,7 @@ using UnityEngine.UI;
 namespace UIFramework
 {
     /// <summary>
-    /// 
+    /// char를 Image로 변환, 사용하려면 <see cref="DoInit_Converter"/> 필요합니다.
     /// </summary>
     public class TextWrapper_ImageArray : UIWidgetObjectBase, ITextWrapperComponent
     {
@@ -30,12 +30,18 @@ namespace UIFramework
             get => _strText_LastValue;
             set
             {
+                if(_OnConvert_Char_To_Sprite == null)
+                {
+                    Debug.LogError($"{name} - Require Init", this);
+                    return;
+                }
+
                 for (int i = 0; i < _arrImage.Length; i++)
                     _arrImage[i].gameObject.SetActive(false);
 
                 if (_arrImage.Length < value.Length)
                 {
-                    Debug.LogError($"_arrImage.Length({_arrImage.Length}) < value.Length({value.Length})");
+                    Debug.LogError($"{name} - _arrImage.Length({_arrImage.Length}) < value.Length({value.Length})", this);
                     return;
                 }
 
@@ -77,7 +83,7 @@ namespace UIFramework
             base.OnAwake();
 
             _arrImage = GetComponentsInChildren<Image>();
-            strText = "";
+            _strText_LastValue = "";
         }
 
         /* protected - [abstract & virtual]         */

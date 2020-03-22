@@ -202,9 +202,20 @@ namespace UIFramework
             _mapSlot_ByDataKey.Clear();
         }
 
-        public void Event_Set_SelectedSlot_IsNull(PointerEventData pPointerEvent)
+        public void DoClearEvent_OnClickSlot()
         {
-            OnClickedSlot(null, pPointerEvent);
+            OnClick_Slot = null;
+        }
+
+        public void DoClearEvent_OnDragEndSlot()
+        {
+            OnDragEnd_Slot = null;
+        }
+
+
+        public void Event_Notify_OnClickSlot(InventorySlot pSlot, PointerEventData pPointerEvent)
+        {
+            OnClickedSlot(pSlot, pPointerEvent);
         }
 
         // ========================================================================== //

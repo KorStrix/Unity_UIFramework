@@ -198,11 +198,14 @@ namespace UIFramework
         public void OnPointerClick(PointerEventData eventData) { OnClickedSlot?.Invoke(this, eventData); }
         public void OnPointerEnter(PointerEventData eventData) { OnHoverSlot?.Invoke(this, eventData); }
 
-        public void OnBeginDrag(PointerEventData eventData) { OnDragBeginSlot?.Invoke(this, eventData); }
-        public void OnDrag(PointerEventData eventData) { OnDragSlot?.Invoke(this, eventData); }
+        public void OnBeginDrag(PointerEventData eventData) { if (bIsDragAble) OnDragBeginSlot?.Invoke(this, eventData); }
+        public void OnDrag(PointerEventData eventData) { if(bIsDragAble) OnDragSlot?.Invoke(this, eventData); }
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (bIsDragAble == false)
+                return;
+
             EventSystem.current.RaycastAll(eventData, g_listHit);
             for (int i = 0; i < g_listHit.Count; i++)
             {

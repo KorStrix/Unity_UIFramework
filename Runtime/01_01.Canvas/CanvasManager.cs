@@ -682,8 +682,9 @@ namespace UIFramework
 
             OnShow_BeforeAnimation(pWrapper.eName, pWrapper.pInstance);
 
-            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_ShowCoroutine, pWrapper);
+            // BeforeShow만 Handle 이벤트를 임시로 CanvasManager Logic 전에 호출
             sUICommandHandle.Event_OnBeforeShow();
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_ShowCoroutine, pWrapper);
 
             Canvas pCanvas = GetParentCavnas(pWrapper.eName, pWrapper.pInstance);
             yield return pWrapper.DoExecute_ShowCoroutine(pCanvas, sUICommandHandle);

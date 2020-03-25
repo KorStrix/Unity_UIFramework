@@ -10,14 +10,14 @@ using System.Linq;
 namespace UIFramework_Test
 {
     [Category("UIFramework")]
-    public class Inventory_Tester
+    public class 인벤토리_테스터
     {
         const int const_iTestSlotCount = 5;
 
         [Test]
-        public void Inventory_Test()
+        public void 인벤토리_간단한테스트()
         {
-            GameObject pObjectInventory = new GameObject(nameof(Inventory_Test));
+            GameObject pObjectInventory = new GameObject(nameof(인벤토리_간단한테스트));
 
             for (int i = 0; i < const_iTestSlotCount; i++)
             {

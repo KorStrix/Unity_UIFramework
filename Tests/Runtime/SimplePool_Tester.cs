@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace UIFramework_Test
 {
     [Category("UIFramework")]
-    public class SimplePool_Tester
+    public class 심플풀_테스터
     {
         public class TestObject
         {
@@ -47,7 +47,7 @@ namespace UIFramework_Test
         }
 
         [Test]
-        public void SimplePool_Working_Test()
+        public void 심플풀_동작테스트()
         {
             int iMaxPoolCount = 10;
 

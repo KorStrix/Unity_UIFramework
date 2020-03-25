@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,14 +10,14 @@ using System.Linq;
 namespace UIFramework_Test
 {
     [Category("UIFramework")]
-    public class ÀÎº¥Åä¸®_Å×½ºÅÍ
+    public class ì¸ë²¤í† ë¦¬_í…ŒìŠ¤í„°
     {
         const int const_iTestSlotCount = 5;
 
         [Test]
-        public void ÀÎº¥Åä¸®_°£´ÜÇÑÅ×½ºÆ®()
+        public void ì¸ë²¤í† ë¦¬_ê°„ë‹¨í•œí…ŒìŠ¤íŠ¸()
         {
-            GameObject pObjectInventory = new GameObject(nameof(ÀÎº¥Åä¸®_°£´ÜÇÑÅ×½ºÆ®));
+            GameObject pObjectInventory = new GameObject(nameof(ì¸ë²¤í† ë¦¬_ê°„ë‹¨í•œí…ŒìŠ¤íŠ¸));
 
             for (int i = 0; i < const_iTestSlotCount; i++)
             {

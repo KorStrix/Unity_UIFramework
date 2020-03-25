@@ -1,45 +1,28 @@
-name: Actions 😎
+# This is a basic workflow to help you get started with Actions
 
+name: Copy To Test Project Repo
+
+# Controls when the action will run. Triggers the workflow on push or pull request 
+# events but only for the master branch
 on:
   pull_request: {}
   push: { branches: [master] }
 
-env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
-    name: Build my project ✨
+  copy:
     runs-on: ubuntu-latest
     steps:
-    
-      # Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-    
-      # Cache
-      - uses: actions/cache@v1.1.0
-        with:
-          path: Library
-          key: Library
-
-      # Test
-      - name: Run tests
-        uses: webbertakken/unity-test-runner@v1.3
-        with:
-          unityVersion: 2019.2.11f1
-
-      # Build
-      - name: Build project
-        uses: webbertakken/unity-builder@v0.10
-        with:
-          unityVersion: 2019.2.11f1
-          targetPlatform: WebGL 
-
-      # Output 
-      - uses: actions/upload-artifact@v1
-        with:
-          name: Build
-          path: build
+    - name: Copycat
+      uses: andstor/copycat-action@v3
+      with:
+        personal_token: ${{ secrets.PERSONAL_TOKEN }}
+        src_path: /.
+        dst_path: /UnityProject/Packages/Unity_UIFramework/
+        dst_owner: KorStrix
+        dst_repo_name: Unity_UnitTestTester
+        dst_branch: master
+        clean: true
+        src_branch: master
+        username: KorStrixCI
+        exclude: .*

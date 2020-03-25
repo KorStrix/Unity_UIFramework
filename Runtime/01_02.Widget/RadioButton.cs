@@ -133,7 +133,7 @@ namespace UIFramework
 
             _mapOnStateActive = listActiveObject_OnClicked.
                 GroupBy(p => p.bPressed).
-                ToDictionary(x => x.Key, y => y.Select(z => z.pObject).ToList());
+                ToDictionary(x => x.Key, y => y.Where(z => z.pObject != null).Select(z => z.pObject).ToList());
         }
 
         protected override void DoStateTransition(SelectionState state, bool instant)

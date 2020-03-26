@@ -32,46 +32,100 @@ public static class UIElement_Extension
     /// <returns></returns>
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Int, ToString_Int_NotUseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration, string strNumberFormat)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strNumberFormat, GetLerp_Int, ToString_Int_UseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration, ToString<int> OnTextResult)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Int, OnTextResult));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Long, ToString_Long_NotUseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration, string strNumberFormat)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strNumberFormat, GetLerp_Long, ToString_Long_UseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration, ToString<long> OnTextResult)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Long, OnTextResult));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, null, GetLerp_Float, ToString_Float_NotUseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration, string strNumberFormat)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, strNumberFormat, GetLerp_Float, ToString_Float_UseFormat));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration, ToString<float> OnTextResult)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, null, GetLerp_Float, OnTextResult));
     }
 
@@ -175,11 +229,23 @@ public static class UIElement_Extension
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fDuration)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fDuration, OnCalculateProgress_Duration));
     }
 
     static public Coroutine DoPlayTween_BySpeed(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fSpeed)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fSpeed, OnCalculateProgress_Speed));
     }
 
@@ -219,11 +285,23 @@ public static class UIElement_Extension
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Slider pSlider, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenSlider((fValue) => pSlider.value = fValue, fValueStart, fValueDest, fDuration));
     }
 
     static public Coroutine DoPlayTween(this UnityEngine.UI.Image pImage, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
     {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
         return pCoroutineExecuter.StartCoroutine(TweenSlider((fValue) => pImage.fillAmount = fValue, fValueStart, fValueDest, fDuration));
     }
 

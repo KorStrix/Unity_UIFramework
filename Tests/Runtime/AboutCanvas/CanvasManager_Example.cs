@@ -29,7 +29,7 @@ namespace UIFramework_Test
                 SecondSingle,
             }
 
-            protected override IEnumerator OnCreate_Instance(ECanvasName eName, System.Action<ICanvas> OnFinishCreate)
+            protected override IEnumerator OnCreate_Instance(ECanvasName eName, bool bIsMultiple, System.Action<ICanvas> OnFinishCreate)
             {
                 switch (eName)
                 {

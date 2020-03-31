@@ -602,7 +602,7 @@ namespace UIFramework
         /// <para> 컨테이너의 인스턴스가 없는 경우에만 호출됩니다. </para> 
         /// </summary>
         /// <param name="eName">인스턴스를 만들 팝업 이름 Enum</param>
-        abstract protected IEnumerator OnCreate_Instance(ENUM_CANVAS_NAME eName, System.Action<ICanvas> OnFinish);
+        abstract protected IEnumerator OnCreate_Instance(ENUM_CANVAS_NAME eName, bool bIsMultiple, System.Action<ICanvas> OnFinish);
 
         /// <summary>
         /// 인스턴스에 알맞는 캔버스를 얻어오는 방법을 구현합니다.
@@ -754,13 +754,13 @@ namespace UIFramework
         }
 
 
-        IEnumerator Process_CreateInstance<T>(ENUM_CANVAS_NAME eName, CanvasWrapper pWrapper, bool bCreateInstance, UICommandHandle<T> pUICommandHandle)
+        IEnumerator Process_CreateInstance<T>(ENUM_CANVAS_NAME eName, CanvasWrapper pWrapper, bool bCreateInstance, bool bIsMultiple, UICommandHandle<T> pUICommandHandle)
             where T : class, ICanvas
         {
             if (bCreateInstance)
             {
                 ICanvas pInstance = null;
-                yield return OnCreate_Instance(eName,
+                yield return OnCreate_Instance(eName, bIsMultiple,
                     (ICanvas pCanvas) =>
                     {
                         if (pCanvas.IsNull())
@@ -836,7 +836,7 @@ namespace UIFramework
         {
             CanvasWrapper pWrapper;
             bool bIsCreateInstance = Check_IsCreateInstance(eName, bIsMultiple, pHandle, out pWrapper);
-            StartCoroutine(Process_CreateInstance(eName, pWrapper, bIsCreateInstance, pHandle));
+            StartCoroutine(Process_CreateInstance(eName, pWrapper, bIsCreateInstance, bIsMultiple, pHandle));
 
             return pWrapper;
         }

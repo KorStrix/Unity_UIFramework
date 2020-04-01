@@ -165,7 +165,7 @@ namespace UIFramework
                     _pCamera = Camera.main;
                     _OnSetSlotPos = GetWorld_To_ScreenPoint;
                 }
-                pSlot.OnDragSlot += _OnSetSlotPos;
+                // pSlot.OnDragSlot += _OnSetSlotPos;
 
                 RectTransform pTransformOrigin = pSlot.transform as RectTransform;
                 RectTransform pTransformClone = _pSlotClone.transform as RectTransform;
@@ -185,7 +185,7 @@ namespace UIFramework
 
             public void IInventorySlot_CommandLogic_Undo(InventorySlot pSlot, PointerEventData pPointerEventData)
             {
-                pSlot.OnDragSlot -= _OnSetSlotPos;
+                // pSlot.OnDragSlot -= _OnSetSlotPos;
                 _OnDestroy_CloneSlot(_pSlotClone.gameObject);
             }
 

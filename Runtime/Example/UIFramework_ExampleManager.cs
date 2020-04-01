@@ -69,7 +69,7 @@ namespace UIFramework
         {
         }
 
-        protected override IEnumerator OnCreate_Instance(ECanvas eName, Action<ICanvas> OnFinish)
+        protected override IEnumerator OnCreate_Instance(ECanvas eName, bool bIsMultiple, Action<ICanvas> OnFinish)
         {
             OnFinish(_mapExampleCanvas[eName]);
 

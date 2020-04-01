@@ -44,5 +44,20 @@ public static class UnityFolderPathEditor
     {
         System.Diagnostics.Process.Start(EditorPrefs.GetString("AndroidSdkRoot"));
     }
+
+
+    [MenuItem("Tools/OpenFolder/Open Editor Log")]
+    static public void Open_EditorLog_Path()
+    {
+        string strPath_Unity = Application.persistentDataPath + "/../../../Local/";
+        if (System.IO.Directory.Exists(strPath_Unity))
+        {
+            string strPath = "Unity/Editor/";
+            if (System.IO.Directory.Exists(strPath_Unity + strPath))
+                System.Diagnostics.Process.Start(strPath_Unity + strPath);
+            else
+                System.Diagnostics.Process.Start(strPath_Unity);
+        }
+    }
 }
 #endif

@@ -108,8 +108,8 @@ namespace UIFramework
             {
                 InventorySlot pInventorySlot = _listSlot[i];
                 pInventorySlot.OnClickedSlot -= OnClickedSlot;
-                pInventorySlot.OnDragBeginSlot -= OnDragBeginSlot;
-                pInventorySlot.OnDragEndSlot -= OnDragEndSlot;
+                //pInventorySlot.OnDragBeginSlot -= OnDragBeginSlot;
+                //pInventorySlot.OnDragEndSlot -= OnDragEndSlot;
                 pInventorySlot.OnSwapSlot -= OnSwapSlot;
                 // pInventorySlot.OnChange_SlotData -= OnChange_SlotData;
             }
@@ -120,8 +120,8 @@ namespace UIFramework
             {
                 InventorySlot pInventorySlot = _listSlot[i];
                 pInventorySlot.OnClickedSlot += OnClickedSlot;
-                pInventorySlot.OnDragBeginSlot += OnDragBeginSlot;
-                pInventorySlot.OnDragEndSlot += OnDragEndSlot;
+                //pInventorySlot.OnDragBeginSlot += OnDragBeginSlot;
+                //pInventorySlot.OnDragEndSlot += OnDragEndSlot;
                 pInventorySlot.OnSwapSlot += OnSwapSlot;
                 // pInventorySlot.OnChange_SlotData += OnChange_SlotData;
 

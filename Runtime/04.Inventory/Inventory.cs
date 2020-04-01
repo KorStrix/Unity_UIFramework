@@ -66,6 +66,8 @@ namespace UIFramework
 
         public static HashSet<Inventory> g_setActiveInventory = new HashSet<Inventory>();
 
+        public event System.Action<IInventoryData> OnAddData;
+
         public event System.Action<Inventory_OnChangeSelectSlot_Msg> OnSelected_Slot;
 
         public delegate void delOnSwap_Slot(InventorySlot pStart, InventorySlot pDest);
@@ -78,8 +80,8 @@ namespace UIFramework
         public IUIManager pUIManager { get; set; }
         public InventorySlot pSlotSelected { get; private set; }
 
-        public IEnumerable<InventorySlot> arrSlot => _listSlot;
-        public IEnumerable<IInventoryData> arrData => _listSlot.Where(p => p.pData != null).Select(p => p.pData);
+        public IEnumerable<InventorySlot> arrSlot => _listSlotInstance;
+        public IEnumerable<IInventoryData> arrData => _listSlotInstance.Where(p => p.pData != null).Select(p => p.pData);
 
         [Header("선택한 슬롯을 또 선택하면 선택 해제할지")]
         public bool bPossible_SelectedSlotRelease_OnClick = true;
@@ -93,7 +95,7 @@ namespace UIFramework
 
 
         Dictionary<string, InventorySlot> _mapSlot_ByDataKey = new Dictionary<string, InventorySlot>();
-        List<InventorySlot> _listSlot = new List<InventorySlot>();
+        List<InventorySlot> _listSlotInstance = new List<InventorySlot>();
 
         InventorySlot_StateLogic[] _arrSlotLogic_State = new InventorySlot_StateLogic[0];
         InventorySlot_CommandLogic[] _arrSlotLogic_Command = new InventorySlot_CommandLogic[0];
@@ -104,9 +106,9 @@ namespace UIFramework
 
         public void DoInit_Slot(bool bInclude_Deactive = true)
         {
-            for(int i = 0; i < _listSlot.Count; i++)
+            for(int i = 0; i < _listSlotInstance.Count; i++)
             {
-                InventorySlot pInventorySlot = _listSlot[i];
+                InventorySlot pInventorySlot = _listSlotInstance[i];
                 pInventorySlot.OnClickedSlot -= OnClickedSlot;
                 //pInventorySlot.OnDragBeginSlot -= OnDragBeginSlot;
                 //pInventorySlot.OnDragEndSlot -= OnDragEndSlot;
@@ -114,11 +116,11 @@ namespace UIFramework
                 // pInventorySlot.OnChange_SlotData -= OnChange_SlotData;
             }
 
-            GetComponentsInChildren(bInclude_Deactive, _listSlot);
+            GetComponentsInChildren(bInclude_Deactive, _listSlotInstance);
 
-            for (int i = 0; i < _listSlot.Count; i++)
+            for (int i = 0; i < _listSlotInstance.Count; i++)
             {
-                InventorySlot pInventorySlot = _listSlot[i];
+                InventorySlot pInventorySlot = _listSlotInstance[i];
                 pInventorySlot.OnClickedSlot += OnClickedSlot;
                 //pInventorySlot.OnDragBeginSlot += OnDragBeginSlot;
                 //pInventorySlot.OnDragEndSlot += OnDragEndSlot;
@@ -135,12 +137,12 @@ namespace UIFramework
         public void DoInit_SlotLogic(InventoryLogicFactory pLogicFactory)
         {
             _arrSlotLogic_State = pLogicFactory.list_StateLogic.ToArray();
-            for (int i = 0; i < _listSlot.Count; i++)
-                _listSlot[i].DoInit_SlotStateLogic(_arrSlotLogic_State);
+            for (int i = 0; i < _listSlotInstance.Count; i++)
+                _listSlotInstance[i].DoInit_SlotStateLogic(_arrSlotLogic_State);
 
             _arrSlotLogic_Command = pLogicFactory.list_CommandLogic.ToArray();
-            for (int i = 0; i < _listSlot.Count; i++)
-                _listSlot[i].DoInit_SlotCommandLogic(_arrSlotLogic_Command);
+            for (int i = 0; i < _listSlotInstance.Count; i++)
+                _listSlotInstance[i].DoInit_SlotCommandLogic(_arrSlotLogic_Command);
         }
 
         public void DoAddRangeData(params IInventoryData[] arrData)
@@ -155,9 +157,9 @@ namespace UIFramework
                 }
                 else
                 {
-                    for (int j = 0; j < _listSlot.Count; j++)
+                    for (int j = 0; j < _listSlotInstance.Count; j++)
                     {
-                        pSlot = _listSlot[j];
+                        pSlot = _listSlotInstance[j];
                         if (pSlot.pData == null)
                         {
                             Slot_SetDataNew(pSlot, pData);
@@ -184,9 +186,9 @@ namespace UIFramework
 
         public void DoClearData(bool bClear_OnSelected = true)
         {
-            for (int i = 0; i < _listSlot.Count; i++)
+            for (int i = 0; i < _listSlotInstance.Count; i++)
             {
-                InventorySlot pSlot = _listSlot[i];
+                InventorySlot pSlot = _listSlotInstance[i];
                 if(pSlot.pData != null)
                     Slot_ClearData(pSlot, pSlot.pData.IInventoryData_Key);
                 else
@@ -335,7 +337,7 @@ namespace UIFramework
 
 #if UNITY_EDITOR
         [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(Inventory))]
-        static public void CreateRadioButton(MenuCommand pCommand)
+        static public void CreateInventory(MenuCommand pCommand)
         {
             const float const_fPosX = 120f;
 

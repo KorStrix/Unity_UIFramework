@@ -14,11 +14,12 @@ using System.Collections.Generic;
 
 namespace UIFramework
 {
-
 	/// <summary>
-	/// 
+	/// 일단 Inventory Slot만
+    /// 가로 기준으로 구현
 	/// </summary>
-	public class ScrollGrid : UIWidgetObjectBase
+    [RequireComponent(typeof(Inventory))]
+	public class InventoryLogic_GridSlot : UIWidgetObjectBase
 	{
         /* const & readonly declaration             */
 
@@ -26,32 +27,19 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
-        public int iGridObjectCount;
+        public int iGridSlotCount;
 
-		/* protected & private - Field declaration  */
+        /* protected & private - Field declaration  */
+
+        List<InventorySlot> _listSlotInstance = new List<InventorySlot>();
 
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
 
-
         // ========================================================================== //
 
         /* protected - [Override & Unity API]       */
-
-        #region IEnumerable
-
-        public IEnumerator<InventorySlot> GetEnumerator()
-		{
-			return _listSlot.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _listSlot.GetEnumerator();
-		}
-
-        #endregion
 
         /* protected - [abstract & virtual]         */
 

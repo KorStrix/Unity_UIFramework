@@ -10,7 +10,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace UIFramework
 {
@@ -32,6 +32,7 @@ namespace UIFramework
         /* protected & private - Field declaration  */
 
         List<InventorySlot> _listSlotInstance = new List<InventorySlot>();
+        Inventory _pInventory;
 
         // ========================================================================== //
 
@@ -41,12 +42,35 @@ namespace UIFramework
 
         /* protected - [Override & Unity API]       */
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            _pInventory = GetComponent<Inventory>();
+            _pInventory.OnEmptySlot += Inventory_OnEmptySlot;
+        }
+
         /* protected - [abstract & virtual]         */
 
 
         // ========================================================================== //
 
         #region Private
+
+        private InventorySlot Inventory_OnEmptySlot(InventorySlot pSlotOrigin)
+        {
+            _listSlotInstance.Clear();
+            Transform pTransform_SlotParents = pSlotOrigin.transform.parent;
+
+            for (int i = 0; i < iGridSlotCount; i++)
+            {
+                InventorySlot pSlotCopy = GameObject.Instantiate(pSlotOrigin, pTransform_SlotParents);
+
+                _listSlotInstance.Add(pSlotCopy);
+            }
+
+            return _listSlotInstance.FirstOrDefault();
+        }
 
         #endregion Private
     }

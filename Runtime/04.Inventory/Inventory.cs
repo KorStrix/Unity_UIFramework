@@ -66,8 +66,8 @@ namespace UIFramework
 
         public static HashSet<Inventory> g_setActiveInventory = new HashSet<Inventory>();
 
-        public event System.Action<IInventoryData> OnAddData;
 
+        public event System.Func<InventorySlot, InventorySlot> OnEmptySlot;
         public event System.Action<Inventory_OnChangeSelectSlot_Msg> OnSelected_Slot;
 
         public delegate void delOnSwap_Slot(InventorySlot pStart, InventorySlot pDest);
@@ -100,11 +100,13 @@ namespace UIFramework
         InventorySlot_StateLogic[] _arrSlotLogic_State = new InventorySlot_StateLogic[0];
         InventorySlot_CommandLogic[] _arrSlotLogic_Command = new InventorySlot_CommandLogic[0];
 
+        InventorySlot _pSlot_Origin;
+
         // ========================================================================== //
 
         /* public - [Do~Somthing] Function 	        */
 
-        public void DoInit_Slot(bool bInclude_Deactive = true)
+        public void DoInit_ChildrenSlot(bool bInclude_Deactive = true)
         {
             for(int i = 0; i < _listSlotInstance.Count; i++)
             {
@@ -132,18 +134,24 @@ namespace UIFramework
 
                 pInventorySlot.DoInit(this);
             }
+
+            DoInitSlot_Origin(_listSlotInstance.FirstOrDefault());
+        }
+
+        public void DoInitSlot_Origin(InventorySlot pSlot_Origin)
+        {
+            _pSlot_Origin = pSlot_Origin;
         }
 
         public void DoInit_SlotLogic(InventoryLogicFactory pLogicFactory)
         {
             _arrSlotLogic_State = pLogicFactory.list_StateLogic.ToArray();
-            for (int i = 0; i < _listSlotInstance.Count; i++)
-                _listSlotInstance[i].DoInit_SlotStateLogic(_arrSlotLogic_State);
+            _listSlotInstance.ForEach(p => p.DoInit_SlotStateLogic(_arrSlotLogic_State));
 
             _arrSlotLogic_Command = pLogicFactory.list_CommandLogic.ToArray();
-            for (int i = 0; i < _listSlotInstance.Count; i++)
-                _listSlotInstance[i].DoInit_SlotCommandLogic(_arrSlotLogic_Command);
+            _listSlotInstance.ForEach(p => p.DoInit_SlotCommandLogic(_arrSlotLogic_Command));
         }
+
 
         public void DoAddRangeData(params IInventoryData[] arrData)
         {
@@ -157,13 +165,20 @@ namespace UIFramework
                 }
                 else
                 {
-                    for (int j = 0; j < _listSlotInstance.Count; j++)
+                    pSlot = _listSlotInstance.Where(p => p.pData == null).FirstOrDefault();
+                    if(pSlot != null)
                     {
-                        pSlot = _listSlotInstance[j];
-                        if (pSlot.pData == null)
+                        Slot_Set_NewData(pSlot, pData);
+                        break;
+                    }
+
+                    if(OnEmptySlot != null)
+                    {
+                        pSlot = OnEmptySlot(_pSlot_Origin);
+                        if(pSlot != null)
                         {
-                            Slot_SetDataNew(pSlot, pData);
-                            break;
+                            _listSlotInstance.Add(pSlot);
+                            Slot_Set_NewData(pSlot, pData);
                         }
                     }
                 }
@@ -228,7 +243,7 @@ namespace UIFramework
         {
             base.OnAwake();
 
-            DoInit_Slot();
+            DoInit_ChildrenSlot();
             DoClearData();
         }
 
@@ -314,10 +329,10 @@ namespace UIFramework
             if (sMsg.bSlot_IsEmpty)
                 Slot_ClearData(sMsg.pSlot);
             else
-                Slot_SetDataNew(sMsg.pSlot, sMsg.pData_Current);
+                Slot_Set_NewData(sMsg.pSlot, sMsg.pData_Current);
         }
 
-        private void Slot_SetDataNew(InventorySlot pSlot, IInventoryData pData)
+        private void Slot_Set_NewData(InventorySlot pSlot, IInventoryData pData)
         {
             pSlot.DoSetData(pData);
             _mapSlot_ByDataKey.Add(pData.IInventoryData_Key, pSlot);

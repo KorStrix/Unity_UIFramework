@@ -121,19 +121,7 @@ namespace UIFramework
             GetComponentsInChildren(bInclude_Deactive, _listSlotInstance);
 
             for (int i = 0; i < _listSlotInstance.Count; i++)
-            {
-                InventorySlot pInventorySlot = _listSlotInstance[i];
-                pInventorySlot.OnClickedSlot += OnClickedSlot;
-                //pInventorySlot.OnDragBeginSlot += OnDragBeginSlot;
-                //pInventorySlot.OnDragEndSlot += OnDragEndSlot;
-                pInventorySlot.OnSwapSlot += OnSwapSlot;
-                // pInventorySlot.OnChange_SlotData += OnChange_SlotData;
-
-                pInventorySlot.DoInit_SlotStateLogic(_arrSlotLogic_State);
-                pInventorySlot.DoInit_SlotCommandLogic(_arrSlotLogic_Command);
-
-                pInventorySlot.DoInit(this);
-            }
+                InitSlot(_listSlotInstance[i]);
 
             DoInitSlot_Origin(_listSlotInstance.FirstOrDefault());
         }
@@ -169,7 +157,7 @@ namespace UIFramework
                     if(pSlot != null)
                     {
                         Slot_Set_NewData(pSlot, pData);
-                        break;
+                        continue;
                     }
 
                     if(OnEmptySlot != null)
@@ -178,6 +166,7 @@ namespace UIFramework
                         if(pSlot != null)
                         {
                             _listSlotInstance.Add(pSlot);
+                            InitSlot(pSlot);
                             Slot_Set_NewData(pSlot, pData);
                         }
                     }
@@ -265,6 +254,20 @@ namespace UIFramework
         // ========================================================================== //
 
         #region Private
+
+        private void InitSlot(InventorySlot pInventorySlot)
+        {
+            pInventorySlot.OnClickedSlot += OnClickedSlot;
+            //pInventorySlot.OnDragBeginSlot += OnDragBeginSlot;
+            //pInventorySlot.OnDragEndSlot += OnDragEndSlot;
+            pInventorySlot.OnSwapSlot += OnSwapSlot;
+            // pInventorySlot.OnChange_SlotData += OnChange_SlotData;
+
+            pInventorySlot.DoInit_SlotStateLogic(_arrSlotLogic_State);
+            pInventorySlot.DoInit_SlotCommandLogic(_arrSlotLogic_Command);
+
+            pInventorySlot.DoInit(this);
+        }
 
         private void OnSwapSlot(OnSwapSlot_Msg obj)
         {

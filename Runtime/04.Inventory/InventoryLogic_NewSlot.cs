@@ -15,11 +15,9 @@ using System.Linq;
 namespace UIFramework
 {
 	/// <summary>
-	/// 일단 Inventory Slot만
-    /// 가로 기준으로 구현
 	/// </summary>
     [RequireComponent(typeof(Inventory))]
-	public class InventoryLogic_GridSlot : UIWidgetObjectBase
+	public class InventoryLogic_NewSlot : UIWidgetObjectBase
 	{
         /* const & readonly declaration             */
 
@@ -27,11 +25,8 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
-        public int iGridSlotCount;
-
         /* protected & private - Field declaration  */
 
-        List<InventorySlot> _listSlotInstance = new List<InventorySlot>();
         Inventory _pInventory;
 
         // ========================================================================== //
@@ -59,18 +54,11 @@ namespace UIFramework
 
         private InventorySlot Inventory_OnEmptySlot(InventorySlot pSlotOrigin)
         {
-            _listSlotInstance.Clear();
             Transform pTransform_SlotParents = pSlotOrigin.transform.parent;
+            InventorySlot pSlotCopy = GameObject.Instantiate(pSlotOrigin, pTransform_SlotParents);
+            pSlotCopy.EventAwake();
 
-            for (int i = 0; i < iGridSlotCount; i++)
-            {
-                InventorySlot pSlotCopy = GameObject.Instantiate(pSlotOrigin, pTransform_SlotParents);
-                pSlotCopy.EventAwake();
-
-                _listSlotInstance.Add(pSlotCopy);
-            }
-
-            return _listSlotInstance.FirstOrDefault();
+            return pSlotCopy;
         }
 
         #endregion Private

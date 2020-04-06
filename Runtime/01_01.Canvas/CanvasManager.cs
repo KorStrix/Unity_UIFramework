@@ -785,6 +785,9 @@ namespace UIFramework
             if (pWrapper == null || pWrapper.pInstance.IsNull())
                 yield break;
 
+            if (pWrapper.Check_IsEnable())
+                yield break;
+
             EnableWrapper(pWrapper, pUICommandHandle);
             yield return Process_ShowCoroutine(eName, pWrapper, pUICommandHandle);
         }

@@ -609,7 +609,7 @@ namespace UIFramework
         /// </summary>
         /// <param name="eName">캔버스가 필요한 이름 Enum</param>
         /// <param name="pCanvas">캔버스가 필요한 인스턴스</param>
-        abstract public Canvas GetParentCavnas(ENUM_CANVAS_NAME eName, ICanvas pCanvas);
+        abstract public Canvas GetParentCanvas(ENUM_CANVAS_NAME eName, ICanvas pCanvas);
 
         /// <summary>
         /// 오브젝트가 켜질 때 호출됩니다.
@@ -686,7 +686,7 @@ namespace UIFramework
             sUICommandHandle.Event_OnBeforeShow();
             yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_ShowCoroutine, pWrapper);
 
-            Canvas pCanvas = GetParentCavnas(pWrapper.eName, pWrapper.pInstance);
+            Canvas pCanvas = GetParentCanvas(pWrapper.eName, pWrapper.pInstance);
             yield return pWrapper.DoExecute_ShowCoroutine(pCanvas, sUICommandHandle);
 
             yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_ShowCoroutine, pWrapper);

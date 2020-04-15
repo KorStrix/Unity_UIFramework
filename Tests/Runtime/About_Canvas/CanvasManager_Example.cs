@@ -48,7 +48,7 @@ namespace UIFramework_Test
             {
             }
 
-            public override Canvas GetParentCavnas(ECanvasName eName, ICanvas pCanvas)
+            public override Canvas GetParentCanvas(ECanvasName eName, ICanvas pCanvas)
             {
                 return null;
             }

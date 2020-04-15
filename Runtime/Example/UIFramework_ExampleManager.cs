@@ -76,7 +76,7 @@ namespace UIFramework
             yield break;
         }
 
-        public override Canvas GetParentCavnas(ECanvas eName, ICanvas pCanvas)
+        public override Canvas GetParentCanvas(ECanvas eName, ICanvas pCanvas)
         {
             return _pCanvas;
         }

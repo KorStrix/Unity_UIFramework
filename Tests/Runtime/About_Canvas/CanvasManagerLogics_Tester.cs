@@ -87,7 +87,7 @@ namespace UIFramework_Test
                     pLogicFactory.DoAddLogic(pLogic.Key, pLogic.Value.ToArray());
             }
 
-            public override Canvas GetParentCavnas(ECanvasName eName, ICanvas pCanvas)
+            public override Canvas GetParentCanvas(ECanvasName eName, ICanvas pCanvas)
             {
                 return null;
             }

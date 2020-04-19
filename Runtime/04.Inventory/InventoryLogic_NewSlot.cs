@@ -16,6 +16,7 @@ namespace UIFramework
 {
 	/// <summary>
 	/// </summary>
+	[DefaultExecutionOrder(order:-100)]
     [RequireComponent(typeof(Inventory))]
 	public class InventoryLogic_NewSlot : UIWidgetObjectBase
 	{

@@ -17,7 +17,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    abstract public class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UIObjectManagerBase<CLASS_DRIVEN_MANAGER, ICanvas>, IUIManager
+    public abstract class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UIObjectManagerBase<CLASS_DRIVEN_MANAGER, ICanvas>, IUIManager
         where CLASS_DRIVEN_MANAGER : CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME>
     {
         /* const & readonly declaration             */
@@ -264,7 +264,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Show 할 캔버스 이름</param>
-        static public UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
@@ -289,7 +289,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Show 할 캔버스 이름</param>
-        static public UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow_Multiple<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow_Multiple<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
@@ -307,7 +307,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Show 할 캔버스 이름</param>
-        static public UICommandHandle<ICanvas> DoShowOnly(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<ICanvas> DoShowOnly(ENUM_CANVAS_NAME eName)
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
 
@@ -330,7 +330,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Hide 할 캔버스 이름</param>
-        static public UICommandHandle<CLASS_DRIVEN_CANVAS> DoHide<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoHide<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
@@ -348,7 +348,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Hide 할 캔버스 이름</param>
-        static public UICommandHandle<ICanvas> DoHideOnly(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<ICanvas> DoHideOnly(ENUM_CANVAS_NAME eName)
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
 
@@ -362,7 +362,7 @@ namespace UIFramework
         /// 모든 팝업을 닫습니다
         /// </summary>
         /// <param name="bPlayHideCoroutine"><see cref="IUIObject.OnHideCoroutine"/>실행 유무</param>
-        static public void DoAllHide_ShowedCanvas(bool bPlayHideCoroutine = true)
+        public static void DoAllHide_ShowedCanvas(bool bPlayHideCoroutine = true)
         {
             List<ICanvas> listCanavs = GetAlreadyShow_CanvasList();
             if (bPlayHideCoroutine)
@@ -383,7 +383,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
         /// <param name="eName">얻고자 하는 캔버스 이름</param>
-        static public CLASS_DRIVEN_CANVAS GetAlreadyShow_Canvas_OrNull<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static CLASS_DRIVEN_CANVAS GetAlreadyShow_Canvas_OrNull<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : MonoBehaviour, ICanvas
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
@@ -401,7 +401,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
         /// <param name="eName">얻고자 하는 캔버스 이름</param>
-        static public List<CLASS_DRIVEN_CANVAS> GetAlreadyShow_CanvasList<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static List<CLASS_DRIVEN_CANVAS> GetAlreadyShow_CanvasList<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
@@ -413,8 +413,7 @@ namespace UIFramework
         /// <summary>
         /// 이미 보여지고 있는 Canvas List를 Return합니다. 없으면 count == 0인 list를 리턴합니다.
         /// </summary>
-        /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
-        static public List<ICanvas> GetAlreadyShow_CanvasList()
+        public static List<ICanvas> GetAlreadyShow_CanvasList()
         {
             if (_bApplication_IsQuit)
                 return new List<ICanvas>();
@@ -425,7 +424,7 @@ namespace UIFramework
         /// <summary>
         /// 마지막에 Show를 한 Canvas를 리턴합니다. 없으면 Null을 리턴합니다.
         /// </summary>
-        static public ICanvas GetLastShowCanvas_OrNull()
+        public static ICanvas GetLastShowCanvas_OrNull()
         {
             CLASS_DRIVEN_MANAGER pInstance = instance;
             if (pInstance.IsNull())
@@ -439,7 +438,7 @@ namespace UIFramework
         /// </summary>
         /// <param name="pObject">Key를 얻을 캔버스 인스턴스</param>
         /// <param name="eName">리턴받을 Key</param>
-        static public bool GetEnumKey(ICanvas pObject, out ENUM_CANVAS_NAME eName)
+        public static bool GetEnumKey(ICanvas pObject, out ENUM_CANVAS_NAME eName)
         {
             eName = default(ENUM_CANVAS_NAME);
 
@@ -595,21 +594,21 @@ namespace UIFramework
         /// <para>`로직`은 <see cref="ICanvasManager_Logic"/>을 상속받은 클래스입니다.</para>
         /// </summary>
         /// <param name="pLogicFactory"></param>
-        abstract protected void OnInit_ManagerLogic(CanvasManagerLogicFactory pLogicFactory);
+        protected abstract void OnInit_ManagerLogic(CanvasManagerLogicFactory pLogicFactory);
 
         /// <summary>
         /// 컨테이너의 인스턴스를 만드는 방법을 구현합니다.
         /// <para> 컨테이너의 인스턴스가 없는 경우에만 호출됩니다. </para> 
         /// </summary>
         /// <param name="eName">인스턴스를 만들 팝업 이름 Enum</param>
-        abstract protected IEnumerator OnCreate_Instance(ENUM_CANVAS_NAME eName, bool bIsMultiple, System.Action<ICanvas> OnFinish);
+        protected abstract IEnumerator OnCreate_Instance(ENUM_CANVAS_NAME eName, bool bIsMultiple, System.Action<ICanvas> OnFinish);
 
         /// <summary>
         /// 인스턴스에 알맞는 캔버스를 얻어오는 방법을 구현합니다.
         /// </summary>
         /// <param name="eName">캔버스가 필요한 이름 Enum</param>
         /// <param name="pCanvas">캔버스가 필요한 인스턴스</param>
-        abstract public Canvas GetParentCanvas(ENUM_CANVAS_NAME eName, ICanvas pCanvas);
+        public abstract Canvas GetParentCanvas(ENUM_CANVAS_NAME eName, ICanvas pCanvas);
 
         /// <summary>
         /// 오브젝트가 켜질 때 호출됩니다.
@@ -617,7 +616,7 @@ namespace UIFramework
         /// </summary>
         /// <param name="eName">켜지는 오브젝트의 이름 Enum</param>
         /// <param name="pInstance">켜지는 오브젝트의 인스턴스</param>
-        virtual protected void OnShow_BeforeAnimation(ENUM_CANVAS_NAME eName, ICanvas pInstance) { }
+        protected virtual void OnShow_BeforeAnimation(ENUM_CANVAS_NAME eName, ICanvas pInstance) { }
 
 
         /// <summary>
@@ -626,7 +625,7 @@ namespace UIFramework
         /// </summary>
         /// <param name="eName">켜지는 오브젝트의 이름 Enum</param>
         /// <param name="pInstance">켜지는 오브젝트의 인스턴스</param>
-        virtual protected void OnShow_AfterAnimation(ENUM_CANVAS_NAME eName, ICanvas pInstance) { }
+        protected virtual void OnShow_AfterAnimation(ENUM_CANVAS_NAME eName, ICanvas pInstance) { }
 
         /// <summary>
         /// 오브젝트가 꺼질 때 호출됩니다.
@@ -634,7 +633,7 @@ namespace UIFramework
         /// </summary>
         /// <param name="eName">꺼지는 오브젝트의 이름 Enum</param>
         /// <param name="pInstance">꺼지는 오브젝트의 인스턴스</param>
-        virtual protected void OnHide(ENUM_CANVAS_NAME eName, ICanvas pInstance, int iInstanceCount) { }
+        protected virtual void OnHide(ENUM_CANVAS_NAME eName, ICanvas pInstance, int iInstanceCount) { }
 
         /// <summary>
         /// Default <see cref="GetEnumKey(ICanvas, out ENUM_CANVAS_NAME)"/>를 Fail하면 호출되는 함수입니다.
@@ -642,9 +641,9 @@ namespace UIFramework
         /// <param name="pInstance"></param>
         /// <param name="eName"></param>
         /// <returns></returns>
-        virtual protected bool GetEnumKey_Custom(ICanvas pInstance, out ENUM_CANVAS_NAME eName) { eName = default(ENUM_CANVAS_NAME); return false; }
+        protected virtual bool GetEnumKey_Custom(ICanvas pInstance, out ENUM_CANVAS_NAME eName) { eName = default(ENUM_CANVAS_NAME); return false; }
 
-        virtual protected ICanvas Get_CanvasInstance(ENUM_CANVAS_NAME eName)
+        protected virtual ICanvas Get_CanvasInstance(ENUM_CANVAS_NAME eName)
         {
             CanvasWrapper pContainer = null;
             if (Get_UnUsedWrapper(eName, out pContainer))
@@ -699,7 +698,7 @@ namespace UIFramework
             yield break;
         }
 
-        virtual protected IEnumerator Process_HideCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+        protected virtual IEnumerator Process_HideCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
             if (pWrapper == null)
@@ -726,7 +725,7 @@ namespace UIFramework
             DisableWrapper(pWrapper);
         }
 
-        virtual protected void Process_Hide<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+        protected virtual void Process_Hide<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
             if (pWrapper == null)

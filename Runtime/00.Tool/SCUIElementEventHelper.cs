@@ -100,14 +100,9 @@ public static class SCUIElementEventHelper
 
         System.Type pType_EnumButtonName = pType_InterfaceHasButton.GetGenericArguments()[0];
         HashSet<string> setEnumName = new HashSet<string>(System.Enum.GetNames(pType_EnumButtonName));
-
-        Button[] arrButton = pOwner.GetComponentsInChildren<Button>(true);
-        for (int i = 0; i < arrButton.Length; i++)
+        var arrButton = pOwner.GetComponentsInChildren<Button>(true).Where(p => setEnumName.Contains(p.name));
+        foreach (Button pButton in arrButton)
         {
-            Button pButton = arrButton[i];
-            if (setEnumName.Contains(pButton.name) == false)
-                continue;
-
             object pEnumValue;
             if (TryParsing_NameToEnum(pType_EnumButtonName, pButton, out pEnumValue) == false)
                 continue;

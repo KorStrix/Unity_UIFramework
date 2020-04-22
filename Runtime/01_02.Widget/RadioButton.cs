@@ -128,12 +128,20 @@ namespace UIFramework
                 g_mapRadioButtonAll.Add(_pTransformParents, new HashSet<RadioButton>());
             g_mapRadioButtonAll[_pTransformParents].Add(this);
 
-            if (bDefaultClick)
-                DoClick_RadioButton();
-
             _mapOnStateActive = listActiveObject_OnClicked.
                 GroupBy(p => p.bPressed).
                 ToDictionary(x => x.Key, y => y.Where(z => z.pObject != null).Select(z => z.pObject).ToList());
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            
+            if (bDefaultClick)
+            {
+                DoClick_RadioButton();
+                DoStateTransition(SelectionState.Pressed, true);
+            }
         }
 
         protected override void DoStateTransition(SelectionState state, bool instant)

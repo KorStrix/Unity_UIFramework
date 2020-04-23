@@ -101,7 +101,7 @@ public interface IUIManager : IUIObjectBase
         where CLASS_UIOBJECT : IUIObject;
 }
 
-static public class IUIObjectExtension
+public static class IUIObjectExtension
 {
     /// <summary>
     /// 오브젝트가 파괴되었는지 null인지 확실하게 체크, 비용이 무겁습니다

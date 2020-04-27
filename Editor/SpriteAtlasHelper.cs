@@ -48,7 +48,7 @@ public class SpriteAtlasHelper
     }
 
     [MenuItem("Assets/UpdateAtlas_AllFile_InFolder")]
-    static public void DoUpdateAtlas()
+    public static void DoUpdateAtlas()
     {
         Debug.Log(nameof(DoUpdateAtlas));
 

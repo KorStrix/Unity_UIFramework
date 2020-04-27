@@ -48,19 +48,19 @@ namespace UIFramework
             OnAwake();
         }
 
-        virtual public IEnumerator OnShowCoroutine()
+        public virtual IEnumerator OnShowCoroutine()
         {
             yield break;
         }
 
-        virtual public IEnumerator OnHideCoroutine()
+        public virtual IEnumerator OnHideCoroutine()
         {
             yield break;
         }
 
         /* protected - [abstract & virtual]         */
 
-        virtual protected void OnAwake() { }
+        protected virtual void OnAwake() { }
 
         // ========================================================================== //
 

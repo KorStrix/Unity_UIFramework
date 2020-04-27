@@ -836,8 +836,7 @@ public class CUGUIScrollView : UIBehaviour, ICollectionView, IInitializePotentia
         if (!IsActive())
             return;
 
-        Vector2 localCursor;
-        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(viewRect, eventData.position, eventData.pressEventCamera, out localCursor))
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(viewRect, eventData.position, eventData.pressEventCamera, out var localCursor))
             return;
 
         UpdateBounds();

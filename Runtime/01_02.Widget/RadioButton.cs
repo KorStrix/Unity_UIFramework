@@ -58,7 +58,7 @@ namespace UIFramework
         /// </summary>
         public event delOnRadioButtonEvent OnRadioButtonEvent;
 
-        static public Dictionary<Transform, HashSet<RadioButton>> g_mapRadioButtonAll = new Dictionary<Transform, HashSet<RadioButton>>();
+        public static Dictionary<Transform, HashSet<RadioButton>> g_mapRadioButtonAll = new Dictionary<Transform, HashSet<RadioButton>>();
 
 
         [Header("처음 상태를 클릭한 채로")]
@@ -85,8 +85,7 @@ namespace UIFramework
 
         public void DoClick_RadioButton()
         {
-            HashSet<RadioButton> setButton;
-            if (g_mapRadioButtonAll.TryGetValue(_pTransformParents, out setButton) == false)
+            if (g_mapRadioButtonAll.TryGetValue(_pTransformParents, out var setButton) == false)
             {
                 if (_bApplicationIsQuit == false)
                     Debug.LogError($"{name} RadioButtonGroup.TryGetValue({_pTransformParents}) Fail", this);
@@ -111,8 +110,7 @@ namespace UIFramework
 
             if (bNotify)
             {
-                HashSet<RadioButton> setButton;
-                g_mapRadioButtonAll.TryGetValue(_pTransformParents, out setButton);
+                g_mapRadioButtonAll.TryGetValue(_pTransformParents, out var setButton);
                 OnRadioButtonEvent?.Invoke(new RadioButtonEventMsg(setButton, this, bClick));
             }
         }
@@ -205,7 +203,7 @@ namespace UIFramework
 
 #if UNITY_EDITOR
         [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(RadioButton))]
-        static public void CreateRadioButton(MenuCommand pCommand)
+        public static void CreateRadioButton(MenuCommand pCommand)
         {
             const float const_fPosX = 120f;
 

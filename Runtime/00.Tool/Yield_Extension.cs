@@ -21,7 +21,7 @@ public static class Yield_Extension
     /// </summary>
     /// <param name="listCoroutine"></param>
     /// <returns></returns>
-    static public IEnumerator GetEnumerator_Safe(this List<Coroutine> listCoroutine)
+    public static IEnumerator GetEnumerator_Safe(this List<Coroutine> listCoroutine)
     {
         if (listCoroutine.Count != 0)
             yield return new List<Coroutine>(listCoroutine).GetEnumerator();

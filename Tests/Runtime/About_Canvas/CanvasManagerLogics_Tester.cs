@@ -55,7 +55,7 @@ namespace UIFramework_Test
 
             static CanvasManagerLogicFactory g_pLogicFactory = new CanvasManagerLogicFactory();
 
-            static public void DoInit(CanvasManagerLogicFactory pLogicFactory)
+            public static void DoInit(CanvasManagerLogicFactory pLogicFactory)
             {
                 g_pLogicFactory = pLogicFactory;
             }

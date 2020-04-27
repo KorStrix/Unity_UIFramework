@@ -93,7 +93,7 @@ namespace UIFramework
 
         /* protected & private - Field declaration  */
 
-        static protected List<RaycastResult> g_listHit = new List<RaycastResult>();
+        protected static List<RaycastResult> g_listHit = new List<RaycastResult>();
 
         Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>> _mapSlotLogic_State = new Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>>();
         Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>> _mapSlotLogic_State_Undo = new Dictionary<EInventorySlot_StateEvent, List<InventorySlot_StateLogic>>();
@@ -136,7 +136,7 @@ namespace UIFramework
             OnSwapSlot += ExecuteLogic_StateEvent_OnSwap;
         }
 
-        virtual public void DoInit_SlotCommandLogic(InventorySlot_CommandLogic[] arrSlotCommandLogic)
+        public virtual void DoInit_SlotCommandLogic(InventorySlot_CommandLogic[] arrSlotCommandLogic)
         {
             _mapSlotLogic_Command = arrSlotCommandLogic.
                 GroupBy(p => p.eEvent).
@@ -238,8 +238,7 @@ namespace UIFramework
 
         protected void ExecuteLogic_State(EInventorySlot_StateEvent eEvent)
         {
-            List<InventorySlot_StateLogic> listLogic;
-            if (_mapSlotLogic_State.TryGetValue(eEvent, out listLogic))
+            if (_mapSlotLogic_State.TryGetValue(eEvent, out var listLogic))
             {
                 for (int i = 0; i < listLogic.Count; i++)
                     listLogic[i].pLogic.IInventorySlot_StateLogic(this);
@@ -254,8 +253,7 @@ namespace UIFramework
 
         protected void ExecuteLogic_Command(EInventorySlot_CommandEvent eEvent, PointerEventData pPointerEventData)
         {
-            List<InventorySlot_CommandLogic> listLogic;
-            if (_mapSlotLogic_Command.TryGetValue(eEvent, out listLogic))
+            if (_mapSlotLogic_Command.TryGetValue(eEvent, out var listLogic))
             {
                 for (int i = 0; i < listLogic.Count; i++)
                     listLogic[i].pLogic.IInventorySlot_CommandLogic(this, pPointerEventData);

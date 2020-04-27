@@ -15,7 +15,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    abstract public class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : MonoBehaviour, IUIManager
+    public abstract class UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT> : MonoBehaviour, IUIManager
         where CLASS_DRIVEN_MANAGER : UIObjectManagerBase<CLASS_DRIVEN_MANAGER, UIOBJECT>
         where UIOBJECT : IUIObject
     {
@@ -43,7 +43,7 @@ namespace UIFramework
         public event delOnPrintLog OnPrintLog = DefaultPrintLog;
 
         public delegate void delOnException(System.Exception pException, Object pObject);
-        static public event delOnException OnException;
+        public static event delOnException OnException;
 
         public static CLASS_DRIVEN_MANAGER instance
         {
@@ -71,16 +71,16 @@ namespace UIFramework
 
         /* protected & private - Field declaration         */
 
-        static protected CLASS_DRIVEN_MANAGER _instance { get; private set; }
-        static protected bool _bIsDestroying { get; private set; } = false;
-        static protected bool _bApplication_IsQuit { get; private set; } = false;
+        protected static CLASS_DRIVEN_MANAGER _instance { get; private set; }
+        protected static bool _bIsDestroying { get; private set; } = false;
+        protected static bool _bApplication_IsQuit { get; private set; } = false;
 
         // ========================================================================== //
 
         /* public - [Do] Function
          * 외부 객체가 호출(For External class call)*/
 
-        static public void DefaultPrintLog(ELogTypeFlag eLogTypeFlag, string strLog, Object pContextObject)
+        public static void DefaultPrintLog(ELogTypeFlag eLogTypeFlag, string strLog, Object pContextObject)
         {
             if ((eLogTypeFlag & ELogTypeFlag.Error) == ELogTypeFlag.Error)
             {
@@ -100,7 +100,7 @@ namespace UIFramework
         /// <summary>
         /// 싱글톤을 파괴합니다
         /// </summary>
-        static public void DoDestroy_Manager(bool bDeleteObject_Immediately = false)
+        public static void DoDestroy_Manager(bool bDeleteObject_Immediately = false)
         {
             if (_bIsDestroying)
                 return;
@@ -170,17 +170,17 @@ namespace UIFramework
 
         /* protected - [abstract & virtual]         */
 
-        virtual protected void OnAwake() { }
+        protected virtual void OnAwake() { }
 
-        virtual protected void OnCreate_ManagerInstance() { }
-        virtual protected void OnDestroy_ManagerInstance() { }
+        protected virtual void OnCreate_ManagerInstance() { }
+        protected virtual void OnDestroy_ManagerInstance() { }
 
-        abstract public UICommandHandle<CLASS_UIOBJECT> IUIManager_Show<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
+        public abstract UICommandHandle<CLASS_UIOBJECT> IUIManager_Show<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
             where CLASS_UIOBJECT : IUIObject;
 
-        abstract public UICommandHandle<CLASS_UIOBJECT> IUIManager_Hide<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject, bool bPlayAnimation)
+        public abstract UICommandHandle<CLASS_UIOBJECT> IUIManager_Hide<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject, bool bPlayAnimation)
             where CLASS_UIOBJECT : IUIObject;
-        abstract public EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
+        public abstract EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
             where CLASS_UIOBJECT : IUIObject;
 
         // ========================================================================== //

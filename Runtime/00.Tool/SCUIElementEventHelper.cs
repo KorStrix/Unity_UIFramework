@@ -103,8 +103,7 @@ public static class SCUIElementEventHelper
         var arrButton = pOwner.GetComponentsInChildren<Button>(true).Where(p => setEnumName.Contains(p.name));
         foreach (Button pButton in arrButton)
         {
-            object pEnumValue;
-            if (TryParsing_NameToEnum(pType_EnumButtonName, pButton, out pEnumValue) == false)
+            if (TryParsing_NameToEnum(pType_EnumButtonName, pButton, out var pEnumValue) == false)
                 continue;
 
             UnityEngine.Events.UnityAction pAction = () => 

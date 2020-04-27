@@ -104,7 +104,7 @@ namespace UIFramework
 
         // ========================================================================== //
 
-        /* public - [Do~Somthing] Function 	        */
+        /* public - [Do~Something] Function 	        */
 
         public void DoInit_ChildrenSlot(bool bInclude_Deactive = true)
         {
@@ -146,14 +146,13 @@ namespace UIFramework
             for(int i = 0; i < arrData.Length; i++)
             {
                 IInventoryData pData = arrData[i];
-                InventorySlot pSlot;
-                if (_mapSlot_ByDataKey.TryGetValue(pData.IInventoryData_Key, out pSlot))
+                if (_mapSlot_ByDataKey.TryGetValue(pData.IInventoryData_Key, out InventorySlot pSlot))
                 {
                     pSlot.DoSetData(pSlot.pData.IInventoryData_AddOrMinusCount(pData.IInventoryData_Count));
                 }
                 else
                 {
-                    pSlot = _listSlotInstance.Where(p => p.pData == null).FirstOrDefault();
+                    pSlot = _listSlotInstance.FirstOrDefault(p => p.pData == null);
                     if(pSlot != null)
                     {
                         Slot_Set_NewData(pSlot, pData);
@@ -181,8 +180,7 @@ namespace UIFramework
 
         public void DoRemoveData(IInventoryData pData)
         {
-            InventorySlot pSlot;
-            if (_mapSlot_ByDataKey.TryGetValue(pData.IInventoryData_Key, out pSlot) == false)
+            if (_mapSlot_ByDataKey.TryGetValue(pData.IInventoryData_Key, out var pSlot) == false)
                 return;
 
             Slot_ClearData(pSlot, pData.IInventoryData_Key);
@@ -355,7 +353,7 @@ namespace UIFramework
 
 #if UNITY_EDITOR
         [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(Inventory))]
-        static public void CreateInventory(MenuCommand pCommand)
+        public static void CreateInventory(MenuCommand pCommand)
         {
             const float const_fPosX = 120f;
 

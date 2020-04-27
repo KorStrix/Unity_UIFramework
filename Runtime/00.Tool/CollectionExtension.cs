@@ -12,9 +12,9 @@ using System.Collections.Generic;
 
 namespace UIFramework
 {
-    static public class CollectionExtension
+    public static class CollectionExtension
     {
-        static public IEnumerable<T> ForEach<T>(this IEnumerable<T> arrTarget, System.Action<T> OnExecute)
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> arrTarget, System.Action<T> OnExecute)
         {
             foreach (var pTarget in arrTarget)
                 OnExecute.Invoke(pTarget);

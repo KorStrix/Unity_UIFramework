@@ -34,12 +34,12 @@ public interface ICanvas : IUIObject, IUIObject_Managed
     // UIWidgetContainer pWidgetContainer { get; }
 }
 
-static public class ICanvasHelper
+public static class ICanvasHelper
 {
 
 #if UNITY_EDITOR
     [UnityEditor.MenuItem("GameObject/UI/Custom/" + "PopupBase")]
-    static public void CreatePopup(MenuCommand pCommand)
+    public static void CreatePopup(MenuCommand pCommand)
     {
         GameObject pObjectParents = pCommand.context as GameObject;
 
@@ -102,7 +102,7 @@ static public class ICanvasHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 켭니다.
     /// </summary>
-    static public UICommandHandle<T> DoShow<T>(this T pObject)
+    public static UICommandHandle<T> DoShow<T>(this T pObject)
         where T : MonoBehaviour, ICanvas
     {
         if (pObject == null)
@@ -122,7 +122,7 @@ static public class ICanvasHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
     /// </summary>
-    static public UICommandHandle<T> DoHide<T>(this T pObject)
+    public static UICommandHandle<T> DoHide<T>(this T pObject)
         where T : ICanvas
     {
         if (pObject == null)
@@ -142,7 +142,7 @@ static public class ICanvasHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
     /// </summary>
-    static public void DoHideOnly<T>(this T pObject)
+    public static void DoHideOnly<T>(this T pObject)
         where T : ICanvas
     {
         if (pObject.IsNull())
@@ -162,7 +162,7 @@ static public class ICanvasHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
     /// </summary>
-    static public UICommandHandle<T> DoHide_NotPlayHideCoroutine<T>(this T pObject)
+    public static UICommandHandle<T> DoHide_NotPlayHideCoroutine<T>(this T pObject)
         where T : ICanvas
     {
         if (pObject.IsNull())
@@ -182,7 +182,7 @@ static public class ICanvasHelper
     /// <summary>
     /// 이 오브젝트의 UI 상태를 얻습니다.
     /// </summary>
-    static public EUIObjectState GetUIObjectState<T>(this T pObject)
+    public static EUIObjectState GetUIObjectState<T>(this T pObject)
         where T : ICanvas
     {
         if (pObject.IsNull())

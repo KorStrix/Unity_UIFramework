@@ -196,8 +196,7 @@ namespace UIFramework
 
             void GetWorld_To_ScreenPoint(InventorySlot pSlot, PointerEventData pPointerEventData)
             {
-                Vector3 vecOutPos;
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(_pTransform_Parents, pPointerEventData.position, null, out vecOutPos);
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(_pTransform_Parents, pPointerEventData.position, null, out var vecOutPos);
                 _pSlotClone.transform.position = vecOutPos;
             }
         }

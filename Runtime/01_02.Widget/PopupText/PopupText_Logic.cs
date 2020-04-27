@@ -22,7 +22,7 @@ namespace UIFramework
 
         public abstract class PopupText_Logic_ComponentBase : MonoBehaviour, IPopupText_Logic
         {
-            abstract public IEnumerator OnAnimation(PopupText pTextOwner, string strText);
+            public abstract IEnumerator OnAnimation(PopupText pTextOwner, string strText);
         }
     }
 }

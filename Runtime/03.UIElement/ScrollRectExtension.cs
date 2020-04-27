@@ -239,7 +239,7 @@ namespace UIFramework
             return newNormalizedPosition;
         }
 
-        static private Vector3 GetWidgetWorldPoint(RectTransform target)
+        private static Vector3 GetWidgetWorldPoint(RectTransform target)
         {
             //pivot position + item size has to be included
             var pivotOffset = new Vector3(
@@ -250,7 +250,7 @@ namespace UIFramework
             return target.parent.TransformPoint(localPosition);
         }
 
-        static private Vector3 GetWorldPointInWidget(RectTransform target, Vector3 worldPoint)
+        private static Vector3 GetWorldPointInWidget(RectTransform target, Vector3 worldPoint)
         {
             return target.InverseTransformPoint(worldPoint);
         }

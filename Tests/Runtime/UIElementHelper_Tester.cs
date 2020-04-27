@@ -53,7 +53,7 @@ namespace UIFramework_Test
     public class UIElementHelper_Tester : MonoBehaviour
     {
         [Test]
-        static public void HasButton_Test()
+        public static void HasButton_Test()
         {
             GameObject pObjectTest = new GameObject(nameof(HasButton_Test));
 
@@ -93,7 +93,7 @@ namespace UIFramework_Test
         }
 
         [Test]
-        static public void HasToggle_Test()
+        public static void HasToggle_Test()
         {
             GameObject pObjectTest = new GameObject(nameof(HasToggle_Test));
 

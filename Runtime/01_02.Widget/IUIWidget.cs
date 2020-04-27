@@ -28,12 +28,12 @@ namespace UIFramework
 }
 
 
-static public class IUIWidgetHelper
+public static class IUIWidgetHelper
 {
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 켭니다.
     /// </summary>
-    static public UICommandHandle<T> DoShow<T>(this T pObject)
+    public static UICommandHandle<T> DoShow<T>(this T pObject)
         where T : class, IUIWidget_Managed
     {
         if (pObject == null)
@@ -48,7 +48,7 @@ static public class IUIWidgetHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
     /// </summary>
-    static public UICommandHandle<T> DoHide<T>(this T pObject)
+    public static UICommandHandle<T> DoHide<T>(this T pObject)
         where T : class, IUIWidget_Managed
     {
         if (pObject == null)
@@ -63,7 +63,7 @@ static public class IUIWidgetHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
     /// </summary>
-    static public UICommandHandle<T> DoPlay_ShowOrHide<T>(this T pObject, bool bShow)
+    public static UICommandHandle<T> DoPlay_ShowOrHide<T>(this T pObject, bool bShow)
         where T : class, IUIWidget_Managed
     {
         if (pObject == null || pObject.gameObject.activeSelf == bShow)

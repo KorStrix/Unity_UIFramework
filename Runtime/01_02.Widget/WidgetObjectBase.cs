@@ -62,23 +62,23 @@ namespace UIFramework
             _bIsQuit_Application = true;
         }
 
-        virtual protected void OnDisableObject(bool bIsQuit_Application) { }
+        protected virtual void OnDisableObject(bool bIsQuit_Application) { }
 
-        virtual public IEnumerator OnShowCoroutine()
+        public virtual IEnumerator OnShowCoroutine()
         {
             yield break;
         }
 
-        virtual public IEnumerator OnHideCoroutine()
+        public virtual IEnumerator OnHideCoroutine()
         {
             yield break;
         }
 
         /* protected - [abstract & virtual]         */
 
-        virtual protected void OnAwake() { }
+        protected virtual void OnAwake() { }
 
-        virtual public void IUIWidget_OnBeforeShow()
+        public virtual void IUIWidget_OnBeforeShow()
         {
         }
 

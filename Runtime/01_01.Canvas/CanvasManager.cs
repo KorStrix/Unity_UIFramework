@@ -270,8 +270,7 @@ namespace UIFramework
             CLASS_DRIVEN_MANAGER pInstance = instance;
 
             UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle;
-            KeyValuePair<CanvasWrapper, object> sCreatingCanvas;
-            if (pInstance._mapProcessCreating.TryGetValue(eName, out sCreatingCanvas) == false)
+            if (pInstance._mapProcessCreating.TryGetValue(eName, out var sCreatingCanvas) == false)
             {
                 pHandle = GetCommandHandle<CLASS_DRIVEN_CANVAS>(null);
                 pInstance.CreateInstance(eName, false, pHandle);
@@ -312,8 +311,7 @@ namespace UIFramework
             CLASS_DRIVEN_MANAGER pInstance = instance;
 
             UICommandHandle<ICanvas> pHandle;
-            KeyValuePair<CanvasWrapper, object> sCreatingCanvas;
-            if (pInstance._mapProcessCreating.TryGetValue(eName, out sCreatingCanvas) == false)
+            if (pInstance._mapProcessCreating.TryGetValue(eName, out var sCreatingCanvas) == false)
             {
                 pHandle = GetCommandHandle<ICanvas>(null);
                 pInstance.CreateInstance(eName, false, pHandle);
@@ -543,14 +541,12 @@ namespace UIFramework
 
         public override UICommandHandle<CLASS_UIOBJECT> IUIManager_Show<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
         {
-            CanvasWrapper pWrapper;
             UICommandHandle<CLASS_UIOBJECT> pHandle = null;
 
             if (pUIObject.IsNull() == false)
             {
-                GetWrapper_And_Handle(pUIObject, out pWrapper, out pHandle);
-                ENUM_CANVAS_NAME eName;
-                GetEnumKey_Custom(pUIObject as ICanvas, out eName);
+                GetWrapper_And_Handle(pUIObject, out var pWrapper, out pHandle);
+                GetEnumKey_Custom(pUIObject as ICanvas, out var eName);
                 StartCoroutine(Process_ShowCoroutine(eName, pWrapper, pHandle));
             }
 
@@ -559,12 +555,11 @@ namespace UIFramework
 
         public override UICommandHandle<CLASS_UIOBJECT> IUIManager_Hide<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject, bool bPlayHideCoroutine)
         {
-            CanvasWrapper pWrapper;
             UICommandHandle<CLASS_UIOBJECT> pHandle = null;
 
             if (pUIObject.IsNull() == false)
             {
-                GetWrapper_And_Handle(pUIObject, out pWrapper, out pHandle);
+                GetWrapper_And_Handle(pUIObject, out var pWrapper, out pHandle);
 
                 if (bPlayHideCoroutine)
                     StartCoroutine(Process_HideCoroutine(pWrapper, pHandle));
@@ -578,8 +573,7 @@ namespace UIFramework
         public override EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
         {
             ICanvas pCanvas = pUIObject as ICanvas;
-            CanvasWrapper pCanvasWrapper;
-            if (_mapWrapper_Key_Is_Instance.TryGetValue(pCanvas, out pCanvasWrapper) == false)
+            if (_mapWrapper_Key_Is_Instance.TryGetValue(pCanvas, out var pCanvasWrapper) == false)
                 return EUIObjectState.Error;
 
             return pCanvasWrapper.eState;
@@ -836,8 +830,7 @@ namespace UIFramework
         private CanvasWrapper CreateInstance<T>(ENUM_CANVAS_NAME eName, bool bIsMultiple, UICommandHandle<T> pHandle)
             where T : class, ICanvas
         {
-            CanvasWrapper pWrapper;
-            bool bIsCreateInstance = Check_IsCreateInstance(eName, bIsMultiple, pHandle, out pWrapper);
+            bool bIsCreateInstance = Check_IsCreateInstance(eName, bIsMultiple, pHandle, out var pWrapper);
             StartCoroutine(Process_CreateInstance(eName, pWrapper, bIsCreateInstance, bIsMultiple, pHandle));
 
             return pWrapper;
@@ -849,8 +842,7 @@ namespace UIFramework
             ICanvas pCanvas = pUIObject as ICanvas;
             if (_mapWrapper_Key_Is_Instance.TryGetValue(pCanvas, out pWrapper) == false)
             {
-                ENUM_CANVAS_NAME eKey;
-                GetEnumKey(pCanvas, out eKey);
+                GetEnumKey(pCanvas, out var eKey);
                 pWrapper = CreateWrapper_OrNull(eKey);
                 Wrapper_SetCanvasInstance(pWrapper, pCanvas);
             }
@@ -930,8 +922,7 @@ namespace UIFramework
                 bCreateInstance = Get_MatchWrapperList(eName, x => x.Check_IsDisable()).Count == 0;
                 if (bCreateInstance)
                 {
-                    KeyValuePair<CanvasWrapper, object> sKeyPair;
-                    bCreateInstance = _mapProcessCreating.TryGetValue(eName, out sKeyPair) == false;
+                    bCreateInstance = _mapProcessCreating.TryGetValue(eName, out var sKeyPair) == false;
                     if (bCreateInstance)
                     {
                         pWrapper = CreateWrapper_OrNull(eName);
@@ -1032,8 +1023,7 @@ namespace UIFramework
             if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)
                 yield return pContainerWrapper.DoExecute_Manager_UndoLogic_Coroutine(this, eUIEvent);
 
-            List<ICanvasManager_Logic> listLogic;
-            if (_mapManagerLogic.TryGetValue(eUIEvent, out listLogic) == false)
+            if (_mapManagerLogic.TryGetValue(eUIEvent, out var listLogic) == false)
                 yield break;
 
             yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, listLogic, GetUndoLogic, const_bIsDebug);
@@ -1049,8 +1039,7 @@ namespace UIFramework
 
         CanvasManager_LogicUndo_Wrapper GetUndoLogic(ICanvasManager_Logic pLogic)
         {
-            CanvasManager_LogicUndo_Wrapper pWrapper;
-            _mapManagerUndoLogic_Parser.TryGetValue(pLogic, out pWrapper);
+            _mapManagerUndoLogic_Parser.TryGetValue(pLogic, out var pWrapper);
 
             return pWrapper;
         }

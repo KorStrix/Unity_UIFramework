@@ -27,7 +27,7 @@ public enum EFontStyle_ForRichText
 /// </summary>
 public static class String_ForRichText_Extension
 {
-    static public string ConvertRichText_SetStyle(this string strText, EFontStyle_ForRichText eStyle)
+    public static string ConvertRichText_SetStyle(this string strText, EFontStyle_ForRichText eStyle)
     {
         switch (eStyle)
         {
@@ -42,27 +42,27 @@ public static class String_ForRichText_Extension
     /// </summary>
     /// <param name="strColor">예시) Red = FF0000, Green = 00FF00, Blue = 0000FF </param>
     /// <returns></returns>
-    static public string ConvertRichText_SetColor(this string strText, string strColorHex)
+    public static string ConvertRichText_SetColor(this string strText, string strColorHex)
     {
         return "<color=#" + strColorHex + ">" + strText + "</color>";
     }
 
-    static public string ConvertRichText_SetColor(this string strText, Color sColorHex)
+    public static string ConvertRichText_SetColor(this string strText, Color sColorHex)
     {
         return "<color=#" + ColorUtility.ToHtmlStringRGB(sColorHex) + ">" + strText + "</color>";
     }
 
-    static public string ConvertRichText_SetColor(this string strText, EColor_ForRichText eColor)
+    public static string ConvertRichText_SetColor(this string strText, EColor_ForRichText eColor)
     {
         return "<color=" + eColor.ToString() + ">" + strText + "</color>";
     }
 
-    static public string ConvertRichText_SetFontSize(this string strText, int iFontSize)
+    public static string ConvertRichText_SetFontSize(this string strText, int iFontSize)
     {
         return string.Format("<size={0}>{1}</size>", iFontSize, strText);
     }
 
-    static public string Regex_Repace_SetRichText(this string strText, string strPattern, RegexOptions eRegexOption, MatchEvaluator OnMatchEvaluator)
+    public static string Regex_Repace_SetRichText(this string strText, string strPattern, RegexOptions eRegexOption, MatchEvaluator OnMatchEvaluator)
     {
         try
         {
@@ -76,7 +76,7 @@ public static class String_ForRichText_Extension
         return strText;
     }
 
-    static public string AddNextLine(this string strText)
+    public static string AddNextLine(this string strText)
     {
         return strText + System.Environment.NewLine;
     }

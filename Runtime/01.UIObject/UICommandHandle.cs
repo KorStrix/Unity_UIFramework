@@ -15,7 +15,7 @@ public class UICommandHandle<T> : System.IDisposable
     where T : IUIObject
 {
     #region Static
-    static public int g_iInstanceCount { get { return g_setHandle.Count; } }
+    public static int g_iInstanceCount { get { return g_setHandle.Count; } }
 
     static HashSet<UICommandHandle<T>> g_setHandle = new HashSet<UICommandHandle<T>>();
     static SimplePool<UICommandHandle<T>> g_pPool = null;
@@ -148,14 +148,14 @@ public class UICommandHandle<T> : System.IDisposable
 
 public static class UICommandHandleHelper
 {
-    static public UICommandHandle<T> Set_OnCheck_IsShow<T>(this UICommandHandle<T> pHandle, UICommandHandle<T>.delOnChecking_IsShow OnChecking_IsShow)
+    public static UICommandHandle<T> Set_OnCheck_IsShow<T>(this UICommandHandle<T> pHandle, UICommandHandle<T>.delOnChecking_IsShow OnChecking_IsShow)
         where T : IUIObject
     {
         pHandle.OnChecking_IsShow = OnChecking_IsShow;
         return pHandle;
     }
 
-    static public UICommandHandle<T> Set_OnBeforeShow<T>(this UICommandHandle<T> pHandle, System.Action<T> OnBeforeShow)
+    public static UICommandHandle<T> Set_OnBeforeShow<T>(this UICommandHandle<T> pHandle, System.Action<T> OnBeforeShow)
         where T : IUIObject
     {
         if (pHandle.bIsExecute_BeforeShow)
@@ -166,21 +166,21 @@ public static class UICommandHandleHelper
         return pHandle;
     }
 
-    static public UICommandHandle<T> Set_OnShow_BeforeAnimation<T>(this UICommandHandle<T> pHandle, System.Action<T> OnShow)
+    public static UICommandHandle<T> Set_OnShow_BeforeAnimation<T>(this UICommandHandle<T> pHandle, System.Action<T> OnShow)
         where T : IUIObject
     {
         pHandle.OnShow_BeforeAnimation += OnShow;
         return pHandle;
     }
 
-    static public UICommandHandle<T> Set_OnShow_AfterAnimation<T>(this UICommandHandle<T> pHandle, System.Action<T> OnShow)
+    public static UICommandHandle<T> Set_OnShow_AfterAnimation<T>(this UICommandHandle<T> pHandle, System.Action<T> OnShow)
         where T : IUIObject
     {
         pHandle.OnShow_AfterAnimation += OnShow;
         return pHandle;
     }
 
-    static public UICommandHandle<T> Set_OnHide<T>(this UICommandHandle<T> pHandle, System.Action<T> OnHide)
+    public static UICommandHandle<T> Set_OnHide<T>(this UICommandHandle<T> pHandle, System.Action<T> OnHide)
         where T : IUIObject
     {
         pHandle.OnHide += OnHide;

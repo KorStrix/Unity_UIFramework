@@ -19,13 +19,13 @@ using UnityEditor;
 public static class UnityFolderPathEditor
 {
     [MenuItem("Tools/OpenFolder/Open Persistent Path")]
-    static public void Open_PersistentPath()
+    public static void Open_PersistentPath()
     {
         System.Diagnostics.Process.Start(Application.persistentDataPath);
     }
 
     [MenuItem("Tools/OpenFolder/Open LocalLow Unity Path")]
-    static public void Open_CahcedBundle_Path()
+    public static void Open_CahcedBundle_Path()
     {
         string strPath_Unity = Application.persistentDataPath + "/../../Unity/";
         string strPath_Include_Compnay_And_Product = $"{strPath_Unity}{Application.companyName}_{Application.productName}";
@@ -40,14 +40,14 @@ public static class UnityFolderPathEditor
     }
 
     [MenuItem("Tools/OpenFolder/Open AndroidSDK Path")]
-    static public void Open_AndroidSDK_Path()
+    public static void Open_AndroidSDK_Path()
     {
         System.Diagnostics.Process.Start(EditorPrefs.GetString("AndroidSdkRoot"));
     }
 
 
     [MenuItem("Tools/OpenFolder/Open Editor Log")]
-    static public void Open_EditorLog_Path()
+    public static void Open_EditorLog_Path()
     {
         string strPath_Unity = Application.persistentDataPath + "/../../../Local/";
         if (System.IO.Directory.Exists(strPath_Unity))

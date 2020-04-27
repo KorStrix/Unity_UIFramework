@@ -45,7 +45,7 @@ namespace UIFramework
 
         /* public - [Do~Somthing] Function 	        */
 
-        override public void DoInit_SlotCommandLogic(InventorySlot_CommandLogic[] arrSlotCommandLogic)
+        public override void DoInit_SlotCommandLogic(InventorySlot_CommandLogic[] arrSlotCommandLogic)
         {
             OnDragBeginSlot -= ExecuteLogic_CommandEvent_OnDragBegin;
             OnDragBeginSlot += ExecuteLogic_CommandEvent_OnDragBegin;

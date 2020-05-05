@@ -34,7 +34,7 @@ namespace UIFramework_Test
             pText.DoSeekTween(iStartNumber, iDestNumber, 0f);
             Assert.AreEqual(pText.text, (iStartNumber).ToString());
 
-            pText.DoPlayTween(pText, iStartNumber, iDestNumber, 0.01f);
+            pText.DoPlayTween_Number(pText, iStartNumber, iDestNumber, 0.01f);
             yield return null;
             yield return null;
             Assert.AreEqual(pText.text, (iDestNumber).ToString());
@@ -64,7 +64,7 @@ namespace UIFramework_Test
             pText.DoSeekTween(fStartNumber, fDestNumber, 0f);
             Assert.AreEqual(pText.text, (fStartNumber).ToString());
 
-            pText.DoPlayTween(pText, fStartNumber, fDestNumber, 0.01f);
+            pText.DoPlayTween_Number(pText, fStartNumber, fDestNumber, 0.01f);
             yield return null;
             yield return null;
             Assert.AreEqual(pText.text, (fDestNumber).ToString());
@@ -91,7 +91,7 @@ namespace UIFramework_Test
                 Assert.AreEqual(pText.text, (iDestNumber * fSeek_0_1).ToString("n1"));
             }
 
-            pText.DoPlayTween(pText, iStartNumber, iDestNumber, 0.01f);
+            pText.DoPlayTween_Number(pText, iStartNumber, iDestNumber, 0.01f);
             yield return null;
             yield return null;
             Assert.AreEqual(pText.text, (iDestNumber).ToString());

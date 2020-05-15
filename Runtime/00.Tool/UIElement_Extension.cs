@@ -367,7 +367,7 @@ public static class UIElement_Extension
     }
 
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Slider pSlider, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
+    public static Coroutine DoPlayTween_FillAmount(this UnityEngine.UI.Slider pSlider, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {

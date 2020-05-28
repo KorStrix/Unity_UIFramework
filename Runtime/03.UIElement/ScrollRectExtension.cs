@@ -87,6 +87,14 @@ namespace UIFramework
             _listScrollItem.AddRange(GetComponentsInChildren<IScrollItem>());
         }
 
+        public void DoUpdateMaskTransform()
+        {
+            var pMask = GetComponentInChildren<Mask>();
+            pMaskTransform = pMask?.rectTransform;
+            if (pMaskTransform == null || ReferenceEquals(pMaskTransform, null))
+                pMaskTransform = content.parent as RectTransform;
+        }
+
         // ========================================================================== //
 
         /* protected - [Override & Unity API]       */
@@ -95,11 +103,7 @@ namespace UIFramework
         {
             _pRectTransform = GetComponent<RectTransform>();
 
-            var pMask = GetComponentInChildren<Mask>();
-            pMaskTransform = pMask?.rectTransform;
-            if (pMaskTransform == null)
-                pMaskTransform = content.parent as RectTransform;
-
+            DoUpdateMaskTransform();
             DoUpdateScrollItemList();
         }
 

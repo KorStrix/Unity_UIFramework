@@ -6,10 +6,11 @@
    ============================================ */
 #endregion Header
 
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UIFramework;
+
+// ReSharper disable PossibleNullReferenceException
 
 public class UICommandHandle<T> : System.IDisposable
     where T : IUIObject
@@ -18,7 +19,7 @@ public class UICommandHandle<T> : System.IDisposable
     public static int g_iInstanceCount { get { return g_setHandle.Count; } }
 
     static HashSet<UICommandHandle<T>> g_setHandle = new HashSet<UICommandHandle<T>>();
-    static SimplePool<UICommandHandle<T>> g_pPool = null;
+    static SimplePool<UICommandHandle<T>> g_pPool;
 
     public static UICommandHandle<T> GetInstance(T pObject_OrNull)
     {

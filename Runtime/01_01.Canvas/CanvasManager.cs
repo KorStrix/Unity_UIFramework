@@ -754,7 +754,7 @@ namespace UIFramework
             {
                 ICanvas pInstance = null;
                 yield return OnCreate_Instance(eName, bIsMultiple,
-                    (ICanvas pCanvas) =>
+                    (pCanvas) =>
                     {
                         if (pCanvas.IsNull())
                             Debug.LogError($"Error {eName} - OnCreate_Instance Fail");
@@ -779,7 +779,10 @@ namespace UIFramework
                 yield break;
 
             if (pWrapper.Check_IsEnable())
+            {
+                pUICommandHandle.Set_UIObject(pWrapper.pInstance as T);
                 yield break;
+            }
 
             EnableWrapper(pWrapper, pUICommandHandle);
             yield return Process_ShowCoroutine(eName, pWrapper, pUICommandHandle);

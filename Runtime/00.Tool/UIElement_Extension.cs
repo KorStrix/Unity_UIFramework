@@ -473,6 +473,12 @@ public static class UIElement_Extension
 
     private static Vector3 GetWorldPoint(RectTransform target)
     {
+        if (target == null)
+        {
+            Debug.LogError($"{nameof(GetWorldPoint)} target == null");
+            return Vector3.zero;
+        }
+
         //pivot position + item size has to be included
         var pivotOffset = new Vector3(
             (0.5f - target.pivot.x) * target.rect.size.x,

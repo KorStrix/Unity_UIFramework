@@ -13,7 +13,7 @@ namespace UIFramework_Test
         /// <summary>
         /// protected에 접근하기 위해 <see cref="CanvasManager_Example"/>를 상속
         /// </summary>
-        [Category("UIFramework")]
+        [Category("UIFramework")]/* [Timeout(7000)]*/
         public class Canvas_Tester : CanvasManager_Example
         {
             int iWaitFrameCount;
@@ -252,7 +252,7 @@ namespace UIFramework_Test
 
                 // Act
                 yield return pHandle.Yield_WaitForSetUIObject();
-                yield return pHandle.Yield_WaitForSetUIObject();
+                yield return pHandle2.Yield_WaitForSetUIObject();
 
 
                 // Assert

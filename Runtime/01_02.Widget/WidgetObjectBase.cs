@@ -1,4 +1,4 @@
-#region Header
+ï»¿#region Header
 /*	============================================
  *	Aurthor 			    : Strix
  *	Initial Creation Date 	: 2020-01-30
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace UIFramework
 {
     /// <summary>
-    /// <see cref="IUIWidget"/>¸¦ »ó¼Ó¹ŞÀº <see cref="MonoBehaviour"/> ±â¹İÀÇ Base Class
+    /// <see cref="IUIWidget"/>ë¥¼ ìƒì†ë°›ì€ <see cref="MonoBehaviour"/> ê¸°ë°˜ì˜ Base Class
     /// </summary>
     public class UIWidgetObjectBase : MonoBehaviour, IUIWidget
     {

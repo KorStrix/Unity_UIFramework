@@ -16,12 +16,46 @@ using UnityEngine.UI;
 /// </summary>
 public static class UIElement_Extension
 {
+    public static void CalculateSpriteSizeFit(this Image pImage, Vector2 vecOriginSize)
+    {
+        if (pImage == null)
+        {
+            Debug.Log($"{nameof(CalculateSpriteSizeFit)} pImage == null");
+            return;
+        }
+
+        if (pImage.sprite == null)
+        {
+            Debug.Log($"{nameof(CalculateSpriteSizeFit)} pImage.sprite == null");
+            return;
+        }
+
+        Vector2 vecSpriteSize = pImage.sprite.rect.size;
+        Vector2 vecApplySize = Vector3.zero;
+
+        float fWidthRatio = vecSpriteSize.x / vecOriginSize.x;
+        float fHeightRatio = vecSpriteSize.y / vecOriginSize.y;
+
+        if (fWidthRatio > fHeightRatio)
+        {
+            vecApplySize.x = vecOriginSize.x;
+            vecApplySize.y = vecSpriteSize.y / fWidthRatio;
+        }
+        else
+        {
+            vecApplySize.x = vecSpriteSize.x / fHeightRatio;
+            vecApplySize.y = vecOriginSize.y;
+        }
+
+        pImage.rectTransform.sizeDelta = vecApplySize;
+    }
+
     #region TextNumber
 
     delegate T GetLerp<T>(T iNumberStart, T iNumberDest, float fProgress_0_1);
     public delegate string ToString<T>(T iNumber, string strFormat_Or_Null);
 
-  /// <summary>
+    /// <summary>
     /// Text컴포넌트에서 어떤 텍스트 애니메이션을 실행시키기 용도
     /// <para>예시) 숫자 1에서 10까지 천천히 올리고 싶을 때 사용</para>
     /// </summary>
@@ -30,7 +64,7 @@ public static class UIElement_Extension
     /// <param name="iNumberDest"></param>
     /// <param name="fDuration"></param>
     /// <returns></returns>
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -41,7 +75,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Int, ToString_Int_NotUseFormat));
     }  
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration, string strNumberFormat)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration, string strNumberFormat)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -52,7 +86,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strNumberFormat, GetLerp_Int, ToString_Int_UseFormat));
     }
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration, ToString<int> OnTextResult)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, int iNumberStart, int iNumberDest, float fDuration, ToString<int> OnTextResult)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -64,7 +98,7 @@ public static class UIElement_Extension
     }
     
     
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberDest, float fDuration)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, int iNumberDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -76,7 +110,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Int, ToString_Int_UseFormat));
     }
     
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberDest, float fDuration, string strNumberFormat)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, int iNumberDest, float fDuration, string strNumberFormat)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -88,7 +122,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strNumberFormat, GetLerp_Int, ToString_Int_UseFormat));
     }
     
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, int iNumberDest, float fDuration, ToString<int> OnTextResult)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, int iNumberDest, float fDuration, ToString<int> OnTextResult)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -104,7 +138,7 @@ public static class UIElement_Extension
     
     
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -115,7 +149,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, null, GetLerp_Long, ToString_Long_NotUseFormat));
     }
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration, string strNumberFormat)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration, string strNumberFormat)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -126,7 +160,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, iNumberStart, iNumberDest, fDuration, strNumberFormat, GetLerp_Long, ToString_Long_UseFormat));
     }
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration, ToString<long> OnTextResult)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, long iNumberStart, long iNumberDest, float fDuration, ToString<long> OnTextResult)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -140,7 +174,7 @@ public static class UIElement_Extension
     
     
     
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -151,7 +185,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, null, GetLerp_Float, ToString_Float_NotUseFormat));
     }
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration, string strNumberFormat)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration, string strNumberFormat)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -162,7 +196,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, strNumberFormat, GetLerp_Float, ToString_Float_UseFormat));
     }
 
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration, ToString<float> OnTextResult)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, float fNumberStart, float fNumberDest, float fDuration, ToString<float> OnTextResult)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -174,7 +208,7 @@ public static class UIElement_Extension
     }
 
     
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberDest, float fDuration)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, float fNumberDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -186,7 +220,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, null, GetLerp_Float, ToString_Float_UseFormat));
     }
     
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberDest, float fDuration, string strNumberFormat)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, float fNumberDest, float fDuration, string strNumberFormat)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -198,7 +232,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, fNumberStart, fNumberDest, fDuration, strNumberFormat, GetLerp_Float, ToString_Float_UseFormat));
     }
     
-    public static Coroutine DoPlayTween_Number(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, float fNumberDest, float fDuration, ToString<float> OnTextResult)
+    public static Coroutine DoPlayTween_Number(this Text pText, MonoBehaviour pCoroutineExecuter, float fNumberDest, float fDuration, ToString<float> OnTextResult)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -213,22 +247,22 @@ public static class UIElement_Extension
     
     
     
-    public static void DoSeekTween(this UnityEngine.UI.Text pText, int iNumberStart, int iNumberDest, float fSeekPos_0_1)
+    public static void DoSeekTween(this Text pText, int iNumberStart, int iNumberDest, float fSeekPos_0_1)
     {
         SeekTweenText(pText, iNumberStart, iNumberDest, fSeekPos_0_1, null, GetLerp_Int, ToString_Int_NotUseFormat);
     }
 
-    public static void DoSeekTween(this UnityEngine.UI.Text pText, int iNumberStart, int iNumberDest, float fSeekPos_0_1, string strFormat)
+    public static void DoSeekTween(this Text pText, int iNumberStart, int iNumberDest, float fSeekPos_0_1, string strFormat)
     {
         SeekTweenText(pText, iNumberStart, iNumberDest, fSeekPos_0_1, strFormat, GetLerp_Int, ToString_Int_UseFormat);
     }
 
-    public static void DoSeekTween(this UnityEngine.UI.Text pText, float fNumberStart, float fNumberDest, float fSeekPos_0_1)
+    public static void DoSeekTween(this Text pText, float fNumberStart, float fNumberDest, float fSeekPos_0_1)
     {
         SeekTweenText(pText, fNumberStart, fNumberDest, fSeekPos_0_1, null, GetLerp_Float, ToString_Float_NotUseFormat);
     }
 
-    public static void DoSeekTween(this UnityEngine.UI.Text pText, float fNumberStart, float fNumberDest, float fSeekPos_0_1, string strFormat)
+    public static void DoSeekTween(this Text pText, float fNumberStart, float fNumberDest, float fSeekPos_0_1, string strFormat)
     {
         SeekTweenText(pText, fNumberStart, fNumberDest, fSeekPos_0_1, strFormat, GetLerp_Float, ToString_Float_UseFormat);
     }
@@ -245,7 +279,7 @@ public static class UIElement_Extension
     /// <param name="strFormat">텍스트를 출력할 포멧</param>
     /// <param name="GetLerp">보간 로직</param>
     /// <param name="ToString">텍스트 출력 함수</param>
-    private static IEnumerator TweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fDuration, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
+    private static IEnumerator TweenText<T>(Text pText, T iNumberStart, T iNumberDest, float fDuration, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
     {
         float fProgress_0_1 = 0f;
         while (fProgress_0_1 < 1f)
@@ -271,7 +305,7 @@ public static class UIElement_Extension
     /// <param name="strFormat"></param>
     /// <param name="GetLerp"></param>
     /// <param name="ToString"></param>
-    private static void SeekTweenText<T>(UnityEngine.UI.Text pText, T iNumberStart, T iNumberDest, float fSeekPos_0_1, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
+    private static void SeekTweenText<T>(Text pText, T iNumberStart, T iNumberDest, float fSeekPos_0_1, string strFormat, GetLerp<T> GetLerp, ToString<T> ToString)
     {
         int iVAlue = 1000;
         iVAlue.ToString(); // =1000
@@ -306,12 +340,12 @@ public static class UIElement_Extension
 
     #endregion TextNumber
 
-    //static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextStart, string strTextDest, float fDuration)
+    //static public Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextStart, string strTextDest, float fSpeed)
     //{
-    //    return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextStart, strTextDest, fDuration));
+    //    return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextStart, strTextDest, fSpeed));
     //}
 
-    public static Coroutine DoPlayTween(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fDuration)
+    public static Coroutine DoPlayTween(this Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -322,7 +356,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fDuration, OnCalculateProgress_Duration));
     }
 
-    public static Coroutine DoPlayTween_BySpeed(this UnityEngine.UI.Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fSpeed)
+    public static Coroutine DoPlayTween_BySpeed(this Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fSpeed)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -333,7 +367,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fSpeed, OnCalculateProgress_Speed));
     }
 
-    private static IEnumerator TweenText(UnityEngine.UI.Text pText, string strTextDest, float fValue, System.Func<float, float, float> OnCalculateProgress)
+    private static IEnumerator TweenText(Text pText, string strTextDest, float fValue, System.Func<float, float, float> OnCalculateProgress)
     {
         int iLength = strTextDest.Length;
         int iCutLengthPrev = -1;
@@ -367,7 +401,7 @@ public static class UIElement_Extension
     }
 
 
-    public static Coroutine DoPlayTween_FillAmount(this UnityEngine.UI.Slider pSlider, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
+    public static Coroutine DoPlayTween_FillAmount(this Slider pSlider, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -378,7 +412,7 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenSlider((fValue) => pSlider.value = fValue, fValueStart, fValueDest, fDuration));
     }
 
-    public static Coroutine DoPlayTween_FillAmount(this UnityEngine.UI.Image pImage, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
+    public static Coroutine DoPlayTween_FillAmount(this Image pImage, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
         {
@@ -389,9 +423,9 @@ public static class UIElement_Extension
         return pCoroutineExecuter.StartCoroutine(TweenSlider((fValue) => pImage.fillAmount = fValue, fValueStart, fValueDest, fDuration));
     }
 
-    //static public Coroutine DoPlayTween(this UnityEngine.UI.Image pSprite, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fDuration)
+    //static public Coroutine DoPlayTween(this UnityEngine.UI.Image pSprite, MonoBehaviour pCoroutineExecuter, float fValueStart, float fValueDest, float fSpeed)
     //{
-    //    return pCoroutineExecuter.StartCoroutine(TweenSlider(pSprite, fValueStart, fValueDest, fDuration));
+    //    return pCoroutineExecuter.StartCoroutine(TweenSlider(pSprite, fValueStart, fValueDest, fSpeed));
     //}
 
     private static IEnumerator TweenSlider(System.Action<float> OnChangeValue, float fValueStart, float fValueDest, float fDuration)

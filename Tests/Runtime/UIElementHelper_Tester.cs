@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using UnityEngine.UI;
 
 namespace UIFramework_Test
@@ -30,7 +27,7 @@ namespace UIFramework_Test
     /// <summary>
     /// 토글을 가지고 있는 테스트용 Monobehaviour
     /// </summary>
-    public class HasToggle_TestObject : MonoBehaviour, IHas_UIToggle
+    public class HasToggle_TestObject : MonoBehaviour, IHas_UIToggle<HasToggle_TestObject.EToggleObjectName>
     {
         public enum EToggleObjectName
         {
@@ -40,12 +37,12 @@ namespace UIFramework_Test
         }
 
         public EToggleObjectName eLastClickToggle { get; private set; } = EToggleObjectName.None;
-        public bool bLastToggle { get; private set; } = false;
+        public bool bLastToggle { get; private set; }
 
-        public void IHas_UIToggle_OnToggle(UIToggleMessage sToggleMessage)
+        public void IHas_UIToggle_OnToggle(UIToggleMessage<EToggleObjectName> sToggleMessage)
         {
-            eLastClickToggle = (EToggleObjectName)System.Enum.Parse(typeof(EToggleObjectName), sToggleMessage.strToggleName);
-            bLastToggle = sToggleMessage.bToggle;
+            eLastClickToggle = sToggleMessage.eToggleName;
+            bLastToggle = sToggleMessage.bToggleInput;
         }
     }
 
@@ -55,6 +52,7 @@ namespace UIFramework_Test
         [Test]
         public static void HasButton_Test()
         {
+            // Arrange (데이터 정렬)
             GameObject pObjectTest = new GameObject(nameof(HasButton_Test));
 
             GameObject pObjectButton_A = new GameObject(HasButton_TestObject.EButtonObjectName.A.ToString());
@@ -66,13 +64,14 @@ namespace UIFramework_Test
             pObjectButton_B.transform.parent = pObjectTest.transform;
 
 
-
-            // 테스트 시작
             HasButton_TestObject pTestScript = pObjectTest.AddComponent<HasButton_TestObject>();
-
             // 처음 디폴트 값은 None입니다.
             Assert.AreEqual(pTestScript.eLastClickButton, HasButton_TestObject.EButtonObjectName.None);
 
+
+
+
+            // Act (실행)
             // 스크립트로 수동으로 버튼 A 클릭
             pButtonA.OnPointerClick(new UnityEngine.EventSystems.PointerEventData(null));
 
@@ -81,7 +80,7 @@ namespace UIFramework_Test
 
 
             // Helper를 통한 Init
-            SCUIElementEventHelper.DoInit_HasUIElement(pTestScript);
+            HasUIElementHelper.DoInit_HasUIElement(pTestScript);
 
             // 스크립트로 수동으로 버튼 A 클릭 테스트
             pButtonA.OnPointerClick(new UnityEngine.EventSystems.PointerEventData(null));
@@ -121,7 +120,7 @@ namespace UIFramework_Test
 
 
             // Helper를 통한 Init
-            SCUIElementEventHelper.DoInit_HasUIElement(pTestScript);
+            HasUIElementHelper.DoInit_HasUIElement(pTestScript);
 
             // 테스트 하기 전 Toggle의 isOn상태 저장
             bool bIsOn_Original = pToggleA.isOn;

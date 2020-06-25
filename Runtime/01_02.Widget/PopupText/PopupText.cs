@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-01-31
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
@@ -58,7 +58,7 @@ namespace UIFramework
 
         // ========================================================================== //
 
-        /* public - [Do~Somthing] Function 	        */
+        /* public - [Do~Something] Function 	        */
 
         /// <summary>
         /// 이 팝업 Text를 출력합니다. 출력과 동시에 등록된 <see cref="IPopupText_Logic"/>을 실행합니다.

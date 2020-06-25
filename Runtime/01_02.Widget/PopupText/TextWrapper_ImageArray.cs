@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-02-13
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
@@ -67,7 +67,7 @@ namespace UIFramework
 
         // ========================================================================== //
 
-        /* public - [Do~Somthing] Function 	        */
+        /* public - [Do~Something] Function 	        */
 
         public void DoInit_Converter(System.Func<char, Sprite> OnConvert_Char_To_Sprite)
         {

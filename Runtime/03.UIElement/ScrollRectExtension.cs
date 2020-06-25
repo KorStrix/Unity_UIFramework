@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-02-18
  *	Summary 		        : 
  *	
@@ -79,7 +79,7 @@ namespace UIFramework
 
         // ========================================================================== //
 
-        /* public - [Do~Somthing] Function 	        */
+        /* public - [Do~Something] Function 	        */
 
         public void DoUpdateScrollItemList()
         {

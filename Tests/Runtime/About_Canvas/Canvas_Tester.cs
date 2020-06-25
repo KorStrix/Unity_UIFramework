@@ -61,7 +61,7 @@ namespace UIFramework_Test
 
 
             /// <summary>
-            /// <see cref="ICanvas"/>를 상속받으면 <see cref="ICanvasHelper.DoShow"/>, <see cref="ICanvasHelper.DoHide"/> 등의 확장 함수를 지원합니다.
+            /// <see cref="ICanvas"/>를 상속받으면 <see cref="ICanvasHelper.DoShowCoroutine{T}"/>, <see cref="ICanvasHelper.DoHide_Coroutine{T}"/> 등의 확장 함수를 지원합니다.
             /// </summary>
             [UnityTest]
             public IEnumerator ICanvas_ExtensionMethod_Test()
@@ -94,7 +94,7 @@ namespace UIFramework_Test
 
                 Assert.IsFalse(pHandle.pUIObject.bIsPlay_Coroutine);
                 // 팝업에게 바로 Hide 명령
-                pHandle.pUIObject.DoHide();
+                pHandle.pUIObject.DoHide_Coroutine();
                 while (pHandle.pUIObject.bIsPlay_Coroutine == false)
                 {
                     if (CanvasManager_Example.const_bIsDebug)
@@ -304,7 +304,7 @@ namespace UIFramework_Test
                         }
 
                         // 다시 Hide 시키기
-                        pUITarget.DoHide();
+                        pUITarget.DoHide_Coroutine();
                     }
 
                     // 모든 Yield For Animation 동시에 기다리기

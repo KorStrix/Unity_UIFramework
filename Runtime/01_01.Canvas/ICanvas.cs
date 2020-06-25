@@ -102,7 +102,7 @@ public static class ICanvasHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 켭니다.
     /// </summary>
-    public static UICommandHandle<T> DoShow<T>(this T pObject)
+    public static UICommandHandle<T> DoShowCoroutine<T>(this T pObject)
         where T : MonoBehaviour, ICanvas
     {
         if (pObject == null)
@@ -110,7 +110,7 @@ public static class ICanvasHelper
 
         if (pObject.pUIManager.IsNull())
         {
-            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoShow), pObject);
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager", pObject.gameObject.name, nameof(DoShowCoroutine), pObject);
             pObject.gameObject.SetActive(true);
 
             return null;
@@ -121,8 +121,18 @@ public static class ICanvasHelper
 
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
+    /// <para>Delegate 핸들링용</para>
     /// </summary>
-    public static UICommandHandle<T> DoHide<T>(this T pObject)
+    public static void DoHide_Coroutine_ReturnVoid<T>(this T pObject)
+        where T : ICanvas
+    {
+        DoHide_Coroutine(pObject);
+    }
+
+    /// <summary>
+    /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
+    /// </summary>
+    public static UICommandHandle<T> DoHide_Coroutine<T>(this T pObject)
         where T : ICanvas
     {
         if (pObject == null)
@@ -130,7 +140,7 @@ public static class ICanvasHelper
 
         if (pObject.pUIManager.IsNull())
         {
-            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide), pObject);
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager", pObject.gameObject.name, nameof(DoHide_Coroutine), pObject);
             pObject.gameObject.SetActive(false);
 
             return null;
@@ -142,7 +152,7 @@ public static class ICanvasHelper
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
     /// </summary>
-    public static void DoHideOnly<T>(this T pObject)
+    public static void DoHide_NotCoroutine<T>(this T pObject)
         where T : ICanvas
     {
         if (pObject.IsNull())
@@ -150,7 +160,7 @@ public static class ICanvasHelper
 
         if (pObject.pUIManager.IsNull())
         {
-            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide), pObject);
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide_Coroutine), pObject);
             pObject.gameObject.SetActive(false);
 
             return;

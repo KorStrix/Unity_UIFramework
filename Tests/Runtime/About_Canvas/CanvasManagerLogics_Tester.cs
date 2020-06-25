@@ -248,11 +248,11 @@ namespace UIFramework_Test
 
 
                 // UI Object에게 직접 명령 후 Handle 및 Logic 동작 이벤트 테스트
-                pHandle_Show = pUICanvas.DoShow();
+                pHandle_Show = pUICanvas.DoShowCoroutine();
                 yield return pHandle_Show.Yield_WaitForAnimation();
                 Assert.AreEqual(pUICanvas.strText, nameof(EUIObjectState.Process_After_ShowCoroutine));
 
-                pHandle_Hide = pUICanvas.DoHide();
+                pHandle_Hide = pUICanvas.DoHide_Coroutine();
                 yield return null;
                 Assert.AreEqual(pUICanvas.strText, nameof(EUIObjectState.Process_Before_HideCoroutine));
 

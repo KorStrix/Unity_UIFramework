@@ -9,59 +9,61 @@
 using System.Collections;
 using System.Collections.Generic;
 using UIFramework;
+using UnityEngine;
 
 // ReSharper disable PossibleNullReferenceException
 
-public class UICommandHandle<T> : System.IDisposable
-    where T : IUIObject
+public class UICommandHandle<TUIObject> : System.IDisposable
+    where TUIObject : IUIObject
 {
     #region Static
     public static int g_iInstanceCount { get { return g_setHandle.Count; } }
 
-    static HashSet<UICommandHandle<T>> g_setHandle = new HashSet<UICommandHandle<T>>();
-    static SimplePool<UICommandHandle<T>> g_pPool;
+    static HashSet<UICommandHandle<TUIObject>> g_setHandle = new HashSet<UICommandHandle<TUIObject>>();
+    static SimplePool<UICommandHandle<TUIObject>> g_pPool;
 
-    public static UICommandHandle<T> GetInstance(T pObject_OrNull)
+    public static UICommandHandle<TUIObject> GetInstance(TUIObject pObject_OrNull)
     {
         if (g_pPool == null)
-            g_pPool = new SimplePool<UICommandHandle<T>>(iCount => new UICommandHandle<T>(iCount), null, 1);
+            g_pPool = new SimplePool<UICommandHandle<TUIObject>>(iCount => new UICommandHandle<TUIObject>(iCount), null, 1);
 
-        UICommandHandle<T> pHandle = g_pPool.DoPop();
+        UICommandHandle<TUIObject> pHandle = g_pPool.DoPop();
         if (pObject_OrNull != null)
             g_setHandle.Add(pHandle);
 
         return pHandle.Reset();
     }
 
-    public static void ReturnInstance(UICommandHandle<T> pHandle)
+    public static void ReturnInstance(UICommandHandle<TUIObject> pHandle)
     {
         g_setHandle.Remove(pHandle);
         g_pPool.DoPush(pHandle);
     }
+
     #endregion
 
 
 
-    public event System.Action<T> OnBeforeShow;
+    public event System.Action<TUIObject> OnBeforeShow;
 
     public delegate IEnumerator delOnChecking_IsShow(System.Action<bool> OnCheck_IsShow);
     public delOnChecking_IsShow OnChecking_IsShow;
 
-    public event System.Action<T> OnShow_BeforeAnimation;
-    public event System.Action<T> OnShow_AfterAnimation;
-    public event System.Action<T> OnHide;
+    public event System.Action<TUIObject> OnShow_BeforeAnimation;
+    public event System.Action<TUIObject> OnShow_AfterAnimation;
+    public event System.Action<TUIObject> OnHide;
 
     /// <summary>
     /// 호출한 직후는 null이며 한프레임 기다려야 합니다.
     /// </summary>
-    public T pUIObject { get; private set; }
+    public TUIObject pUIObject { get; private set; }
     public int iID { get; private set; }
 
     public bool bIsExecute_BeforeShow { get; private set; }
     public bool bIsFinish_Animation { get; private set; }
     public bool bIsDisable { get; private set; }
 
-    public UICommandHandle<T> Reset()
+    public UICommandHandle<TUIObject> Reset()
     {
         // Null Check를 안하기 위해 Default Func Setting
         OnBeforeShow = DefaultFunc;
@@ -75,7 +77,7 @@ public class UICommandHandle<T> : System.IDisposable
         bIsFinish_Animation = false;
         bIsDisable = false;
 
-        pUIObject = default(T);
+        pUIObject = default(TUIObject);
 
         return this;
     }
@@ -102,9 +104,26 @@ public class UICommandHandle<T> : System.IDisposable
         ReturnInstance(this);
     }
 
-    public void Set_UIObject(T pUIObject)
+    public void Set_UIObject(TUIObject pUIObject)
     {
         this.pUIObject = pUIObject;
+    }
+
+    public UICommandHandle<T> Cast<T>()
+        where T : class, IUIObject
+    {
+        T pObjectCast = pUIObject as T;
+        if (pUIObject != null && pObjectCast == null)
+            Debug.LogError($"Type : {typeof(T).Name} - Casting Fail Name : {pUIObject?.gameObject.name}", pUIObject?.gameObject);
+
+        UICommandHandle<T> pCast = UICommandHandle<T>.GetInstance(pObjectCast);
+        pCast.bIsExecute_BeforeShow = this.bIsExecute_BeforeShow;
+        pCast.bIsFinish_Animation = this.bIsFinish_Animation;
+        pCast.bIsDisable = this.bIsDisable;
+
+        ReturnInstance(this);
+
+        return pCast;
     }
 
     public void Event_OnBeforeShow() { bIsExecute_BeforeShow = true; OnBeforeShow(pUIObject); }
@@ -143,7 +162,7 @@ public class UICommandHandle<T> : System.IDisposable
         return base.ToString() + "_" + iID;
     }
 
-    void DefaultFunc(T pObject) { }
+    void DefaultFunc(TUIObject pObject) { }
     IEnumerator DefaultCo(System.Action<bool> OnCheckFinish) { OnCheckFinish(true); yield break; }
 }
 

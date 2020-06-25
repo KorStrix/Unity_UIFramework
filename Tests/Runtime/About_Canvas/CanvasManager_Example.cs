@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			  : Strix
+ *	Author   			  : Strix
  *	Initial Creation Date : 2020-03-16 오전 11:08:18
  *	Summary 			  : 
  *  Template 		      : Visual Studio ItemTemplate For Unity V7

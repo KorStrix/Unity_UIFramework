@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-02-05
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1

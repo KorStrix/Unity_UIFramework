@@ -101,7 +101,7 @@ namespace UIFramework
         //    yield return null;
 
         //    if (bIsPlay_ShowAnimation_OnEnable)
-        //        this.DoShow();
+        //        this.DoShowCoroutine();
         //}
 
         public override void IUIWidget_OnBeforeShow()

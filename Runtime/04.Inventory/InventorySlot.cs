@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-01-30
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
@@ -103,7 +103,7 @@ namespace UIFramework
 
         // ========================================================================== //
 
-        /* public - [Do~Somthing] Function 	        */
+        /* public - [Do~Something] Function 	        */
 
         public void DoInit(Inventory pInventory)
         {

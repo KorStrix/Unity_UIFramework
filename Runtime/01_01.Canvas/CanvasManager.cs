@@ -366,7 +366,7 @@ namespace UIFramework
             if (bPlayHideCoroutine)
             {
                 for (int i = 0; i < listCanavs.Count; i++)
-                    listCanavs[i].DoHide();
+                    listCanavs[i].DoHide_Coroutine();
             }
             else
             {
@@ -661,7 +661,7 @@ namespace UIFramework
 
             bool bIsShow = false;
             yield return sUICommandHandle.DoExecute_Check_IsShowCoroutine(
-                (bool bIsShowParameter) => bIsShow = bIsShowParameter);
+                (bIsShowParameter) => bIsShow = bIsShowParameter);
 
             if (bIsShow == false)
             {

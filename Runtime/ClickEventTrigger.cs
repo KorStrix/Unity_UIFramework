@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-02-21
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
@@ -33,7 +33,7 @@ public class ClickEventTrigger : MonoBehaviour, IPointerClickHandler
 
 	// ========================================================================== //
 
-	/* public - [Do~Somthing] Function 	        */
+	/* public - [Do~Something] Function 	        */
 
 
 	// ========================================================================== //

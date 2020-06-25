@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-02-18
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
@@ -37,7 +37,7 @@ public class ScrollRectNested : ScrollRect
 
     // ========================================================================== //
 
-    /* public - [Do~Somthing] Function 	        */
+    /* public - [Do~Something] Function 	        */
 
 
     // ========================================================================== //

@@ -1,6 +1,6 @@
 #region Header
 /*	============================================
- *	Aurthor 			    : Strix
+ *	Author   			    : Strix
  *	Initial Creation Date 	: 2020-01-30
  *	Summary 		        : 
  *  Template 		        : For Unity Editor V1
@@ -32,7 +32,7 @@ namespace UIFramework
 
         // ========================================================================== //
 
-        /* public - [Do~Somthing] Function 	        */
+        /* public - [Do~Something] Function 	        */
 
         // ========================================================================== //
 
@@ -44,7 +44,7 @@ namespace UIFramework
                 return;
             _bExecute_Awake = true;
 
-            SCUIElementEventHelper.DoInit_HasUIElement(this);
+            HasUIElementHelper.DoInit_HasUIElement(this);
             OnAwake();
         }
 

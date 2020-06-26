@@ -98,6 +98,9 @@ public class UIGradientEffect : BaseMeshEffect
 
     public void DoDisable()
     {
+        if (pGraphicTarget == null)
+            Awake();
+
         eUpdateMode = EUpdateMode.Manual;
         pGraphicTarget.color = _sColorOrigin;
         pGraphicTarget.SetAllDirty();

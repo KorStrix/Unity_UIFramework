@@ -73,6 +73,7 @@ public class UIGradientEffect : BaseMeshEffect
 
     readonly List<UIVertex> _listVertex = new List<UIVertex>();
     private float _fElapseTime;
+    private bool _bIsEnable = true;
     Color _sColorOrigin;
 
     // ========================================================================== //
@@ -96,14 +97,18 @@ public class UIGradientEffect : BaseMeshEffect
     }
 
 
-    public void DoDisable()
+    public void DoSetEnable(bool bEnable)
     {
         if (pGraphicTarget == null)
             Awake();
 
-        eUpdateMode = EUpdateMode.Manual;
-        pGraphicTarget.color = _sColorOrigin;
-        pGraphicTarget.SetAllDirty();
+        _bIsEnable = bEnable;
+
+        if (bEnable == false)
+        {
+            pGraphicTarget.color = _sColorOrigin;
+            pGraphicTarget.SetAllDirty();
+        }
     }
 
     public void DoUpdate(float fDeltaTime)
@@ -159,6 +164,9 @@ public class UIGradientEffect : BaseMeshEffect
 
     public override void ModifyMesh(VertexHelper pVertexHelper)
     {
+        if (_bIsEnable == false)
+            return;
+
         if (_fElapseTime == 0f)
             return;
 

@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-11-12 오전 10:07:06
@@ -6,8 +6,6 @@
    ============================================ */
 #endregion Header
 
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
@@ -91,11 +89,11 @@ public class SimplePool<T>
     /// 풀에서 사용하지 않는 오브젝트를 요청합니다.
     /// </summary>
     /// <returns></returns>
-    public T DoPop()
+    public T DoPop(System.Action<string> OnError = null)
     {
         if(_bIsInit == false)
         {
-            Debug.LogError(GetName() + " Pop - _bIsInit == false");
+            OnError?.Invoke(GetName() + " Pop - _bIsInit == false");
             return null;
         }
 

@@ -1,9 +1,5 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace UIFramework_Test
 {
@@ -65,7 +61,8 @@ namespace UIFramework_Test
 
 
             // Pop(사용 안하는 오브젝트 요청) 테스트
-            int iRandomPop = Random.Range(5, iMaxPoolCount);
+            System.Random pRandom = new System.Random();
+            int iRandomPop = pRandom.Next(5, iMaxPoolCount);
             List<TestObject> listUsed = new List<TestObject>();
             for (int i = 0; i < iRandomPop; i++)
             {

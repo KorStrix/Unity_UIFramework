@@ -61,7 +61,6 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
     public bool bIsExecute_BeforeShow { get; private set; }
     public bool bIsFinish_Animation { get; private set; }
-    public bool bIsDisable { get; private set; }
 
     public UICommandHandle<TUIObject> Reset()
     {
@@ -75,7 +74,6 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
         bIsExecute_BeforeShow = false;
         bIsFinish_Animation = false;
-        bIsDisable = false;
 
         pUIObject = default(TUIObject);
 
@@ -119,7 +117,6 @@ public class UICommandHandle<TUIObject> : System.IDisposable
         UICommandHandle<T> pCast = UICommandHandle<T>.GetInstance(pObjectCast);
         pCast.bIsExecute_BeforeShow = this.bIsExecute_BeforeShow;
         pCast.bIsFinish_Animation = this.bIsFinish_Animation;
-        pCast.bIsDisable = this.bIsDisable;
 
         ReturnInstance(this);
 

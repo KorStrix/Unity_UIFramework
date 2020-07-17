@@ -9,7 +9,8 @@
 
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
+using UIFramework;
+using UnityEngine.UI;
 
 /// <summary>
 /// 
@@ -25,29 +26,39 @@ public class ButtonCollider_Example : MonoBehaviour, IHas_UIButton<ButtonCollide
         ButtonColliderExample,
     }
 
-	/* public - Field declaration               */
+    /* public - Field declaration               */
 
 
-	/* protected & private - Field declaration  */
+    /* protected & private - Field declaration  */
+
+    Button pButton;
+
+    // ========================================================================== //
+
+    /* public - [Do~Something] Function 	        */
 
 
-	// ========================================================================== //
+    // ========================================================================== //
 
-	/* public - [Do~Something] Function 	        */
+    /* protected - [Override & Unity API]       */
 
+    private void Awake()
+    {
+        HasUIElementHelper.DoInit_HasUIElement(this);
 
-	// ========================================================================== //
-
-	/* protected - [Override & Unity API]       */
+        pButton = GetComponentInChildren<ButtonCollider>().pButton;
+    }
 
     public void ButtonTest_Inspector()
     {
         Debug.Log(nameof(ButtonTest_Inspector), this);
+        StartCoroutine(ButtonCoroutine(pButton));
     }
 
-    void ButtonTest_Interface()
+    void ButtonTest_Interface(Button pButton)
     {
         Debug.Log(nameof(ButtonTest_Interface), this);
+        StartCoroutine(ButtonCoroutine(pButton));
     }
 
     public void IHas_UIButton_OnClickButton(UIButtonMessage<EButtonName> sButtonMsg)
@@ -55,7 +66,7 @@ public class ButtonCollider_Example : MonoBehaviour, IHas_UIButton<ButtonCollide
         switch (sButtonMsg.eButtonName)
         {
             case EButtonName.ButtonColliderExample:
-                ButtonTest_Interface();
+                ButtonTest_Interface(sButtonMsg.pButtonInstance_OrNull);
                 break;
         }
     }
@@ -66,6 +77,19 @@ public class ButtonCollider_Example : MonoBehaviour, IHas_UIButton<ButtonCollide
     // ========================================================================== //
 
     #region Private
+
+    IEnumerator ButtonCoroutine(Button pButton)
+    {
+        Text pText = pButton.GetComponentInChildren<Text>();
+
+        pText.text = "Clicked!";
+
+        yield return new WaitForSeconds(1f);
+
+        pText.text = "Normal";
+
+        yield break;
+    }
 
     #endregion Private
 

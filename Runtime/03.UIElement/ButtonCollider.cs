@@ -72,7 +72,7 @@ namespace UIFramework
 
         protected override void DoStateTransition(SelectionState state, bool instant)
         {
-            _pMethodInfo_DoStateTransition.Invoke(pButton, new object[] {state, instant});
+            _pMethodInfo_DoStateTransition?.Invoke(pButton, new object[] {state, instant});
             // pButton.SendMessage(nameof(DoStateTransition), new object[] {state, instant});
         }
 

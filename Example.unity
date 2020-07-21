@@ -1857,8 +1857,8 @@ GameObject:
   - component: {fileID: 611954234}
   - component: {fileID: 611954238}
   - component: {fileID: 611954237}
-  - component: {fileID: 611954236}
   - component: {fileID: 611954235}
+  - component: {fileID: 611954236}
   m_Layer: 5
   m_Name: Slot (6)
   m_TagString: Untagged
@@ -1912,12 +1912,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 611954233}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 5
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &611954237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2040,8 +2041,8 @@ GameObject:
   - component: {fileID: 623459562}
   - component: {fileID: 623459566}
   - component: {fileID: 623459565}
-  - component: {fileID: 623459564}
   - component: {fileID: 623459563}
+  - component: {fileID: 623459564}
   m_Layer: 5
   m_Name: Slot (7)
   m_TagString: Untagged
@@ -2095,12 +2096,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 623459561}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 6
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &623459565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2297,8 +2299,8 @@ GameObject:
   - component: {fileID: 742123269}
   - component: {fileID: 742123273}
   - component: {fileID: 742123272}
-  - component: {fileID: 742123271}
   - component: {fileID: 742123270}
+  - component: {fileID: 742123271}
   m_Layer: 5
   m_Name: Slot (2)
   m_TagString: Untagged
@@ -2352,12 +2354,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 742123268}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 1
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &742123272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2406,8 +2409,8 @@ GameObject:
   - component: {fileID: 762192606}
   - component: {fileID: 762192610}
   - component: {fileID: 762192609}
-  - component: {fileID: 762192608}
   - component: {fileID: 762192607}
+  - component: {fileID: 762192608}
   m_Layer: 5
   m_Name: Slot (4)
   m_TagString: Untagged
@@ -2461,12 +2464,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 762192605}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
   iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &762192609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2745,8 +2749,8 @@ GameObject:
   - component: {fileID: 825524503}
   - component: {fileID: 825524507}
   - component: {fileID: 825524506}
-  - component: {fileID: 825524505}
   - component: {fileID: 825524504}
+  - component: {fileID: 825524505}
   m_Layer: 5
   m_Name: Slot (10)
   m_TagString: Untagged
@@ -2800,12 +2804,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 825524502}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 9
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &825524506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3894,8 +3899,8 @@ GameObject:
   - component: {fileID: 1123776995}
   - component: {fileID: 1123776999}
   - component: {fileID: 1123776998}
-  - component: {fileID: 1123776997}
   - component: {fileID: 1123776996}
+  - component: {fileID: 1123776997}
   m_Layer: 5
   m_Name: Slot (11)
   m_TagString: Untagged
@@ -3949,12 +3954,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1123776994}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
   iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1123776998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4077,8 +4083,8 @@ GameObject:
   - component: {fileID: 1169274218}
   - component: {fileID: 1169274222}
   - component: {fileID: 1169274221}
-  - component: {fileID: 1169274220}
   - component: {fileID: 1169274219}
+  - component: {fileID: 1169274220}
   m_Layer: 5
   m_Name: Slot (2)
   m_TagString: Untagged
@@ -4132,12 +4138,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1169274217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
   iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1169274221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4186,8 +4193,8 @@ GameObject:
   - component: {fileID: 1171675003}
   - component: {fileID: 1171675007}
   - component: {fileID: 1171675006}
-  - component: {fileID: 1171675005}
   - component: {fileID: 1171675004}
+  - component: {fileID: 1171675005}
   m_Layer: 5
   m_Name: Slot (5)
   m_TagString: Untagged
@@ -4241,12 +4248,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1171675002}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 4
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1171675006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4443,8 +4451,8 @@ GameObject:
   - component: {fileID: 1250915665}
   - component: {fileID: 1250915669}
   - component: {fileID: 1250915668}
-  - component: {fileID: 1250915667}
   - component: {fileID: 1250915666}
+  - component: {fileID: 1250915667}
   m_Layer: 5
   m_Name: Slot (8)
   m_TagString: Untagged
@@ -4498,12 +4506,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1250915664}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 7
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1250915668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4630,8 +4639,8 @@ GameObject:
   - component: {fileID: 1283058642}
   - component: {fileID: 1283058646}
   - component: {fileID: 1283058645}
-  - component: {fileID: 1283058644}
   - component: {fileID: 1283058643}
+  - component: {fileID: 1283058644}
   m_Layer: 5
   m_Name: Slot (6)
   m_TagString: Untagged
@@ -4685,12 +4694,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1283058641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
   iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1283058645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4817,8 +4827,8 @@ GameObject:
   - component: {fileID: 1296989361}
   - component: {fileID: 1296989365}
   - component: {fileID: 1296989364}
-  - component: {fileID: 1296989363}
   - component: {fileID: 1296989362}
+  - component: {fileID: 1296989363}
   m_Layer: 5
   m_Name: Slot (3)
   m_TagString: Untagged
@@ -4872,12 +4882,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1296989360}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 2
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1296989364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6206,8 +6217,8 @@ GameObject:
   - component: {fileID: 1728286842}
   - component: {fileID: 1728286846}
   - component: {fileID: 1728286845}
-  - component: {fileID: 1728286844}
   - component: {fileID: 1728286843}
+  - component: {fileID: 1728286844}
   m_Layer: 5
   m_Name: Slot (4)
   m_TagString: Untagged
@@ -6261,12 +6272,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1728286841}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 3
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1728286845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6463,8 +6475,8 @@ GameObject:
   - component: {fileID: 1782553898}
   - component: {fileID: 1782553902}
   - component: {fileID: 1782553901}
-  - component: {fileID: 1782553900}
   - component: {fileID: 1782553899}
+  - component: {fileID: 1782553900}
   m_Layer: 5
   m_Name: Slot (12)
   m_TagString: Untagged
@@ -6518,12 +6530,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1782553897}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 11
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1782553901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6950,8 +6963,8 @@ GameObject:
   - component: {fileID: 1911640251}
   - component: {fileID: 1911640255}
   - component: {fileID: 1911640254}
-  - component: {fileID: 1911640253}
   - component: {fileID: 1911640252}
+  - component: {fileID: 1911640253}
   m_Layer: 5
   m_Name: Slot (11)
   m_TagString: Untagged
@@ -7005,12 +7018,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1911640250}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 10
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1911640254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7059,8 +7073,8 @@ GameObject:
   - component: {fileID: 1932800260}
   - component: {fileID: 1932800264}
   - component: {fileID: 1932800263}
-  - component: {fileID: 1932800262}
   - component: {fileID: 1932800261}
+  - component: {fileID: 1932800262}
   m_Layer: 5
   m_Name: Slot (9)
   m_TagString: Untagged
@@ -7114,12 +7128,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1932800259}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
-  iSlotIndex: 8
+  iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1932800263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7246,8 +7261,8 @@ GameObject:
   - component: {fileID: 1956028505}
   - component: {fileID: 1956028508}
   - component: {fileID: 1956028507}
-  - component: {fileID: 1956028506}
   - component: {fileID: 1956028509}
+  - component: {fileID: 1956028506}
   m_Layer: 5
   m_Name: Slot (1)
   m_TagString: Untagged
@@ -7286,12 +7301,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1956028504}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2c645d767e89a468290eeb436ffd23, type: 3}
+  m_Script: {fileID: 11500000, guid: faf65462e68e7a2489052fce22f5639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bIsSelectAble: 1
   iSlotIndex: 0
+  bIsDragAble: 1
 --- !u!114 &1956028507
 MonoBehaviour:
   m_ObjectHideFlags: 0

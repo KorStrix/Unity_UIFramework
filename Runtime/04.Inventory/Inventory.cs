@@ -8,7 +8,6 @@
 #endregion Header
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -115,7 +114,7 @@ namespace UIFramework
                 //pInventorySlot.OnDragBeginSlot -= OnDragBeginSlot;
                 //pInventorySlot.OnDragEndSlot -= OnDragEndSlot;
                 pInventorySlot.OnSwapSlot -= OnSwapSlot;
-                // pInventorySlot.OnChange_SlotData -= OnChange_SlotData;
+                pInventorySlot.OnChange_SlotData -= OnChange_SlotData;
             }
 
             GetComponentsInChildren(bInclude_Deactive, _listSlotInstance);
@@ -194,7 +193,7 @@ namespace UIFramework
                 if(pSlot.pData != null)
                     Slot_ClearData(pSlot, pSlot.pData.IInventoryData_Key);
                 else
-                    Slot_ClearData(pSlot);
+                    Slot_ClearData(pSlot, false);
             }
 
             if(bClear_OnSelected && pSlotSelected != null)
@@ -259,7 +258,7 @@ namespace UIFramework
             //pInventorySlot.OnDragBeginSlot += OnDragBeginSlot;
             //pInventorySlot.OnDragEndSlot += OnDragEndSlot;
             pInventorySlot.OnSwapSlot += OnSwapSlot;
-            // pInventorySlot.OnChange_SlotData += OnChange_SlotData;
+            pInventorySlot.OnChange_SlotData += OnChange_SlotData;
 
             pInventorySlot.DoInit_SlotStateLogic(_arrSlotLogic_State);
             pInventorySlot.DoInit_SlotCommandLogic(_arrSlotLogic_Command);
@@ -271,11 +270,18 @@ namespace UIFramework
         {
             if (obj.pInventory_OnDraging == obj.pInventory_Dest)
             {
+                if (bIsDebug)
+                    Debug.Log($"{name}-{nameof(OnSwapSlot)} Slot : {obj.pSlot_OnDraging.name} to Dest : {obj.pSlot_Dest.name}", this);
+
                 OnSwap_Slot?.Invoke(obj.pSlot_OnDraging, obj.pSlot_Dest);
-                OnClickedSlot(obj.pSlot_Dest, null);
+                if(obj.pSlot_Dest.bIsSelected == false)
+                    OnClickedSlot(obj.pSlot_Dest, null);
             }
             else
             {
+                if (bIsDebug)
+                    Debug.Log($"{name}-{nameof(OnSwapSlot)} Slot : {obj.pSlot_OnDraging.name} to Other Inventory", this);
+
                 OnSwap_Slot_OtherInventory?.Invoke(obj);
             }
         }
@@ -324,24 +330,38 @@ namespace UIFramework
 
         private void OnChange_SlotData(InventorySlot.OnChangeSlotData_Msg sMsg)
         {
-            if (sMsg.pData_Prev != null)
-                Slot_ClearData(sMsg.pSlot, sMsg.pData_Prev.IInventoryData_Key);
+            if (bIsDebug)
+                Debug.Log($"{name}-{nameof(OnChange_SlotData)} Slot : {sMsg.pSlot.name}", this);
 
-            if (sMsg.bSlot_IsEmpty)
-                Slot_ClearData(sMsg.pSlot);
-            else
-                Slot_Set_NewData(sMsg.pSlot, sMsg.pData_Current);
+            // 밑에 코드때문에 무한루프돔;
+            //if (sMsg.pData_Prev != null)
+            //    Slot_ClearData(sMsg.pSlot, sMsg.pData_Prev.IInventoryData_Key);
+
+            //if (sMsg.bSlot_IsEmpty)
+            //    Slot_ClearData(sMsg.pSlot, true);
+            //else
+            //    Slot_Set_NewData(sMsg.pSlot, sMsg.pData_Current, true);
         }
 
-        private void Slot_Set_NewData(InventorySlot pSlot, IInventoryData pData)
+        bool _bIsIgnore_ChangeSlotEvent = false;
+
+        private void Slot_Set_NewData(InventorySlot pSlot, IInventoryData pData, bool bIgnoreEvent = false)
         {
-            pSlot.DoSetData(pData);
-            _mapSlot_ByDataKey.Add(pData.IInventoryData_Key, pSlot);
+            _bIsIgnore_ChangeSlotEvent = bIgnoreEvent;
+            {
+                pSlot.DoSetData(pData);
+                _mapSlot_ByDataKey.Add(pData.IInventoryData_Key, pSlot);
+            }
+            _bIsIgnore_ChangeSlotEvent = false;
         }
 
-        private void Slot_ClearData(InventorySlot pSlot)
+        private void Slot_ClearData(InventorySlot pSlot, bool bIgnoreEvent = false)
         {
-            pSlot.DoClear();
+            _bIsIgnore_ChangeSlotEvent = bIgnoreEvent;
+            {
+                pSlot.DoClear();
+            }
+            _bIsIgnore_ChangeSlotEvent = false;
         }
 
         private void Slot_ClearData(InventorySlot pSlot, string strDataKey)
@@ -352,7 +372,7 @@ namespace UIFramework
 
 
 #if UNITY_EDITOR
-        [UnityEditor.MenuItem("GameObject/UI/Custom/" + nameof(Inventory))]
+        [MenuItem("GameObject/UI/Custom/" + nameof(Inventory))]
         public static void CreateInventory(MenuCommand pCommand)
         {
             const float const_fPosX = 120f;
@@ -369,9 +389,8 @@ namespace UIFramework
             if (pObjectParents.GetComponent<Inventory>() == null)
                 Undo.AddComponent<Inventory>(pObjectParents);
 
-            var pLayoutGroup = pObjectParents.GetComponent<GridLayoutGroup>();
-            if (pLayoutGroup == null)
-                pLayoutGroup = Undo.AddComponent<GridLayoutGroup>(pObjectParents);
+            if (pObjectParents.GetComponent<GridLayoutGroup>() == null)
+                Undo.AddComponent<GridLayoutGroup>(pObjectParents);
 
 
             int iSlotCount = 5;

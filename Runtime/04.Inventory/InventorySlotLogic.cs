@@ -8,12 +8,12 @@
 #endregion Header
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using static UIFramework.InventorySlot;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UIFramework.InventorySlotLogic;
+
+using static UIFramework.InventorySlot;
 
 namespace UIFramework
 {
@@ -55,9 +55,7 @@ namespace UIFramework
                 default: Debug.LogError("Error - Not Found Logic"); return null;
             }
 
-            if (pLogic != null)
-                list_CommandLogic.Add(new InventorySlot_CommandLogic(eEvent, eEventUndo, pLogic));
-
+            list_CommandLogic.Add(new InventorySlot_CommandLogic(eEvent, eEventUndo, pLogic));
             return pLogic;
         }
     }

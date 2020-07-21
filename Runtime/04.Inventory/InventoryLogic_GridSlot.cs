@@ -8,15 +8,14 @@
 #endregion Header
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace UIFramework
 {
 	/// <summary>
-	/// ÀÏ´Ü Inventory Slot¸¸
-    /// °¡·Î ±âÁØÀ¸·Î ±¸Çö
+	/// ì¼ë‹¨ Inventory Slotë§Œ
+    /// ê°€ë¡œ ê¸°ì¤€ìœ¼ë¡œ êµ¬í˜„
 	/// </summary>
     [RequireComponent(typeof(Inventory))]
 	public class InventoryLogic_GridSlot : UIWidgetObjectBase

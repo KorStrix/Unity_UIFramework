@@ -10,7 +10,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UIFramework.InventorySlotLogic;
@@ -79,7 +78,7 @@ namespace UIFramework
         public event System.Action<bool> OnChange_IsSelected;
 
         public bool bIsSelected { get; private set; }
-        public bool bIsClone { get; private set; } = false;
+        public bool bIsClone { get; private set; }
         public IInventoryData pData { get; private set; }
         public Inventory pInventory { get; private set; }
 
@@ -163,7 +162,7 @@ namespace UIFramework
         public void DoSetData(IInventoryData pData)
         {
             if (bIsDebug)
-                Debug.Log($"{name}-{iSlotIndex} {nameof(DoSetData)} - {pData.ToString()}", this);
+                Debug.Log($"{name}-{iSlotIndex} {nameof(DoSetData)} - {pData}", this);
 
             OnChange_SlotData?.Invoke(new OnChangeSlotData_Msg(this, this.pData, pData));
 
@@ -183,24 +182,24 @@ namespace UIFramework
         public void OnPointerClick(PointerEventData eventData) { OnClickedSlot?.Invoke(this, eventData); }
         public void OnPointerEnter(PointerEventData eventData) { OnHoverSlot?.Invoke(this, eventData); }
 
-        public void Event_SetSelected(bool bIsSelected)
+        public void Event_SetSelected(bool bIsSelected, bool bIsSwapData_OnOverlapSlot = true)
         {
             this.bIsSelected = bIsSelected;
-            //if (bIsSelected && Inventory.g_setActiveInventory.Count >= 2)
-            //{
-            //    foreach (Inventory pInventoryOther in Inventory.g_setActiveInventory)
-            //    {
-            //        if (pInventoryOther == _pInventory)
-            //            continue;
+            if (bIsSwapData_OnOverlapSlot && bIsSelected && Inventory.g_setActiveInventory.Count >= 2)
+            {
+                foreach (Inventory pInventoryOther in Inventory.g_setActiveInventory)
+                {
+                    if (pInventoryOther == pInventory)
+                        continue;
 
-            //        if (pInventoryOther.pSlotSelected == null)
-            //            continue;
+                    if (pInventoryOther.pSlotSelected == null)
+                        continue;
 
-            //        Event_OnSwapSlot(pInventoryOther, pInventoryOther.pSlotSelected, _pInventory, this);
-            //    }
-            //}
+                    Event_OnSwapSlot(pInventoryOther, pInventoryOther.pSlotSelected, pInventory, this);
+                }
+            }
 
-            if(bIsSelectAble)
+            if (bIsSelectAble)
                 OnChange_IsSelected?.Invoke(bIsSelected);
         }
 

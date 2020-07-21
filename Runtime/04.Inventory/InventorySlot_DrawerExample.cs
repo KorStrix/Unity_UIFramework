@@ -25,6 +25,9 @@ namespace UIFramework
 
         /* public - Field declaration               */
 
+        [Header("디버깅 유무")]
+        public bool bIsDebug = false;
+
         public Image pImage_IsSelected;
         public Image pImage_Icon;
 
@@ -49,7 +52,11 @@ namespace UIFramework
 
             InventorySlot pSlot = GetComponent<InventorySlot>();
             pImage_IsSelected.enabled = pSlot.bIsSelected;
-            OnChangeSlotData(new InventorySlot.OnChangeSlotData_Msg(pSlot, null, null));
+
+            if(bIsDebug)
+                Debug.Log($"{name}-{pSlot.iSlotIndex} {nameof(OnAwake)} - Slot is Empty : {pSlot.pData == null}", this);
+
+            OnChangeSlotData(new InventorySlot.OnChangeSlotData_Msg(pSlot, null, pSlot.pData));
 
             pSlot.OnChange_SlotData += OnChangeSlotData;
             pSlot.OnChange_IsSelected += (bIsSelected) => pImage_IsSelected.enabled = bIsSelected;
@@ -64,6 +71,9 @@ namespace UIFramework
 
         private void OnChangeSlotData(InventorySlot.OnChangeSlotData_Msg obj)
         {
+            if (bIsDebug)
+                Debug.Log($"{name}-{obj.pSlot.iSlotIndex} {nameof(OnChangeSlotData)} - Slot is Empty : {obj.pSlot.pData == null}", this);
+
             if (obj.pData_Current == null)
             {
                 pImage_Icon.sprite = null;

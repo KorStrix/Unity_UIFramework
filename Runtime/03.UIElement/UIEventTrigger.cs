@@ -31,9 +31,9 @@ namespace UIFramework
         {
             public UIElementInfo pElementInfo;
 
-            [Header("ë”œë ˆì´(ì´ˆ)")]
+            [Header("µô·¹ÀÌ(ÃÊ)")]
             public float fDelaySec;
-            [Header("ì´ë²¤íŠ¸ ë¦¬ìŠ¤íŠ¸")] 
+            [Header("ÀÌº¥Æ® ¸®½ºÆ®")] 
             public UnityEvent OnEvent;
         }
 

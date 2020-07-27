@@ -60,13 +60,10 @@ namespace UIFramework_Test
             }
 
 
-            /// <summary>
-            /// <see cref="ICanvas"/>를 상속받으면 <see cref="ICanvasHelper.DoShowCoroutine{T}"/>, <see cref="ICanvasHelper.DoHide_Coroutine{T}"/> 등의 확장 함수를 지원합니다.
-            /// </summary>
             [UnityTest]
-            public IEnumerator ICanvas_ExtensionMethod_Test()
+            public IEnumerator ICanvas_확장함수_테스트()
             {
-                Debug.LogWarning(nameof(ICanvas_ExtensionMethod_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
+                Debug.LogWarning(nameof(ICanvas_확장함수_테스트).ConvertRichText_SetColor(EColor_ForRichText.red));
 
                 CanvasManager_Example.DoDestroy_Manager(true);
 
@@ -162,9 +159,9 @@ namespace UIFramework_Test
             }
 
             [UnityTest]
-            public IEnumerator 캔버스매니져의_ShowMuiple함수는_인스턴스여러개를_띄울수있습니다()
+            public IEnumerator 캔버스매니져의_ShowMultiple함수는_인스턴스여러개를_띄울수있습니다()
             {
-                Debug.Log(nameof(캔버스매니져의_ShowMuiple함수는_인스턴스여러개를_띄울수있습니다).ConvertRichText_SetColor(EColor_ForRichText.red));
+                Debug.Log(nameof(캔버스매니져의_ShowMultiple함수는_인스턴스여러개를_띄울수있습니다).ConvertRichText_SetColor(EColor_ForRichText.red));
 
                 CanvasManager_Example.DoDestroy_Manager(true);
                 Assert.AreEqual(UICommandHandle<Canvas_ForTest>.g_iInstanceCount, 0);
@@ -257,6 +254,7 @@ namespace UIFramework_Test
 
                 // Assert
                 Assert.AreEqual(pHandle.pUIObject, pHandle2.pUIObject);
+                Assert.AreEqual(pHandle.pUIObject.GetHandle(), pHandle2.pUIObject.GetHandle());
             }
 
             // ================================================================================================================

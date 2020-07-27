@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-21 오후 6:42:02
@@ -55,7 +55,6 @@ public class CUIWidgetManager : UIObjectManagerBase<CUIWidgetManager, IUIWidget_
             return null;
 
         UICommandHandle<CLASS_UIOBJECT> sUICommandHandle = UICommandHandle<CLASS_UIOBJECT>.GetInstance(pUIObject);
-
         sUICommandHandle.Set_UIObject(pUIObject);
         StartCoroutine(Coroutine_Hide(sUICommandHandle, pUIObject));
 

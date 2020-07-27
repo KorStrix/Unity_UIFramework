@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-21 오후 12:31:30
@@ -8,8 +8,6 @@
 
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
 using UIFramework;
 
 #if UNITY_EDITOR
@@ -36,9 +34,8 @@ public interface ICanvas : IUIObject, IUIObject_Managed
 
 public static class ICanvasHelper
 {
-
 #if UNITY_EDITOR
-    [UnityEditor.MenuItem("GameObject/UI/Custom/" + "PopupBase")]
+    [MenuItem("GameObject/UI/Custom/" + "PopupBase")]
     public static void CreatePopup(MenuCommand pCommand)
     {
         GameObject pObjectParents = pCommand.context as GameObject;

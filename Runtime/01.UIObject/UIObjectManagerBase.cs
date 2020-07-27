@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-21 오후 6:42:42
@@ -65,13 +65,13 @@ namespace UIFramework
                 return _instance;
             }
         }
-        public bool bIsExecute_Awake { get; private set; } = false;
+        public bool bIsExecute_Awake { get; private set; }
 
         /* protected & private - Field declaration         */
 
         protected static CLASS_DRIVEN_MANAGER _instance { get; private set; }
-        protected static bool _bIsDestroying { get; private set; } = false;
-        protected static bool _bApplication_IsQuit { get; private set; } = false;
+        protected static bool _bIsDestroying { get; private set; }
+        protected static bool _bApplication_IsQuit { get; private set; }
 
         // ========================================================================== //
 
@@ -82,15 +82,15 @@ namespace UIFramework
         {
             if ((eLogTypeFlag & ELogTypeFlag.Error) == ELogTypeFlag.Error)
             {
-                Debug.LogError(eLogTypeFlag.ToString() + strLog, pContextObject);
+                Debug.LogError(eLogTypeFlag + strLog, pContextObject);
             }
             else if ((eLogTypeFlag & ELogTypeFlag.Warning) == ELogTypeFlag.Warning)
             {
-                Debug.LogWarning(eLogTypeFlag.ToString() + strLog, pContextObject);
+                Debug.LogWarning(eLogTypeFlag + strLog, pContextObject);
             }
             else
             {
-                Debug.Log(eLogTypeFlag.ToString() + strLog, pContextObject);
+                Debug.Log(eLogTypeFlag + strLog, pContextObject);
             }
         }
 
@@ -169,7 +169,6 @@ namespace UIFramework
         /* protected - [abstract & virtual]         */
 
         protected virtual void OnAwake() { }
-
         protected virtual void OnCreate_ManagerInstance() { }
         protected virtual void OnDestroy_ManagerInstance() { }
 
@@ -178,6 +177,7 @@ namespace UIFramework
 
         public abstract UICommandHandle<CLASS_UIOBJECT> IUIManager_Hide<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject, bool bPlayAnimation)
             where CLASS_UIOBJECT : IUIObject;
+
         public abstract EUIObjectState IUIManager_GetUIObjectState<CLASS_UIOBJECT>(CLASS_UIOBJECT pUIObject)
             where CLASS_UIOBJECT : IUIObject;
 

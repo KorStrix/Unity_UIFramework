@@ -257,7 +257,15 @@ namespace UIFramework_Test
                 Assert.AreEqual(pUICanvas.strText, nameof(EUIObjectState.Process_Before_HideCoroutine));
 
                 yield return pHandle_Hide.Yield_WaitForAnimation();
-                Assert.AreEqual(pUICanvas.strText, nameof(EUIObjectState.Process_After_HideCoroutine));
+
+                try
+                {
+                    Assert.AreEqual(pUICanvas.strText, nameof(EUIObjectState.Process_After_HideCoroutine));
+                }
+                catch
+                {
+                    pHandle_Hide = pUICanvas.DoHide_Coroutine();
+                }
 
                 yield break;
             }

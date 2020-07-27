@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-08 오후 2:21:29
@@ -8,9 +8,9 @@
 
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using UIFramework;
 
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 namespace UIFramework
 {
     /// <summary>

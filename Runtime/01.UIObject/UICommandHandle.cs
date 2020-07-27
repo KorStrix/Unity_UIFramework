@@ -12,31 +12,52 @@ using UIFramework;
 using UnityEngine;
 
 // ReSharper disable PossibleNullReferenceException
-
 public class UICommandHandle<TUIObject> : System.IDisposable
     where TUIObject : IUIObject
 {
     #region Static
-    public static int g_iInstanceCount { get { return g_setHandle.Count; } }
 
-    static HashSet<UICommandHandle<TUIObject>> g_setHandle = new HashSet<UICommandHandle<TUIObject>>();
+    public static bool g_bIsDebug = false;
+
+    public static int g_iInstanceCount { get { return g_mapHandle.Count; } }
+
+    // 이걸 map 으로 바꿔야하나? key를 TUIObject로 해서..?
+    static Dictionary<TUIObject, UICommandHandle<TUIObject>> g_mapHandle = new Dictionary<TUIObject, UICommandHandle<TUIObject>>();
     static SimplePool<UICommandHandle<TUIObject>> g_pPool;
 
     public static UICommandHandle<TUIObject> GetInstance(TUIObject pObject_OrNull)
     {
+        UICommandHandle<TUIObject> pHandle;
+        if (pObject_OrNull != null && g_mapHandle.TryGetValue(pObject_OrNull, out pHandle))
+            return pHandle;
+
+
         if (g_pPool == null)
             g_pPool = new SimplePool<UICommandHandle<TUIObject>>(iCount => new UICommandHandle<TUIObject>(iCount), null, 1);
 
-        UICommandHandle<TUIObject> pHandle = g_pPool.DoPop();
+        pHandle = g_pPool.DoPop();
         if (pObject_OrNull != null)
-            g_setHandle.Add(pHandle);
+        {
+            if (g_mapHandle.ContainsKey(pObject_OrNull) == false)
+                g_mapHandle.Add(pObject_OrNull, pHandle);
 
-        return pHandle.Reset();
+            pHandle.Set_UIObject(pObject_OrNull);
+        }
+
+        return pHandle.DoReset();
+    }
+
+    public static UICommandHandle<TUIObject> GetInstance_Used_OrNull(TUIObject pObject_OrNull)
+    {
+        g_mapHandle.TryGetValue(pObject_OrNull, out var pHandle);
+
+        return pHandle;
     }
 
     public static void ReturnInstance(UICommandHandle<TUIObject> pHandle)
     {
-        g_setHandle.Remove(pHandle);
+        if(pHandle.pUIObject != null)
+            g_mapHandle.Remove(pHandle.pUIObject);
         g_pPool.DoPush(pHandle);
     }
 
@@ -62,8 +83,10 @@ public class UICommandHandle<TUIObject> : System.IDisposable
     public bool bIsExecute_BeforeShow { get; private set; }
     public bool bIsFinish_Animation { get; private set; }
 
-    public UICommandHandle<TUIObject> Reset()
+    public UICommandHandle<TUIObject> DoReset()
     {
+        pUIObject = default;
+
         // Null Check를 안하기 위해 Default Func Setting
         OnBeforeShow = DefaultFunc;
         OnChecking_IsShow = DefaultCo;
@@ -72,10 +95,13 @@ public class UICommandHandle<TUIObject> : System.IDisposable
         OnShow_AfterAnimation = DefaultFunc;
         OnHide = DefaultFunc;
 
+        return DoResetFlag();
+    }
+
+    public UICommandHandle<TUIObject> DoResetFlag()
+    {
         bIsExecute_BeforeShow = false;
         bIsFinish_Animation = false;
-
-        pUIObject = default(TUIObject);
 
         return this;
     }
@@ -105,6 +131,9 @@ public class UICommandHandle<TUIObject> : System.IDisposable
     public void Set_UIObject(TUIObject pUIObject)
     {
         this.pUIObject = pUIObject;
+
+        if (g_mapHandle.ContainsKey(pUIObject) == false)
+            g_mapHandle.Add(pUIObject, this);
     }
 
     public UICommandHandle<T> Cast<T>()
@@ -134,6 +163,9 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
         if (bExecute)
             OnHide(pUIObject);
+
+        if (g_bIsDebug)
+            Debug.Log($"{pUIObject.gameObject.name} - {nameof(Event_OnHide)} - bExecute : {bExecute}", pUIObject.gameObject);
 
         ReturnInstance(this);
     }
@@ -202,5 +234,11 @@ public static class UICommandHandleHelper
     {
         pHandle.OnHide += OnHide;
         return pHandle;
+    }
+
+    public static UICommandHandle<T> GetHandle<T>(this T pCanvas)
+        where T : IUIObject
+    {
+        return UICommandHandle<T>.GetInstance_Used_OrNull(pCanvas);
     }
 }

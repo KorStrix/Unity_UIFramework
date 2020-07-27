@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-21 오후 12:46:22
@@ -17,7 +17,7 @@ namespace UIFramework
     /// <summary>
     /// 
     /// </summary>
-    public abstract class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UIObjectManagerBase<CLASS_DRIVEN_MANAGER, ICanvas>, IUIManager
+    public abstract class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UIObjectManagerBase<CLASS_DRIVEN_MANAGER, ICanvas>
         where CLASS_DRIVEN_MANAGER : CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME>
     {
         /* const & readonly declaration             */
@@ -43,14 +43,14 @@ namespace UIFramework
 
             // 로직 캐싱 - 일일이 파싱체크 방지
             Dictionary<EUIObjectState, List<CanvasManager_LogicUndo_Wrapper>> mapUndoLogic = new Dictionary<EUIObjectState, List<CanvasManager_LogicUndo_Wrapper>>()
-        {
-            { EUIObjectState.Process_Before_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { EUIObjectState.Process_Before_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { EUIObjectState.Process_After_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { EUIObjectState.Process_After_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { EUIObjectState.Showing, new List<CanvasManager_LogicUndo_Wrapper>() },
-            { EUIObjectState.Disable, new List<CanvasManager_LogicUndo_Wrapper>() },
-        };
+            {
+                { EUIObjectState.Process_Before_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+                { EUIObjectState.Process_Before_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+                { EUIObjectState.Process_After_ShowCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+                { EUIObjectState.Process_After_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
+                { EUIObjectState.Showing, new List<CanvasManager_LogicUndo_Wrapper>() },
+                { EUIObjectState.Disable, new List<CanvasManager_LogicUndo_Wrapper>() },
+            };
 
 
             List<IUIWidget> _listChildrenWidget = new List<IUIWidget>();
@@ -240,6 +240,7 @@ namespace UIFramework
 
         /* protected & private - Field declaration         */
 
+        // ReSharper disable once StaticMemberInGenericType
         static HashSet<System.IDisposable> g_setCommandHandle = new HashSet<System.IDisposable>();
 
         protected Dictionary<ENUM_CANVAS_NAME, List<CanvasWrapper>> _mapWrapper = new Dictionary<ENUM_CANVAS_NAME, List<CanvasWrapper>>();
@@ -259,7 +260,7 @@ namespace UIFramework
 
         /// <summary>
         /// 캔버스를 Show합니다. 리턴하는 <see cref="UICommandHandle{CLASS_DRIVEN_CANVAS}"/>를 통해 주요 이벤트를 구독하여 사용합니다.
-        /// <para>이미 <see cref="CanvasWrapper.EState.Showing"/>인 상태인 캔버스가 있을 경우</para>
+        /// <para>이미 <see cref="EUIObjectState.Showing"/>인 상태인 캔버스가 있을 경우</para>
         /// <para>아무 동작하지 않습니다.</para>
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
@@ -283,7 +284,7 @@ namespace UIFramework
 
         /// <summary>
         /// 캔버스를 Show합니다. 리턴하는 <see cref="UICommandHandle{CLASS_DRIVEN_CANVAS}"/>를 통해 주요 이벤트를 구독하여 사용합니다.
-        /// <para>이미 <see cref="CanvasWrapper.EState.Showing"/>인 상태인 캔버스가 있을 경우</para>
+        /// <para>이미 <see cref="EUIObjectState.Showing"/>인 상태인 캔버스가 있을 경우</para>
         /// <para>캔버스의 인스턴스를 새로 만들어서 보여줍니다</para>
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
@@ -301,10 +302,9 @@ namespace UIFramework
 
         /// <summary>
         /// 캔버스를 Show합니다. <see cref="UICommandHandle{CLASS_DRIVEN_CANVAS}"/>를 통해 주요 이벤트를 구독하여 사용합니다.
-        /// <para>이미 <see cref="CanvasWrapper.EState.Showing"/>인 상태인 캔버스가 있을 경우</para>
+        /// <para>이미 <see cref="EUIObjectState.Showing"/>인 상태인 캔버스가 있을 경우</para>
         /// <para>아무 동작하지 않습니다.</para>
         /// </summary>
-        /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Show 할 캔버스 이름</param>
         public static UICommandHandle<ICanvas> DoShowOnly(ENUM_CANVAS_NAME eName)
         {
@@ -324,7 +324,7 @@ namespace UIFramework
 
         /// <summary>
         /// 캔버스를 Hide합니다. 리턴하는 <see cref="UICommandHandle{CLASS_DRIVEN_CANVAS}"/>를 통해 주요 이벤트를 구독하여 사용합니다.
-        /// <para>이미 <see cref="CanvasWrapper.EState.Showing"/>인 상태인 캔버스가 있을때만 동작합니다.</para>
+        /// <para>이미 <see cref="EUIObjectState.Showing"/>인 상태인 캔버스가 있을때만 동작합니다.</para>
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Hide 할 캔버스 이름</param>
@@ -341,10 +341,9 @@ namespace UIFramework
 
         /// <summary>
         /// 캔버스를 Hide합니다. <see cref="UICommandHandle{CLASS_DRIVEN_CANVAS}"/>를 통해 주요 이벤트를 구독하여 사용합니다.
-        /// <para>이미 <see cref="CanvasWrapper.EState.Showing"/>인 상태인 캔버스가 없을 경우</para>
+        /// <para>이미 <see cref="EUIObjectState.Showing"/>인 상태인 캔버스가 없을 경우</para>
         /// <para>아무 동작하지 않습니다.</para>
         /// </summary>
-        /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Hide 할 캔버스 이름</param>
         public static UICommandHandle<ICanvas> DoHideOnly(ENUM_CANVAS_NAME eName)
         {
@@ -373,6 +372,8 @@ namespace UIFramework
                 for (int i = 0; i < listCanavs.Count; i++)
                     listCanavs[i].DoHide_NotPlayHideCoroutine();
             }
+
+            instance?.OnAllHide_ShowedCanvas();
         }
 
         /// <summary>
@@ -384,11 +385,22 @@ namespace UIFramework
         public static CLASS_DRIVEN_CANVAS GetAlreadyShow_Canvas_OrNull<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : MonoBehaviour, ICanvas
         {
+            var pCanvas = GetAlreadyShow_Canvas_OrNull(eName);
+            return pCanvas as CLASS_DRIVEN_CANVAS;
+        }
+
+        /// <summary>
+        /// 이미 보여지고 있는 Canvas를 Return합니다. 없으면 null을 리턴합니다.
+        /// <para>여러개일 경우 오래된 Canvas 1개만 리턴합니다.</para>
+        /// </summary>
+        /// <param name="eName">얻고자 하는 캔버스 이름</param>
+        public static ICanvas GetAlreadyShow_Canvas_OrNull(ENUM_CANVAS_NAME eName)
+        {
             CLASS_DRIVEN_MANAGER pInstance = instance;
 
             var listWrapper = pInstance.Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
             if (listWrapper.Count > 0)
-                return listWrapper[0].pInstance as CLASS_DRIVEN_CANVAS;
+                return listWrapper[0].pInstance;
             else
                 return null;
         }
@@ -533,7 +545,7 @@ namespace UIFramework
             pInstance._mapManagerLogic.Clear();
             pInstance._mapManagerUndoLogic_Parser.Clear();
 
-            pInstance._pWrapperPool.DoDestroyPool(false);
+            pInstance._pWrapperPool.DoDestroyPool();
         }
 
 
@@ -595,6 +607,8 @@ namespace UIFramework
         /// <para> 컨테이너의 인스턴스가 없는 경우에만 호출됩니다. </para> 
         /// </summary>
         /// <param name="eName">인스턴스를 만들 팝업 이름 Enum</param>
+        /// <param name="bIsMultiple">이미 같은 팝업이 떴을 때 또 띄울지</param>
+        /// <param name="OnFinish">인스턴스를 만들었을 때</param>
         protected abstract IEnumerator OnCreate_Instance(ENUM_CANVAS_NAME eName, bool bIsMultiple, System.Action<ICanvas> OnFinish);
 
         /// <summary>
@@ -627,7 +641,10 @@ namespace UIFramework
         /// </summary>
         /// <param name="eName">꺼지는 오브젝트의 이름 Enum</param>
         /// <param name="pInstance">꺼지는 오브젝트의 인스턴스</param>
+        /// <param name="iInstanceCount">현재 켜져있는 인스턴스의 개수</param>
         protected virtual void OnHide(ENUM_CANVAS_NAME eName, ICanvas pInstance, int iInstanceCount) { }
+
+        protected virtual void OnAllHide_ShowedCanvas() { }
 
         /// <summary>
         /// Default <see cref="GetEnumKey(ICanvas, out ENUM_CANVAS_NAME)"/>를 Fail하면 호출되는 함수입니다.
@@ -639,8 +656,7 @@ namespace UIFramework
 
         protected virtual ICanvas Get_CanvasInstance(ENUM_CANVAS_NAME eName)
         {
-            CanvasWrapper pContainer = null;
-            if (Get_UnUsedWrapper(eName, out pContainer))
+            if (Get_UnUsedWrapper(eName, out var pContainer))
                 return pContainer.pInstance;
             else
                 return default(ICanvas);
@@ -672,6 +688,7 @@ namespace UIFramework
             }
 
             _list_CanvasShowInstance.Add(pWrapper.pInstance);
+            sUICommandHandle.DoResetFlag();
 
             OnShow_BeforeAnimation(pWrapper.eName, pWrapper.pInstance);
 
@@ -688,8 +705,6 @@ namespace UIFramework
             OnShow_AfterAnimation(pWrapper.eName, pWrapper.pInstance);
 
             // _list_CanvasShow.Add(pWrapper);
-
-            yield break;
         }
 
         protected virtual IEnumerator Process_HideCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
@@ -703,13 +718,15 @@ namespace UIFramework
             if (pWrapper.eState == EUIObjectState.Process_Before_HideCoroutine)
                 yield break;
 
+            sUICommandHandle.DoResetFlag();
+
             yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_HideCoroutine, pWrapper);
 
             yield return pWrapper.DoExecute_HideCoroutine();
 
             yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_HideCoroutine, pWrapper);
 
-            sUICommandHandle.Event_OnHide(true);
+            sUICommandHandle.Event_OnHide();
 
             int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
             OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
@@ -736,7 +753,7 @@ namespace UIFramework
 
             Execute_ManagerUndoLogic(EUIObjectState.Process_After_HideCoroutine, pWrapper);
 
-            sUICommandHandle.Event_OnHide(true);
+            sUICommandHandle.Event_OnHide();
 
             int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
             OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
@@ -791,23 +808,23 @@ namespace UIFramework
         IEnumerator Process_HideCoroutine<T>(ENUM_CANVAS_NAME eName, UICommandHandle<T> pUICommandHandle)
             where T : class, ICanvas
         {
-            CanvasWrapper pWrapper = null;
             var listEnableWrapper = Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
             if (listEnableWrapper.Count == 0)
             {
                 // Hiding 요청이 왔는데 Canvas Instance가 없는 경우
                 Debug.LogWarning(name + " CoProcess_Hiding - eName : " + eName + " listEnableWrapper.Count == 0", this);
-                pUICommandHandle.Event_OnHide(true);
+                pUICommandHandle.Event_OnHide();
                 yield break;
             }
 
-            pWrapper = listEnableWrapper[0];
+            CanvasWrapper pWrapper = listEnableWrapper[0];
             EnableWrapper(pWrapper, pUICommandHandle);
             yield return Process_HideCoroutine(pWrapper, pUICommandHandle);
         }
 
 
-        private void EnableWrapper<T>(CanvasWrapper pWrapper, UICommandHandle<T> pUICommandHandle) where T : class, ICanvas
+        private void EnableWrapper<T>(CanvasWrapper pWrapper, UICommandHandle<T> pUICommandHandle)
+            where T : class, ICanvas
         {
             pWrapper.DoSet_State_IsEnable();
             pUICommandHandle.Set_UIObject(pWrapper.pInstance as T);
@@ -820,7 +837,8 @@ namespace UIFramework
                 RemoveWrapper(pWrapper);
         }
 
-        private static UICommandHandle<CLASS_DRIVEN_CANVAS> GetCommandHandle<CLASS_DRIVEN_CANVAS>(CLASS_DRIVEN_CANVAS pInstance_OrNull) where CLASS_DRIVEN_CANVAS : IUIObject
+        private static UICommandHandle<CLASS_DRIVEN_CANVAS> GetCommandHandle<CLASS_DRIVEN_CANVAS>(CLASS_DRIVEN_CANVAS pInstance_OrNull) 
+            where CLASS_DRIVEN_CANVAS : IUIObject
         {
             UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle = UICommandHandle<CLASS_DRIVEN_CANVAS>.GetInstance(pInstance_OrNull);
             g_setCommandHandle.Add(pHandle);
@@ -830,6 +848,7 @@ namespace UIFramework
 
         #region Manage_Wrapper
 
+        // ReSharper disable once UnusedMethodReturnValue.Local
         private CanvasWrapper CreateInstance<T>(ENUM_CANVAS_NAME eName, bool bIsMultiple, UICommandHandle<T> pHandle)
             where T : class, ICanvas
         {
@@ -850,7 +869,7 @@ namespace UIFramework
                 Wrapper_SetCanvasInstance(pWrapper, pCanvas);
             }
 
-            pHandle = GetCommandHandle<CLASS_UIOBJECT>(pUIObject);
+            pHandle = GetCommandHandle(pUIObject);
             pHandle.Set_UIObject(pUIObject);
         }
 

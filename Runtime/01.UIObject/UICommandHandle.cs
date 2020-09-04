@@ -6,6 +6,7 @@
    ============================================ */
 #endregion Header
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UIFramework;
@@ -19,7 +20,7 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
     public static bool g_bIsDebug = false;
 
-    public static int g_iInstanceCount { get { return g_mapHandle.Count; } }
+    public static int g_iInstanceCount => g_mapHandle.Count;
 
     // 이걸 map 으로 바꿔야하나? key를 TUIObject로 해서..?
     static Dictionary<TUIObject, UICommandHandle<TUIObject>> g_mapHandle = new Dictionary<TUIObject, UICommandHandle<TUIObject>>();
@@ -27,8 +28,7 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
     public static UICommandHandle<TUIObject> GetInstance(TUIObject pObject_OrNull)
     {
-        UICommandHandle<TUIObject> pHandle;
-        if (pObject_OrNull != null && g_mapHandle.TryGetValue(pObject_OrNull, out pHandle))
+        if (pObject_OrNull != null && g_mapHandle.TryGetValue(pObject_OrNull, out UICommandHandle<TUIObject> pHandle))
             return pHandle;
 
 
@@ -56,7 +56,9 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
     public static void ReturnInstance(UICommandHandle<TUIObject> pHandle)
     {
-        if(pHandle.pUIObject != null)
+        pHandle.Set_UIState(EUIObjectState.Destroyed);
+
+        if (pHandle.pUIObject != null)
             g_mapHandle.Remove(pHandle.pUIObject);
         g_pPool.DoPush(pHandle);
     }
@@ -67,8 +69,7 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
     public event System.Action<TUIObject> OnBeforeShow;
 
-    public delegate IEnumerator delOnChecking_IsShow(System.Action<bool> OnCheck_IsShow);
-    public delOnChecking_IsShow OnChecking_IsShow;
+    public System.Func<System.Action<bool>, IEnumerator> OnChecking_IsShow;
 
     public event System.Action<TUIObject> OnShow_BeforeAnimation;
     public event System.Action<TUIObject> OnShow_AfterAnimation;
@@ -78,6 +79,8 @@ public class UICommandHandle<TUIObject> : System.IDisposable
     /// 호출한 직후는 null이며 한프레임 기다려야 합니다.
     /// </summary>
     public TUIObject pUIObject { get; private set; }
+    public EUIObjectState eState { get; private set; }
+
     public int iID { get; private set; }
 
     public bool bIsExecute_BeforeShow { get; private set; }
@@ -86,6 +89,7 @@ public class UICommandHandle<TUIObject> : System.IDisposable
     public UICommandHandle<TUIObject> DoReset()
     {
         pUIObject = default;
+        Set_UIState(EUIObjectState.Creating);
 
         // Null Check를 안하기 위해 Default Func Setting
         OnBeforeShow = DefaultFunc;
@@ -136,6 +140,16 @@ public class UICommandHandle<TUIObject> : System.IDisposable
             g_mapHandle.Add(pUIObject, this);
     }
 
+    /// <summary>
+    /// 무한 Animation이 떠서 어쩔수 없이 캔슬되는 경우
+    /// 직후 Event를 호출해야 하기 때문에 CommandHandle도 State를 저장
+    /// </summary>
+    /// <param name="eState"></param>
+    public void Set_UIState(EUIObjectState eState)
+    {
+        this.eState = eState;
+    }
+
     public UICommandHandle<T> Cast<T>()
         where T : class, IUIObject
     {
@@ -178,11 +192,57 @@ public class UICommandHandle<TUIObject> : System.IDisposable
         }
     }
 
+    /// <summary>
+    /// 애니메이션이 끝날때 까지 기다립니다.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator Yield_WaitForAnimation()
     {
         while (bIsFinish_Animation == false)
         {
             yield return null;
+        }
+    }
+
+    /// <summary>
+    /// 애니메이션이 끝날때 까지 기다립니다. 타임아웃 시간이 지나면 에러와 함께 Yield Break합니다.
+    /// </summary>
+    /// <param name="fTimeOutSec">기다릴 시간</param>
+    public IEnumerator Yield_WaitForAnimation_TimeOut(float fTimeOutSec = 10f)
+    {
+        float fRemainTime = fTimeOutSec;
+
+        while (bIsFinish_Animation == false || fRemainTime > 0f)
+        {
+            fRemainTime -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        if (fRemainTime <= 0f)
+        {
+            bIsFinish_Animation = true;
+            Debug.LogError($"{pUIObject.GetObjectName_Safe()} is {nameof(Yield_WaitForAnimation_TimeOut)} Timeout Wait Time : {fTimeOutSec}");
+
+            OnForceCancel();
+        }
+    }
+
+    private void OnForceCancel()
+    {
+        switch (eState)
+        {
+            case EUIObjectState.Process_Before_ShowCoroutine:
+                Event_OnShow_BeforeAnimation();
+                break;
+
+            case EUIObjectState.Process_After_ShowCoroutine:
+                Event_OnShow_AfterAnimation();
+                break;
+
+            case EUIObjectState.Process_Before_HideCoroutine:
+            case EUIObjectState.Process_After_HideCoroutine:
+                Event_OnHide();
+                break;
         }
     }
 
@@ -197,7 +257,7 @@ public class UICommandHandle<TUIObject> : System.IDisposable
 
 public static class UICommandHandleHelper
 {
-    public static UICommandHandle<T> Set_OnCheck_IsShow<T>(this UICommandHandle<T> pHandle, UICommandHandle<T>.delOnChecking_IsShow OnChecking_IsShow)
+    public static UICommandHandle<T> Set_OnCheck_IsShow<T>(this UICommandHandle<T> pHandle, System.Func<System.Action<bool>, IEnumerator> OnChecking_IsShow)
         where T : IUIObject
     {
         pHandle.OnChecking_IsShow = OnChecking_IsShow;

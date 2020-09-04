@@ -14,15 +14,52 @@ using UIFramework.UIWidgetContainerManager_Logic;
 
 namespace UIFramework
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public abstract class CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME> : UIObjectManagerBase<CLASS_DRIVEN_MANAGER, ICanvas>
-        where CLASS_DRIVEN_MANAGER : CanvasManager<CLASS_DRIVEN_MANAGER, ENUM_CANVAS_NAME>
+    [System.Flags]
+    public enum EDebugLevelFlags
+    {
+        None = 0,
+
+        /// <summary>
+        /// <see cref="CanvasManager{CLASS_DRIVEN_MANAGER,ENUM_CANVAS_NAME}"/> 클래스의 일반 로직(뭐가 Show됐는지, Hide됐는지) 디버깅용
+        /// </summary>
+        Manager = 1 << 0,
+
+        /// <summary>
+        /// <see cref="CanvasManager{CLASS_DRIVEN_MANAGER,ENUM_CANVAS_NAME}"/> 클래스의 코어 로직(뭐가 List에서 Add됐는지, Remove됐는지) 디버깅용
+        /// </summary>
+        Manager_Core = 1 << 1,
+
+        /// <summary>
+        /// <see cref="ICanvasManager_Logic"/> 로직 디버깅용
+        /// </summary>
+        ManagerLogic = 1 << 2,
+
+        Detail = 1 << 3,
+    }
+
+    public static class UIDebug
+    {
+        static Dictionary<EDebugLevelFlags, string> _mapColorCode = new Dictionary<EDebugLevelFlags, string>()
+        {
+            {EDebugLevelFlags.Manager, "#aaaa00"},
+            {EDebugLevelFlags.Manager_Core, "#ffff00"},
+            {EDebugLevelFlags.ManagerLogic, "#ff0000"},
+            {EDebugLevelFlags.Detail, "#ff00ff"},
+        };
+
+        public static string LogFormat(EDebugLevelFlags eLogType)
+        {
+            return $"<color={_mapColorCode[eLogType]}>[{eLogType}]</color> ";
+        }
+    }
+
+    public abstract class CanvasManager<TDRIVEN_MANAGER, TENUM_CANVAS_NAME> : UIObjectManagerBase<TDRIVEN_MANAGER, ICanvas>
+        where TDRIVEN_MANAGER : CanvasManager<TDRIVEN_MANAGER, TENUM_CANVAS_NAME>
     {
         /* const & readonly declaration             */
 
-        static readonly bool const_bIsDebug = false;
+        // static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.Manager | EDebugLevelFlags.Manager_Core | EDebugLevelFlags.ManagerLogic;
+        private static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.None;
 
         /* enum & struct declaration                */
 
@@ -30,7 +67,7 @@ namespace UIFramework
 
         /// <summary>
         /// <see cref="ICanvas"/> 래퍼
-        /// <para>1. <see cref="ENUM_CANVAS_NAME"/> 관리</para>
+        /// <para>1. <see cref="TENUM_CANVAS_NAME"/> 관리</para>
         /// <para>2. <see cref="ICanvasManager_Logic"/> 관리</para>
         /// <para>3. <see cref="EUIObjectState"/> 관리</para>
         /// <para>4. Show/Hide Coroutine 관리</para>
@@ -38,7 +75,7 @@ namespace UIFramework
         public class CanvasWrapper
         {
             public EUIObjectState eState { get; private set; }
-            public ENUM_CANVAS_NAME eName { get; private set; }
+            public TENUM_CANVAS_NAME eName { get; private set; }
             public ICanvas pInstance { get; private set; }
 
             // 로직 캐싱 - 일일이 파싱체크 방지
@@ -62,7 +99,7 @@ namespace UIFramework
             System.Action<Coroutine> _OnStopCoroutine;
 
 
-            public void DoInit(ENUM_CANVAS_NAME eName, System.Func<IEnumerator, Coroutine> OnStartCoroutine, System.Action<Coroutine> OnStopCoroutine)
+            public void DoInit(TENUM_CANVAS_NAME eName, System.Func<IEnumerator, Coroutine> OnStartCoroutine, System.Action<Coroutine> OnStopCoroutine)
             {
                 this.eName = eName; this.pInstance = pInstance; this._OnStartCoroutine = OnStartCoroutine; this._OnStopCoroutine = OnStopCoroutine;
 
@@ -111,7 +148,7 @@ namespace UIFramework
                 yield return _listCoroutine.GetEnumerator_Safe();
             }
 
-            public IEnumerator DoExecute_Manager_CoroutineLogic(MonoBehaviour pManager, EUIObjectState eEvent, IEnumerable<ICanvasManager_Logic> listManagerLogic, System.Func<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper> GetUndoLogic, bool bIsDebug)
+            public IEnumerator DoExecute_Manager_CoroutineLogic(MonoBehaviour pManager, EUIObjectState eEvent, IEnumerable<ICanvasManager_Logic> listManagerLogic, System.Func<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper> GetUndoLogic, EDebugLevelFlags eDebugLevel)
             {
                 _listManager_CoroutineLogic.Clear();
 
@@ -119,7 +156,7 @@ namespace UIFramework
                 {
                     foreach (ICanvasManager_Logic pLogic in listManagerLogic)
                     {
-                        Coroutine pCoroutine = _OnStartCoroutine(pLogic.Execute_LogicCoroutine(pManager, pInstance, const_bIsDebug));
+                        Coroutine pCoroutine = _OnStartCoroutine(pLogic.Execute_LogicCoroutine(pManager, pInstance, eDebugLevel));
                         if (pCoroutine != null)
                             _listManager_CoroutineLogic.Add(pCoroutine);
                     }
@@ -130,7 +167,7 @@ namespace UIFramework
                 {
                     foreach (ICanvasManager_Logic pLogic in listManagerLogic)
                     {
-                        _listManager_CoroutineLogic.Add(_OnStartCoroutine(pLogic.Execute_LogicCoroutine(pManager, pInstance, const_bIsDebug)));
+                        _listManager_CoroutineLogic.Add(_OnStartCoroutine(pLogic.Execute_LogicCoroutine(pManager, pInstance, eDebugLevel)));
 
                         CanvasManager_LogicUndo_Wrapper pUndoLogic = GetUndoLogic(pLogic);
                         if (pUndoLogic == null)
@@ -149,7 +186,7 @@ namespace UIFramework
 
                 _listManager_Coroutine_UndoLogic.Clear();
                 for (int i = 0; i < listUndoLogic.Count; i++)
-                    _listManager_Coroutine_UndoLogic.Add(_OnStartCoroutine(listUndoLogic[i].Execute_UndoLogic_Coroutine(pManager, pInstance, const_bIsDebug)));
+                    _listManager_Coroutine_UndoLogic.Add(_OnStartCoroutine(listUndoLogic[i].Execute_UndoLogic_Coroutine(pManager, pInstance, eDebugLevel)));
                 listUndoLogic.Clear();
 
                 return _listManager_Coroutine_UndoLogic.GetEnumerator_Safe();
@@ -160,7 +197,7 @@ namespace UIFramework
                 List<CanvasManager_LogicUndo_Wrapper> listUndoLogic = mapUndoLogic[eEvent];
 
                 for (int i = 0; i < listUndoLogic.Count; i++)
-                    listUndoLogic[i].Execute_UndoLogic_NotCoroutine(pManager, pInstance, const_bIsDebug);
+                    listUndoLogic[i].Execute_UndoLogic_NotCoroutine(pManager, pInstance, eDebugLevel);
                 listUndoLogic.Clear();
             }
 
@@ -196,6 +233,11 @@ namespace UIFramework
             {
                 foreach (var pUndoLogicList in mapUndoLogic.Values)
                     pUndoLogicList.Clear();
+            }
+
+            public string GetObjectName()
+            {
+                return pInstance.GetObjectName_Safe();
             }
 
             private void StartCoroutine_Show()
@@ -243,14 +285,14 @@ namespace UIFramework
         // ReSharper disable once StaticMemberInGenericType
         static HashSet<System.IDisposable> g_setCommandHandle = new HashSet<System.IDisposable>();
 
-        protected Dictionary<ENUM_CANVAS_NAME, List<CanvasWrapper>> _mapWrapper = new Dictionary<ENUM_CANVAS_NAME, List<CanvasWrapper>>();
+        protected Dictionary<TENUM_CANVAS_NAME, List<CanvasWrapper>> _mapWrapper = new Dictionary<TENUM_CANVAS_NAME, List<CanvasWrapper>>();
         protected Dictionary<ICanvas, CanvasWrapper> _mapWrapper_Key_Is_Instance = new Dictionary<ICanvas, CanvasWrapper>();
 
         Dictionary<EUIObjectState, List<ICanvasManager_Logic>> _mapManagerLogic = new Dictionary<EUIObjectState, List<ICanvasManager_Logic>>();
         Dictionary<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper> _mapManagerUndoLogic_Parser = new Dictionary<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper>();
 
         List<ICanvas> _list_CanvasShowInstance = new List<ICanvas>();
-        Dictionary<ENUM_CANVAS_NAME, KeyValuePair<CanvasWrapper, object>> _mapProcessCreating = new Dictionary<ENUM_CANVAS_NAME, KeyValuePair<CanvasWrapper, object>>();
+        Dictionary<TENUM_CANVAS_NAME, KeyValuePair<CanvasWrapper, object>> _mapProcessCreating = new Dictionary<TENUM_CANVAS_NAME, KeyValuePair<CanvasWrapper, object>>();
         SimplePool<CanvasWrapper> _pWrapperPool;
 
         // ========================================================================== //
@@ -265,10 +307,10 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Show 할 캔버스 이름</param>
-        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow<CLASS_DRIVEN_CANVAS>(TENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
 
             UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle;
             if (pInstance._mapProcessCreating.TryGetValue(eName, out var sCreatingCanvas) == false)
@@ -289,10 +331,10 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Show 할 캔버스 이름</param>
-        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow_Multiple<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoShow_Multiple<CLASS_DRIVEN_CANVAS>(TENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
 
             UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle = GetCommandHandle<CLASS_DRIVEN_CANVAS>(null);
             pInstance.CreateInstance(eName, true, pHandle);
@@ -306,9 +348,9 @@ namespace UIFramework
         /// <para>아무 동작하지 않습니다.</para>
         /// </summary>
         /// <param name="eName">Show 할 캔버스 이름</param>
-        public static UICommandHandle<ICanvas> DoShowOnly(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<ICanvas> DoShowOnly(TENUM_CANVAS_NAME eName)
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
 
             UICommandHandle<ICanvas> pHandle;
             if (pInstance._mapProcessCreating.TryGetValue(eName, out var sCreatingCanvas) == false)
@@ -328,10 +370,10 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS"></typeparam>
         /// <param name="eName">Hide 할 캔버스 이름</param>
-        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoHide<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<CLASS_DRIVEN_CANVAS> DoHide<CLASS_DRIVEN_CANVAS>(TENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
 
             UICommandHandle<CLASS_DRIVEN_CANVAS> pHandle = GetCommandHandle<CLASS_DRIVEN_CANVAS>(null);
             pInstance.StartCoroutine(pInstance.Process_HideCoroutine(eName, pHandle));
@@ -345,9 +387,9 @@ namespace UIFramework
         /// <para>아무 동작하지 않습니다.</para>
         /// </summary>
         /// <param name="eName">Hide 할 캔버스 이름</param>
-        public static UICommandHandle<ICanvas> DoHideOnly(ENUM_CANVAS_NAME eName)
+        public static UICommandHandle<ICanvas> DoHideOnly(TENUM_CANVAS_NAME eName)
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
 
             UICommandHandle<ICanvas> pHandle = GetCommandHandle<ICanvas>(null);
             pInstance.StartCoroutine(pInstance.Process_HideCoroutine(eName, pHandle));
@@ -382,7 +424,7 @@ namespace UIFramework
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
         /// <param name="eName">얻고자 하는 캔버스 이름</param>
-        public static CLASS_DRIVEN_CANVAS GetAlreadyShow_Canvas_OrNull<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static CLASS_DRIVEN_CANVAS GetAlreadyShow_Canvas_OrNull<CLASS_DRIVEN_CANVAS>(TENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : MonoBehaviour, ICanvas
         {
             var pCanvas = GetAlreadyShow_Canvas_OrNull(eName);
@@ -394,9 +436,9 @@ namespace UIFramework
         /// <para>여러개일 경우 오래된 Canvas 1개만 리턴합니다.</para>
         /// </summary>
         /// <param name="eName">얻고자 하는 캔버스 이름</param>
-        public static ICanvas GetAlreadyShow_Canvas_OrNull(ENUM_CANVAS_NAME eName)
+        public static ICanvas GetAlreadyShow_Canvas_OrNull(TENUM_CANVAS_NAME eName)
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
 
             var listWrapper = pInstance.Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
             if (listWrapper.Count > 0)
@@ -407,14 +449,14 @@ namespace UIFramework
 
         /// <summary>
         /// 이미 보여지고 있는 Canvas List를 Return합니다. 없으면 count == 0인 list를 리턴합니다.
-        /// <para><see cref="DoShow_Multiple{CLASS_DRIVEN_CANVAS}(ENUM_CANVAS_NAME)"/>을 통해 Show를 할 경우 유효합니다.</para>
+        /// <para><see cref="DoShow_Multiple{CLASS_DRIVEN_CANVAS}(TENUM_CANVAS_NAME)"/>을 통해 Show를 할 경우 유효합니다.</para>
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
         /// <param name="eName">얻고자 하는 캔버스 이름</param>
-        public static List<CLASS_DRIVEN_CANVAS> GetAlreadyShow_CanvasList<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName)
+        public static List<CLASS_DRIVEN_CANVAS> GetAlreadyShow_CanvasList<CLASS_DRIVEN_CANVAS>(TENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
 
             var listWrapper = pInstance.Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
             return listWrapper.Where(p => p.pInstance is CLASS_DRIVEN_CANVAS && p.pInstance.IsNull() == false).Select(p => p.pInstance as CLASS_DRIVEN_CANVAS).ToList();
@@ -436,7 +478,7 @@ namespace UIFramework
         /// </summary>
         public static ICanvas GetLastShowCanvas_OrNull()
         {
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
             if (pInstance.IsNull())
                 return null;
 
@@ -448,14 +490,14 @@ namespace UIFramework
         /// </summary>
         /// <param name="pObject">Key를 얻을 캔버스 인스턴스</param>
         /// <param name="eName">리턴받을 Key</param>
-        public static bool GetEnumKey(ICanvas pObject, out ENUM_CANVAS_NAME eName)
+        public static bool GetEnumKey(ICanvas pObject, out TENUM_CANVAS_NAME eName)
         {
-            eName = default(ENUM_CANVAS_NAME);
+            eName = default(TENUM_CANVAS_NAME);
 
             if (pObject.IsNull())
                 return false;
 
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
             if (pInstance.IsNull())
                 return false;
 
@@ -492,7 +534,7 @@ namespace UIFramework
             CanvasManagerLogicFactory pFactory = new CanvasManagerLogicFactory();
             int iLoopMax = (int)EUIObjectState.MAX;
 
-            if (const_bIsDebug)
+            if ((eDebugLevel & EDebugLevelFlags.Manager) != 0)
             {
                 for (int i = 0; i < iLoopMax; i++)
                     pFactory.DoAddLogic((EUIObjectState)i, new Print_CanvasState((EUIObjectState)i));
@@ -520,7 +562,7 @@ namespace UIFramework
 
             DoAllHide_ShowedCanvas(false);
 
-            CLASS_DRIVEN_MANAGER pInstance = instance;
+            TDRIVEN_MANAGER pInstance = instance;
             if (pInstance.IsNull())
                 return;
 
@@ -609,14 +651,14 @@ namespace UIFramework
         /// <param name="eName">인스턴스를 만들 팝업 이름 Enum</param>
         /// <param name="bIsMultiple">이미 같은 팝업이 떴을 때 또 띄울지</param>
         /// <param name="OnFinish">인스턴스를 만들었을 때</param>
-        protected abstract IEnumerator OnCreate_Instance(ENUM_CANVAS_NAME eName, bool bIsMultiple, System.Action<ICanvas> OnFinish);
+        protected abstract IEnumerator OnCreate_Instance(TENUM_CANVAS_NAME eName, bool bIsMultiple, System.Action<ICanvas> OnFinish);
 
         /// <summary>
         /// 인스턴스에 알맞는 캔버스를 얻어오는 방법을 구현합니다.
         /// </summary>
         /// <param name="eName">캔버스가 필요한 이름 Enum</param>
         /// <param name="pCanvas">캔버스가 필요한 인스턴스</param>
-        public abstract Canvas GetParentCanvas(ENUM_CANVAS_NAME eName, ICanvas pCanvas);
+        public abstract Canvas GetParentCanvas(TENUM_CANVAS_NAME eName, ICanvas pCanvas);
 
         /// <summary>
         /// 오브젝트가 켜질 때 호출됩니다.
@@ -624,7 +666,7 @@ namespace UIFramework
         /// </summary>
         /// <param name="eName">켜지는 오브젝트의 이름 Enum</param>
         /// <param name="pInstance">켜지는 오브젝트의 인스턴스</param>
-        protected virtual void OnShow_BeforeAnimation(ENUM_CANVAS_NAME eName, ICanvas pInstance) { }
+        protected virtual void OnShow_BeforeAnimation(TENUM_CANVAS_NAME eName, ICanvas pInstance) { }
 
 
         /// <summary>
@@ -633,7 +675,7 @@ namespace UIFramework
         /// </summary>
         /// <param name="eName">켜지는 오브젝트의 이름 Enum</param>
         /// <param name="pInstance">켜지는 오브젝트의 인스턴스</param>
-        protected virtual void OnShow_AfterAnimation(ENUM_CANVAS_NAME eName, ICanvas pInstance) { }
+        protected virtual void OnShow_AfterAnimation(TENUM_CANVAS_NAME eName, ICanvas pInstance) { }
 
         /// <summary>
         /// 오브젝트가 꺼질 때 호출됩니다.
@@ -642,19 +684,19 @@ namespace UIFramework
         /// <param name="eName">꺼지는 오브젝트의 이름 Enum</param>
         /// <param name="pInstance">꺼지는 오브젝트의 인스턴스</param>
         /// <param name="iInstanceCount">현재 켜져있는 인스턴스의 개수</param>
-        protected virtual void OnHide(ENUM_CANVAS_NAME eName, ICanvas pInstance, int iInstanceCount) { }
+        protected virtual void OnHide(TENUM_CANVAS_NAME eName, ICanvas pInstance, int iInstanceCount) { }
 
         protected virtual void OnAllHide_ShowedCanvas() { }
 
         /// <summary>
-        /// Default <see cref="GetEnumKey(ICanvas, out ENUM_CANVAS_NAME)"/>를 Fail하면 호출되는 함수입니다.
+        /// Default <see cref="GetEnumKey(ICanvas, out TENUM_CANVAS_NAME)"/>를 Fail하면 호출되는 함수입니다.
         /// </summary>
         /// <param name="pInstance"></param>
         /// <param name="eName"></param>
         /// <returns></returns>
-        protected virtual bool GetEnumKey_Custom(ICanvas pInstance, out ENUM_CANVAS_NAME eName) { eName = default(ENUM_CANVAS_NAME); return false; }
+        protected virtual bool GetEnumKey_Custom(ICanvas pInstance, out TENUM_CANVAS_NAME eName) { eName = default(TENUM_CANVAS_NAME); return false; }
 
-        protected virtual ICanvas Get_CanvasInstance(ENUM_CANVAS_NAME eName)
+        protected virtual ICanvas Get_CanvasInstance(TENUM_CANVAS_NAME eName)
         {
             if (Get_UnUsedWrapper(eName, out var pContainer))
                 return pContainer.pInstance;
@@ -666,12 +708,15 @@ namespace UIFramework
 
         #region Private
 
-        protected IEnumerator Process_ShowCoroutine<CLASS_DRIVEN_CANVAS>(ENUM_CANVAS_NAME eName, CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+        protected IEnumerator Process_ShowCoroutine<CLASS_DRIVEN_CANVAS>(TENUM_CANVAS_NAME eName, CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
+            if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_ShowCoroutine)} - Name : {eName} // {pWrapper.GetObjectName()}");
+
             if (pWrapper == null || pWrapper.pInstance.IsNull())
             {
-                Debug.LogWarning(name + " " + eName.ToString() + " CoProcess_Showing - pContainerWrapper == null || pContainerWrapper.pInstance.Equals(null)", this);
+                Debug.LogWarning(name + " " + eName + " CoProcess_Showing - pContainerWrapper == null || pContainerWrapper.pInstance.Equals(null)", this);
                 yield break;
             }
 
@@ -694,15 +739,17 @@ namespace UIFramework
 
             // BeforeShow만 Handle 이벤트를 임시로 CanvasManager Logic 전에 호출
             sUICommandHandle.Event_OnBeforeShow();
-            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_ShowCoroutine, pWrapper);
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_ShowCoroutine, pWrapper, sUICommandHandle);
 
             Canvas pCanvas = GetParentCanvas(pWrapper.eName, pWrapper.pInstance);
             yield return pWrapper.DoExecute_ShowCoroutine(pCanvas, sUICommandHandle);
 
-            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_ShowCoroutine, pWrapper);
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_ShowCoroutine, pWrapper, sUICommandHandle);
             sUICommandHandle.Event_OnShow_AfterAnimation();
 
             OnShow_AfterAnimation(pWrapper.eName, pWrapper.pInstance);
+
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Showing, pWrapper, sUICommandHandle);
 
             // _list_CanvasShow.Add(pWrapper);
         }
@@ -710,6 +757,9 @@ namespace UIFramework
         protected virtual IEnumerator Process_HideCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
+            if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_HideCoroutine)} - Wrapper :  {pWrapper.GetObjectName()}");
+
             if (pWrapper == null)
                 yield break;
 
@@ -720,18 +770,18 @@ namespace UIFramework
 
             sUICommandHandle.DoResetFlag();
 
-            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_HideCoroutine, pWrapper);
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_Before_HideCoroutine, pWrapper, sUICommandHandle);
 
             yield return pWrapper.DoExecute_HideCoroutine();
 
-            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_HideCoroutine, pWrapper);
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_HideCoroutine, pWrapper, sUICommandHandle);
 
             sUICommandHandle.Event_OnHide();
 
             int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
             OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
 
-            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Disable, pWrapper);
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Disable, pWrapper, sUICommandHandle);
 
             DisableWrapper(pWrapper);
         }
@@ -739,6 +789,9 @@ namespace UIFramework
         protected virtual void Process_Hide<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
+            if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_Hide)} - Wrapper :  {pWrapper.GetObjectName()}");
+
             if (pWrapper == null)
                 return;
 
@@ -747,24 +800,24 @@ namespace UIFramework
             if (pWrapper.eState == EUIObjectState.Process_Before_HideCoroutine)
                 return;
 
-            Execute_ManagerUndoLogic(EUIObjectState.Process_Before_HideCoroutine, pWrapper);
+            Execute_ManagerUndoLogic(EUIObjectState.Process_Before_HideCoroutine, pWrapper, sUICommandHandle);
 
             // pWrapper.DoExecute_HideCoroutine();
 
-            Execute_ManagerUndoLogic(EUIObjectState.Process_After_HideCoroutine, pWrapper);
+            Execute_ManagerUndoLogic(EUIObjectState.Process_After_HideCoroutine, pWrapper, sUICommandHandle);
 
             sUICommandHandle.Event_OnHide();
 
             int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
             OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
 
-            Execute_ManagerUndoLogic(EUIObjectState.Disable, pWrapper);
+            Execute_ManagerUndoLogic(EUIObjectState.Disable, pWrapper, sUICommandHandle);
 
             DisableWrapper(pWrapper);
         }
 
 
-        IEnumerator Process_CreateInstance<T>(ENUM_CANVAS_NAME eName, CanvasWrapper pWrapper, bool bCreateInstance, bool bIsMultiple, UICommandHandle<T> pUICommandHandle)
+        IEnumerator Process_CreateInstance<T>(TENUM_CANVAS_NAME eName, CanvasWrapper pWrapper, bool bCreateInstance, bool bIsMultiple, UICommandHandle<T> pUICommandHandle)
             where T : class, ICanvas
         {
             if (bCreateInstance)
@@ -788,8 +841,8 @@ namespace UIFramework
 
                 Wrapper_SetCanvasInstance(pWrapper, pInstance);
                 _mapProcessCreating.Remove(eName);
-                if (const_bIsDebug)
-                    Debug.LogWarning(name + " Removed Creating " + eName);
+                if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                    Debug.Log(name + " Removed Creating " + eName);
             }
 
             if (pWrapper == null || pWrapper.pInstance.IsNull())
@@ -805,7 +858,7 @@ namespace UIFramework
             yield return Process_ShowCoroutine(eName, pWrapper, pUICommandHandle);
         }
 
-        IEnumerator Process_HideCoroutine<T>(ENUM_CANVAS_NAME eName, UICommandHandle<T> pUICommandHandle)
+        IEnumerator Process_HideCoroutine<T>(TENUM_CANVAS_NAME eName, UICommandHandle<T> pUICommandHandle)
             where T : class, ICanvas
         {
             var listEnableWrapper = Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
@@ -849,7 +902,7 @@ namespace UIFramework
         #region Manage_Wrapper
 
         // ReSharper disable once UnusedMethodReturnValue.Local
-        private CanvasWrapper CreateInstance<T>(ENUM_CANVAS_NAME eName, bool bIsMultiple, UICommandHandle<T> pHandle)
+        private CanvasWrapper CreateInstance<T>(TENUM_CANVAS_NAME eName, bool bIsMultiple, UICommandHandle<T> pHandle)
             where T : class, ICanvas
         {
             bool bIsCreateInstance = Check_IsCreateInstance(eName, bIsMultiple, pHandle, out var pWrapper);
@@ -873,7 +926,7 @@ namespace UIFramework
             pHandle.Set_UIObject(pUIObject);
         }
 
-        protected bool Get_UnUsedWrapper(ENUM_CANVAS_NAME eName, out CanvasWrapper pWrapper)
+        protected bool Get_UnUsedWrapper(TENUM_CANVAS_NAME eName, out CanvasWrapper pWrapper)
         {
             pWrapper = null;
             bool bGet_IsSuccess = false;
@@ -893,7 +946,7 @@ namespace UIFramework
         }
 
         List<CanvasWrapper> _listTempWrapper = new List<CanvasWrapper>();
-        private List<CanvasWrapper> Get_MatchWrapperList(ENUM_CANVAS_NAME eName, System.Func<CanvasWrapper, bool> OnCheck_IsMatch)
+        private List<CanvasWrapper> Get_MatchWrapperList(TENUM_CANVAS_NAME eName, System.Func<CanvasWrapper, bool> OnCheck_IsMatch)
         {
             _listTempWrapper.Clear();
             if (_mapWrapper.ContainsKey(eName) == false)
@@ -922,7 +975,7 @@ namespace UIFramework
             return (pWrapper == null || pWrapper.pInstance.Equals(null));
         }
 
-        bool Check_IsCreateInstance<T>(ENUM_CANVAS_NAME eName, bool bIsMultiple, UICommandHandle<T> pUICommandHandle, out CanvasWrapper pWrapper)
+        bool Check_IsCreateInstance<T>(TENUM_CANVAS_NAME eName, bool bIsMultiple, UICommandHandle<T> pUICommandHandle, out CanvasWrapper pWrapper)
             where T : class, ICanvas
         {
             pWrapper = null;
@@ -954,8 +1007,8 @@ namespace UIFramework
                     else
                         pWrapper = sKeyPair.Key;
 
-                    if (const_bIsDebug)
-                        Debug.LogWarning($"{name} Check_IsCreateInstance // bCreateInstance : {bCreateInstance} " + eName + " Disable Count : " + Get_MatchWrapperList(eName, (x) => x.Check_IsDisable()).Count);
+                    if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                        Debug.Log($"{name} Check_IsCreateInstance // bCreateInstance : {bCreateInstance} " + eName + " Disable Count : " + Get_MatchWrapperList(eName, (x) => x.Check_IsDisable()).Count);
                 }
                 else
                 {
@@ -967,7 +1020,7 @@ namespace UIFramework
             return bCreateInstance;
         }
 
-        protected CanvasWrapper CreateWrapper_OrNull(ENUM_CANVAS_NAME eName)
+        protected CanvasWrapper CreateWrapper_OrNull(TENUM_CANVAS_NAME eName)
         {
             CanvasWrapper pWrapper = null;
             try
@@ -1002,8 +1055,8 @@ namespace UIFramework
 
         protected void RemoveWrapper(CanvasWrapper pWrapper)
         {
-            if (const_bIsDebug)
-                Debug.LogWarning($"Remove Wrapper - {pWrapper.eName} - Instance == Null : {pWrapper.pInstance == null}");
+            if ((eDebugLevel & EDebugLevelFlags.Manager) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager)} Remove Wrapper - {pWrapper.eName} - Instance == Null : {pWrapper.pInstance == null}");
 
             if (_mapWrapper.ContainsKey(pWrapper.eName))
                 _mapWrapper[pWrapper.eName].Remove(pWrapper);
@@ -1038,8 +1091,10 @@ namespace UIFramework
             }
         }
 
-        private IEnumerator Execute_ManagerLogicCoroutine(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper)
+        private IEnumerator Execute_ManagerLogicCoroutine<CLASS_DRIVEN_CANVAS>(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+            where CLASS_DRIVEN_CANVAS : IUIObject
         {
+            sUICommandHandle.Set_UIState(eUIEvent);
             pContainerWrapper.DoSet_State(eUIEvent);
 
             if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)
@@ -1048,11 +1103,13 @@ namespace UIFramework
             if (_mapManagerLogic.TryGetValue(eUIEvent, out var listLogic) == false)
                 yield break;
 
-            yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, listLogic, GetUndoLogic, const_bIsDebug);
+            yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, listLogic, GetUndoLogic, eDebugLevel);
         }
 
-        private void Execute_ManagerUndoLogic(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper)
+        private void Execute_ManagerUndoLogic<CLASS_DRIVEN_CANVAS>(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+            where CLASS_DRIVEN_CANVAS : IUIObject
         {
+            sUICommandHandle.Set_UIState(eUIEvent);
             pContainerWrapper.DoSet_State(eUIEvent);
 
             if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)

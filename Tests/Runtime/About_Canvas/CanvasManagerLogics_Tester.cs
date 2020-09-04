@@ -103,7 +103,7 @@ namespace UIFramework_Test
                 _strTestText = strTestText;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 Canvas_ForLogicTest pTest = pCanvas as Canvas_ForLogicTest;
                 pTest.DoSetText(_strTestText);
@@ -122,7 +122,7 @@ namespace UIFramework_Test
                 _iAddValue = iAddValue;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 Canvas_ForLogicTest pTest = pCanvas as Canvas_ForLogicTest;
                 _iOriginValue = pTest.iValue;
@@ -131,7 +131,7 @@ namespace UIFramework_Test
                 yield break;
             }
 
-            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 Canvas_ForLogicTest pTest = pCanvas as Canvas_ForLogicTest;
                 pTest.iValue = _iOriginValue;
@@ -139,7 +139,7 @@ namespace UIFramework_Test
                 yield break;
             }
 
-            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 Canvas_ForLogicTest pTest = pCanvas as Canvas_ForLogicTest;
                 pTest.iValue = _iOriginValue;
@@ -155,14 +155,14 @@ namespace UIFramework_Test
                 _pTransformParents = pTransformParents;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 new GameObject(nameof(Logic_CreateObject_And_SetParents_And_Undo_Is_Destroy)).transform.SetParent(_pTransformParents);
 
                 yield break;
             }
 
-            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (_pTransformParents.childCount == 0)
                     yield break;
@@ -172,7 +172,7 @@ namespace UIFramework_Test
                 yield break;
             }
 
-            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (_pTransformParents.childCount == 0)
                     return;
@@ -192,17 +192,17 @@ namespace UIFramework_Test
                 this.fWaitSecond = fWaitSecond; this.fWaitSecond_On_Undo = fWaitSecond_On_Undo;
             }
 
-            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 yield return new WaitForSeconds(fWaitSecond);
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 yield return new WaitForSeconds(fWaitSecond_On_Undo);
             }
 
-            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
             }
         }

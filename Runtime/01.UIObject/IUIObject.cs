@@ -55,6 +55,8 @@ namespace UIFramework
         /// </summary>
         Disable,
 
+        Destroyed,
+
         MAX,
     }
 
@@ -121,5 +123,16 @@ public static class IUIObjectExtension
     static bool IsNull(this GameObject gameObject)
     {
         return gameObject == null || ReferenceEquals(gameObject, null);
+    }
+
+    /// <summary>
+    /// 오브젝트의 이름을 Null에 상관없이 얻어옵니다.
+    /// </summary>
+    public static string GetObjectName_Safe(this IUIObjectBase pObject)
+    {
+        if (pObject.IsNull())
+            return "is null Object";
+
+        return pObject.gameObject.name;
     }
 }

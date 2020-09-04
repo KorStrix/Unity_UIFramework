@@ -84,7 +84,7 @@ public class CUIWidgetManager : UIObjectManagerBase<CUIWidgetManager, IUIWidget_
 
         sUICommandHandle.Event_OnBeforeShow();
         GameObject pObject = pUIObject.gameObject;
-        if (pObject.activeSelf == false)
+        if (pObject != null && pObject.activeSelf == false)
             pObject.SetActive(true);
 
         sUICommandHandle.Event_OnShow_BeforeAnimation();
@@ -100,7 +100,7 @@ public class CUIWidgetManager : UIObjectManagerBase<CUIWidgetManager, IUIWidget_
         _setPlayHiding.Add(pUIObject);
 
         GameObject pObject = pUIObject.gameObject;
-        if (pObject.activeSelf == false)
+        if (pObject != null && pObject.activeSelf == false)
             pObject.SetActive(true);
 
         yield return pUIObject.OnHideCoroutine();

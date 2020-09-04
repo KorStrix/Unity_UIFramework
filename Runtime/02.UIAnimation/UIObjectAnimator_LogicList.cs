@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-17 오전 11:23:33
@@ -43,6 +43,8 @@ namespace UIFramework
         void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
         void IUIAnimationLogic_OnBeforeShow(IUIObject pUIObject);
         IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
+        void IUIAnimationLogic_OnDestroy(IUIObject pUIObject);
+
     }
 
     /// <summary>
@@ -61,6 +63,8 @@ namespace UIFramework
         public abstract void IUIAnimationLogic_OnAwake(IUIObject pUIObject);
         public abstract void IUIAnimationLogic_OnBeforeShow(IUIObject pUIObject);
         public abstract IEnumerator IUIAnimationLogic_OnAnimation(IUIObject pUIObject, bool bIgnoreTimeScale);
+        public virtual void IUIAnimationLogic_OnDestroy(IUIObject pUIObject) { }
+
     }
 
     /// <summary>
@@ -115,6 +119,7 @@ namespace UIFramework
 
         public void DoClear_AnimationLogic()
         {
+            listUIAnimationLogic.ForEach(p => p.IUIAnimationLogic_OnDestroy(_pUIObject));
             listUIAnimationLogic.Clear();
         }
 
@@ -122,6 +127,7 @@ namespace UIFramework
         {
             listUIAnimationLogic.ForEach(p => p.IUIAnimationLogic_OnBeforeShow(_pUIObject));
         }
+
 
         /// <summary>
         /// 애니메이션들을 동시에 재생
@@ -156,7 +162,6 @@ namespace UIFramework
         // ========================================================================== //
 
         /* protected - Override & Unity API         */
-
 
         /* protected - [abstract & virtual]         */
 

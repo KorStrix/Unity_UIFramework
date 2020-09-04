@@ -1,4 +1,4 @@
-﻿#region Header
+#region Header
 /*	============================================
  *	작성자 : Strix
  *	작성일 : 2019-10-30 오후 5:29:29
@@ -72,7 +72,7 @@ namespace UIFramework
         /// </summary>
         public interface ICanvasManager_Logic
         {
-            IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug);
+            IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags);
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace UIFramework
         /// </summary>
         public interface ICanvasManager_Logic_IsPossible_Undo : ICanvasManager_Logic
         {
-            IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug);
-            void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug);
+            IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags);
+            void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags);
         }
 
         public class CanvasManager_LogicUndo_Wrapper : ICanvasManager_Logic_IsPossible_Undo
@@ -95,19 +95,19 @@ namespace UIFramework
                 this.pLogic = pLogic; this.eWhenUndo = eWhenUndo;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
-                yield return pLogic.Execute_LogicCoroutine(pManager, pCanvas, bIsDebug);
+                yield return pLogic.Execute_LogicCoroutine(pManager, pCanvas, eDebugFlags);
             }
 
-            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
-                yield return pLogic.Execute_UndoLogic_Coroutine(pManager, pCanvas, bIsDebug);
+                yield return pLogic.Execute_UndoLogic_Coroutine(pManager, pCanvas, eDebugFlags);
             }
 
-            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
-                pLogic.Execute_UndoLogic_NotCoroutine(pManager, pCanvas, bIsDebug);
+                pLogic.Execute_UndoLogic_NotCoroutine(pManager, pCanvas, eDebugFlags);
             }
         }
         #endregion
@@ -122,12 +122,12 @@ namespace UIFramework
                 _eState = eState;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if(pCanvas.IsNull())
-                    Debug.Log(nameof(Print_CanvasState) + "Object is Null /// ECavnasState : " + _eState);
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}{nameof(Print_CanvasState)} Object is Null /// CanvasState : {_eState}");
                 else
-                    Debug.Log(nameof(Print_CanvasState) + " " + pCanvas.gameObject.name + "// ECavnasState : " + _eState, pCanvas.gameObject);
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}{nameof(Print_CanvasState)} {pCanvas.gameObject.name} /// CanvasState : {_eState}", pCanvas.gameObject);
 
                 yield break;
             }
@@ -135,7 +135,7 @@ namespace UIFramework
 
         public class SetTransform_LastSibling : ICanvasManager_Logic
         {
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (pCanvas.IsNull())
                     yield break;
@@ -159,7 +159,7 @@ namespace UIFramework
                 this.pObject = pObject; this.OnRequireObject = OnRequireObject; this.OnHideObject = OnHideObject;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (OnRequireObject == null || pObject == null)
                 {
@@ -176,11 +176,11 @@ namespace UIFramework
 
                 mapShowObject.Add(pCanvas, pObjectCopy);
 
-                if (bIsDebug)
-                    Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}{nameof(Show_Object)} Canvas {pCanvas.gameObject.name} {nameof(Execute_LogicCoroutine)} Finish");
             }
 
-            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (mapShowObject.ContainsKey(pCanvas) == false)
                     yield break;
@@ -191,7 +191,7 @@ namespace UIFramework
                 OnHideObject(pObject);
             }
 
-            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (mapShowObject.ContainsKey(pCanvas) == false)
                     return;
@@ -208,7 +208,14 @@ namespace UIFramework
         {
             public enum EOption
             {
+                /// <summary>
+                /// 애니메이션을 전부 기다리고 다음 코드를 실행할지
+                /// </summary>
                 WaitAnimation,
+
+                /// <summary>
+                /// 애니메이션을 안기다리고 바로 다음 코드를 실행할지
+                /// </summary>
                 NotWaitAnimation,
             }
 
@@ -225,7 +232,7 @@ namespace UIFramework
                 this.pObject = pObject; this.OnRequireObject = OnRequireObject; this.OnHideObject = OnHideObject; this._eOption = eOption;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (OnRequireObject == null || pObject == null)
                 {
@@ -241,27 +248,27 @@ namespace UIFramework
                 if (pObjectCopy.IsNull())
                     yield break;
 
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Show_UIWidget_Managed<T>) + " Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_LogicCoroutine) + " Start");
+
                 mapShowObject.Add(pCanvas, pObjectCopy);
 
                 _bWaitAnimation = _eOption == EOption.WaitAnimation;
                 var pHandle = pObjectCopy.DoShow();
                 if (pHandle == null)
                     yield break;
-                pHandle.Set_OnShow_AfterAnimation(OnFinishAnimation);
-
-                if (bIsDebug)
-                    Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Start");
+                pHandle.Set_OnShow_AfterAnimation((pPopup) => _bWaitAnimation = false);
 
                 while (_bWaitAnimation)
                 {
                     yield return null;
                 }
 
-                if (bIsDebug)
-                    Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Show_UIWidget_Managed<T>) + " Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_LogicCoroutine) + " Finish");
             }
 
-            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (mapShowObject.ContainsKey(pCanvas) == false)
                     yield break;
@@ -271,16 +278,16 @@ namespace UIFramework
                 if (pObject.IsNull())
                     yield break;
 
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}{nameof(Show_UIWidget_Managed<T>)}/{nameof(Execute_UndoLogic_Coroutine)} // Canvas : {pCanvas.GetObjectName_Safe()} Start");
+
                 var pHandle = pObject.DoHide();
                 if (pHandle == null)
                 {
-                    Debug.LogWarning("Execute_UndoLogicCoroutine - pHandle == null");
+                    Debug.LogWarning($"{nameof(Execute_UndoLogic_Coroutine)} // Canvas : {pCanvas.GetObjectName_Safe()} - pHandle == null");
                     yield break;
                 }
-                pHandle.Set_OnHide(OnFinishAnimation);
-
-                if (bIsDebug)
-                    Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Start");
+                pHandle.Set_OnHide((pPopup) => _bWaitAnimation = false);
 
                 _bWaitAnimation = _eOption == EOption.WaitAnimation;
                 while (_bWaitAnimation)
@@ -288,14 +295,14 @@ namespace UIFramework
                     yield return null;
                 }
 
-                if (bIsDebug)
-                    Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
-
                 OnHideObject(pObject);
+
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}{nameof(Show_UIWidget_Managed<T>)}/{nameof(Execute_UndoLogic_Coroutine)} // Canvas : {pCanvas.GetObjectName_Safe()} Finish");
             }
 
 
-            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if (mapShowObject.ContainsKey(pCanvas) == false)
                     return;
@@ -305,34 +312,27 @@ namespace UIFramework
                 if (pObject.IsNull())
                     return;
 
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Show_UIWidget_Managed<T>) + " Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_UndoLogic_NotCoroutine) + " Start");
+
                 var pHandle = pObject.DoHide();
                 if (pHandle == null)
                 {
-                    Debug.LogWarning("Execute_UndoLogicCoroutine - pHandle == null");
+                    Debug.LogWarning($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + "Execute_UndoLogicCoroutine - pHandle == null");
                     return;
                 }
-                pHandle.Set_OnHide(OnFinishAnimation);
-
-                if (bIsDebug)
-                    Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Start");
-
-                if (bIsDebug)
-                    Debug.Log(nameof(Show_Object) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " Finish");
-
+                pHandle.Set_OnHide((pPopup) => _bWaitAnimation = false);
                 OnHideObject(pObject);
+
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Show_UIWidget_Managed<T>) + " Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_UndoLogic_NotCoroutine) + " Finish");
             }
 
             public T GetLinkedInstance(ICanvas pCanvas)
             {
-                T pObject = null;
-                mapShowObject.TryGetValue(pCanvas, out pObject);
+                mapShowObject.TryGetValue(pCanvas, out var pObject);
 
                 return pObject;
-            }
-
-            private void OnFinishAnimation(T pObject)
-            {
-                _bWaitAnimation = false;
             }
         }
 
@@ -359,16 +359,20 @@ namespace UIFramework
                 return this;
             }
 
-            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
-                if (bIsDebug)
-                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " 1");
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{nameof(Lock_AllInput)} Prepare Canvas : {pCanvas.GetObjectName_Safe()} + {nameof(Execute_LogicCoroutine)}", pCanvas.gameObject);
 
                 if (_OnCheck_IsExecute(pCanvas) == false)
                     yield break;
 
                 if (pCanvas.IsNull())
                     yield break;
+
+
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_LogicCoroutine));
 
                 if (_mapSelectAble.ContainsKey(pCanvas) == false)
                 {
@@ -382,7 +386,7 @@ namespace UIFramework
 
 
                 List<SelectAble_OriginState> listSelectAble = _mapSelectAble[pCanvas];
-                if (bIsDebug)
+                if ((eDebugFlags & EDebugLevelFlags.Detail) != 0)
                 {
                     for (int i = 0; i < listSelectAble.Count; i++)
                     {
@@ -402,16 +406,16 @@ namespace UIFramework
                     }
                 }
 
-                if (bIsDebug)
-                    Debug.Log(nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_LogicCoroutine) + " 2");
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log(nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_LogicCoroutine));
 
                 yield break;
             }
 
-            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
-                if (bIsDebug)
-                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log($"{nameof(Lock_AllInput)}/{nameof(Execute_UndoLogic_Coroutine)} Prepare Canvas : {pCanvas.GetObjectName_Safe()}", pCanvas?.gameObject);
 
                 if (_OnCheck_IsExecute(pCanvas) == false)
                     yield break;
@@ -427,7 +431,10 @@ namespace UIFramework
                 if (listSelectAble == null)
                     yield break;
 
-                if (bIsDebug)
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
+                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
+
+                if ((eDebugFlags & EDebugLevelFlags.Detail) != 0)
                 {
                     for (int i = 0; i < listSelectAble.Count; i++)
                     {
@@ -447,15 +454,15 @@ namespace UIFramework
                     }
                 }
 
-                if (bIsDebug)
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
                     Debug.Log(nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
 
                 yield break;
             }
 
-            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, bool bIsDebug)
+            public void Execute_UndoLogic_NotCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
-                if (bIsDebug)
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
                     Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
 
                 if (_OnCheck_IsExecute(pCanvas) == false)
@@ -472,7 +479,7 @@ namespace UIFramework
                 if (listSelectAble == null)
                     return;
 
-                if (bIsDebug)
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
                 {
                     for (int i = 0; i < listSelectAble.Count; i++)
                     {
@@ -492,7 +499,7 @@ namespace UIFramework
                     }
                 }
 
-                if (bIsDebug)
+                if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
                     Debug.Log(nameof(Lock_AllInput) + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
             }
         }

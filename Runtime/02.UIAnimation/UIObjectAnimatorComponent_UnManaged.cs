@@ -157,6 +157,11 @@ namespace UIFramework
                 Debug.Log($"{name} - {nameof(OnHideCoroutine)} Finish - eAnimationPlayHow : {eAnimationPlayHow}", this);
         }
 
+        private void OnDestroy()
+        {
+            DoClear_AnimationLogic();
+        }
+
         /* protected - [abstract & virtual]         */
 
 

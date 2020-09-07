@@ -58,6 +58,8 @@ namespace UIFramework
     {
         /* const & readonly declaration             */
 
+        //static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.Manager | EDebugLevelFlags.ManagerLogic | EDebugLevelFlags.Detail | EDebugLevelFlags.Manager_Core;
+
         // static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.Manager | EDebugLevelFlags.Manager_Core | EDebugLevelFlags.ManagerLogic;
         private static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.None;
 
@@ -95,11 +97,11 @@ namespace UIFramework
             List<Coroutine> _listManager_CoroutineLogic = new List<Coroutine>();
             List<Coroutine> _listManager_Coroutine_UndoLogic = new List<Coroutine>();
 
-            System.Func<IEnumerator, Coroutine> _OnStartCoroutine;
+            System.Func<CanvasWrapper, IEnumerator, Coroutine> _OnStartCoroutine;
             System.Action<Coroutine> _OnStopCoroutine;
 
 
-            public void DoInit(TENUM_CANVAS_NAME eName, System.Func<IEnumerator, Coroutine> OnStartCoroutine, System.Action<Coroutine> OnStopCoroutine)
+            public void DoInit(TENUM_CANVAS_NAME eName, System.Func<CanvasWrapper, IEnumerator, Coroutine> OnStartCoroutine, System.Action<Coroutine> OnStopCoroutine)
             {
                 this.eName = eName; this.pInstance = pInstance; this._OnStartCoroutine = OnStartCoroutine; this._OnStopCoroutine = OnStopCoroutine;
 
@@ -156,7 +158,7 @@ namespace UIFramework
                 {
                     foreach (ICanvasManager_Logic pLogic in listManagerLogic)
                     {
-                        Coroutine pCoroutine = _OnStartCoroutine(pLogic.Execute_LogicCoroutine(pManager, pInstance, eDebugLevel));
+                        Coroutine pCoroutine = _OnStartCoroutine(this, pLogic.Execute_LogicCoroutine(pManager, pInstance, eDebugLevel));
                         if (pCoroutine != null)
                             _listManager_CoroutineLogic.Add(pCoroutine);
                     }
@@ -167,7 +169,7 @@ namespace UIFramework
                 {
                     foreach (ICanvasManager_Logic pLogic in listManagerLogic)
                     {
-                        _listManager_CoroutineLogic.Add(_OnStartCoroutine(pLogic.Execute_LogicCoroutine(pManager, pInstance, eDebugLevel)));
+                        _listManager_CoroutineLogic.Add(_OnStartCoroutine(this, pLogic.Execute_LogicCoroutine(pManager, pInstance, eDebugLevel)));
 
                         CanvasManager_LogicUndo_Wrapper pUndoLogic = GetUndoLogic(pLogic);
                         if (pUndoLogic == null)
@@ -186,7 +188,7 @@ namespace UIFramework
 
                 _listManager_Coroutine_UndoLogic.Clear();
                 for (int i = 0; i < listUndoLogic.Count; i++)
-                    _listManager_Coroutine_UndoLogic.Add(_OnStartCoroutine(listUndoLogic[i].Execute_UndoLogic_Coroutine(pManager, pInstance, eDebugLevel)));
+                    _listManager_Coroutine_UndoLogic.Add(_OnStartCoroutine(this, listUndoLogic[i].Execute_UndoLogic_Coroutine(pManager, pInstance, eDebugLevel)));
                 listUndoLogic.Clear();
 
                 return _listManager_Coroutine_UndoLogic.GetEnumerator_Safe();
@@ -242,18 +244,18 @@ namespace UIFramework
 
             private void StartCoroutine_Show()
             {
-                _listCoroutine.Add(_OnStartCoroutine(pInstance.OnShowCoroutine()));
+                _listCoroutine.Add(_OnStartCoroutine(this, pInstance.OnShowCoroutine()));
 
                 for (int i = 0; i < _listChildrenWidget.Count; i++)
-                    _listCoroutine.Add(_OnStartCoroutine(_listChildrenWidget[i].OnShowCoroutine()));
+                    _listCoroutine.Add(_OnStartCoroutine(this, _listChildrenWidget[i].OnShowCoroutine()));
             }
 
             private void StartCoroutine_Hide()
             {
-                _listCoroutine.Add(_OnStartCoroutine(pInstance.OnHideCoroutine()));
+                _listCoroutine.Add(_OnStartCoroutine(this, pInstance.OnHideCoroutine()));
 
                 for (int i = 0; i < _listChildrenWidget.Count; i++)
-                    _listCoroutine.Add(_OnStartCoroutine(_listChildrenWidget[i].OnHideCoroutine()));
+                    _listCoroutine.Add(_OnStartCoroutine(this, _listChildrenWidget[i].OnHideCoroutine()));
             }
 
             private void StopCoroutine()
@@ -716,7 +718,7 @@ namespace UIFramework
 
             if (pWrapper == null || pWrapper.pInstance.IsNull())
             {
-                Debug.LogWarning(name + " " + eName + " CoProcess_Showing - pContainerWrapper == null || pContainerWrapper.pInstance.Equals(null)", this);
+                Debug.LogWarning(name + " " + eName + " CoProcess_Showing - pWrapper == null || pWrapper.pInstance.Equals(null)", this);
                 yield break;
             }
 
@@ -842,7 +844,7 @@ namespace UIFramework
                 Wrapper_SetCanvasInstance(pWrapper, pInstance);
                 _mapProcessCreating.Remove(eName);
                 if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
-                    Debug.Log(name + " Removed Creating " + eName);
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}{name} Removed Creating " + eName);
             }
 
             if (pWrapper == null || pWrapper.pInstance.IsNull())
@@ -1008,7 +1010,7 @@ namespace UIFramework
                         pWrapper = sKeyPair.Key;
 
                     if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
-                        Debug.Log($"{name} Check_IsCreateInstance // bCreateInstance : {bCreateInstance} " + eName + " Disable Count : " + Get_MatchWrapperList(eName, (x) => x.Check_IsDisable()).Count);
+                        Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}{name} Check_IsCreateInstance // bCreateInstance : {bCreateInstance} " + eName + " Disable Count : " + Get_MatchWrapperList(eName, (x) => x.Check_IsDisable()).Count);
                 }
                 else
                 {
@@ -1026,7 +1028,7 @@ namespace UIFramework
             try
             {
                 pWrapper = _pWrapperPool.DoPop();
-                pWrapper.DoInit(eName, StartCoroutine, StopCoroutine);
+                pWrapper.DoInit(eName, StartCoroutineWrapper, StopCoroutine);
 
                 if (_mapWrapper.ContainsKey(eName) == false)
                     _mapWrapper.Add(eName, new List<CanvasWrapper>());
@@ -1040,6 +1042,14 @@ namespace UIFramework
             }
 
             return pWrapper;
+        }
+
+        Coroutine StartCoroutineWrapper(CanvasWrapper pWrapper, IEnumerator pEnumerator)
+        {
+            if((eDebugLevel & EDebugLevelFlags.Detail) != 0)
+                Debug.Log($"{pWrapper.GetObjectName()} - StartCoroutine {pEnumerator}");
+
+            return StartCoroutine(pEnumerator);
         }
 
         protected void Wrapper_SetCanvasInstance<T>(CanvasWrapper pWrapper, T pInstance)
@@ -1091,19 +1101,23 @@ namespace UIFramework
             }
         }
 
-        private IEnumerator Execute_ManagerLogicCoroutine<CLASS_DRIVEN_CANVAS>(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+        private IEnumerator Execute_ManagerLogicCoroutine<CLASS_DRIVEN_CANVAS>(EUIObjectState eUIState, CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
-            sUICommandHandle.Set_UIState(eUIEvent);
-            pContainerWrapper.DoSet_State(eUIEvent);
+            if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(Execute_ManagerLogicCoroutine)} - {pWrapper.eName} // Set UIState : {eUIState}");
 
-            if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)
-                yield return pContainerWrapper.DoExecute_Manager_UndoLogic_Coroutine(this, eUIEvent);
 
-            if (_mapManagerLogic.TryGetValue(eUIEvent, out var listLogic) == false)
+            sUICommandHandle.Set_UIState(eUIState);
+            pWrapper.DoSet_State(eUIState);
+
+            if (eUIState != EUIObjectState.Process_Before_ShowCoroutine)
+                yield return pWrapper.DoExecute_Manager_UndoLogic_Coroutine(this, eUIState);
+
+            if (_mapManagerLogic.TryGetValue(eUIState, out var listLogic) == false)
                 yield break;
 
-            yield return pContainerWrapper.DoExecute_Manager_CoroutineLogic(this, eUIEvent, listLogic, GetUndoLogic, eDebugLevel);
+            yield return pWrapper.DoExecute_Manager_CoroutineLogic(this, eUIState, listLogic, GetUndoLogic, eDebugLevel);
         }
 
         private void Execute_ManagerUndoLogic<CLASS_DRIVEN_CANVAS>(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)

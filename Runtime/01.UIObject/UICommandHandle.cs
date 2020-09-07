@@ -212,10 +212,16 @@ public class UICommandHandle<TUIObject> : System.IDisposable
     {
         float fRemainTime = fTimeOutSec;
 
-        while (bIsFinish_Animation == false || fRemainTime > 0f)
+        while (bIsFinish_Animation == false)
         {
-            fRemainTime -= Time.unscaledDeltaTime;
             yield return null;
+
+            if (fRemainTime > 0f)
+            {
+                fRemainTime -= Time.unscaledDeltaTime;
+                if (fRemainTime < 0f)
+                    break;
+            }
         }
 
         if (fRemainTime <= 0f)

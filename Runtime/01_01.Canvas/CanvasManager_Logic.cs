@@ -362,7 +362,7 @@ namespace UIFramework
             public IEnumerator Execute_LogicCoroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
-                    Debug.Log($"{nameof(Lock_AllInput)} Prepare Canvas : {pCanvas.GetObjectName_Safe()} + {nameof(Execute_LogicCoroutine)}", pCanvas.gameObject);
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}{nameof(Lock_AllInput)} Prepare Canvas : {pCanvas.GetObjectName_Safe()} + {nameof(Execute_LogicCoroutine)}", pCanvas.gameObject);
 
                 if (_OnCheck_IsExecute(pCanvas) == false)
                     yield break;
@@ -372,7 +372,7 @@ namespace UIFramework
 
 
                 if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
-                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_LogicCoroutine));
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}{nameof(Lock_AllInput)} Start Canvas : {pCanvas.GetObjectName_Safe()} {nameof(Execute_LogicCoroutine)}");
 
                 if (_mapSelectAble.ContainsKey(pCanvas) == false)
                 {
@@ -393,7 +393,7 @@ namespace UIFramework
                         if (listSelectAble[i].pSelectAble != null)
                         {
                             listSelectAble[i].pSelectAble.enabled = false;
-                            Debug.Log(nameof(Lock_AllInput) + " Canvas : " + pCanvas.gameObject.name + " - " + listSelectAble[i].pSelectAble.name + " Enable False", listSelectAble[i].pSelectAble);
+                            Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Lock_AllInput) + " Canvas : " + pCanvas.gameObject.name + " - " + listSelectAble[i].pSelectAble.name + " Enable False", listSelectAble[i].pSelectAble);
                         }
                     }
                 }
@@ -407,7 +407,7 @@ namespace UIFramework
                 }
 
                 if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
-                    Debug.Log(nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_LogicCoroutine));
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}{nameof(Lock_AllInput)} Finish Canvas : {pCanvas.GetObjectName_Safe()} + {nameof(Execute_LogicCoroutine)}");
 
                 yield break;
             }
@@ -415,7 +415,7 @@ namespace UIFramework
             public IEnumerator Execute_UndoLogic_Coroutine(MonoBehaviour pManager, ICanvas pCanvas, EDebugLevelFlags eDebugFlags)
             {
                 if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
-                    Debug.Log($"{nameof(Lock_AllInput)}/{nameof(Execute_UndoLogic_Coroutine)} Prepare Canvas : {pCanvas.GetObjectName_Safe()}", pCanvas?.gameObject);
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)} {nameof(Lock_AllInput)} {nameof(Execute_UndoLogic_Coroutine)} Prepare Canvas : {pCanvas.GetObjectName_Safe()}", pCanvas?.gameObject);
 
                 if (_OnCheck_IsExecute(pCanvas) == false)
                     yield break;
@@ -432,7 +432,7 @@ namespace UIFramework
                     yield break;
 
                 if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
-                    Debug.Log(nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Lock_AllInput) + " Start Canvas : " + pCanvas.GetObjectName_Safe() + " " + nameof(Execute_UndoLogic_Coroutine) + " 1");
 
                 if ((eDebugFlags & EDebugLevelFlags.Detail) != 0)
                 {
@@ -440,7 +440,7 @@ namespace UIFramework
                     {
                         if (listSelectAble[i].pSelectAble != null)
                         {
-                            Debug.Log(nameof(Lock_AllInput) + " Canvas : " + pCanvas.gameObject.name + " - " + listSelectAble[i].pSelectAble.name + " Enable : " + listSelectAble[i].bEnableOrigin, listSelectAble[i].pSelectAble);
+                            Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Lock_AllInput) + " Canvas : " + pCanvas.gameObject.name + " - " + listSelectAble[i].pSelectAble.name + " Enable : " + listSelectAble[i].bEnableOrigin, listSelectAble[i].pSelectAble);
                             listSelectAble[i].pSelectAble.enabled = listSelectAble[i].bEnableOrigin;
                         }
                     }
@@ -455,7 +455,7 @@ namespace UIFramework
                 }
 
                 if ((eDebugFlags & EDebugLevelFlags.ManagerLogic) != 0)
-                    Debug.Log(nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.ManagerLogic)}" + nameof(Lock_AllInput) + " Finish Canvas : " + pCanvas.gameObject.name + " " + nameof(Execute_UndoLogic_Coroutine) + " 2");
 
                 yield break;
             }

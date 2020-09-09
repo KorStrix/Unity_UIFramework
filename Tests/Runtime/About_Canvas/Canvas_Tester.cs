@@ -257,6 +257,53 @@ namespace UIFramework_Test
                 Assert.AreEqual(pHandle.pUIObject.GetHandle(), pHandle2.pUIObject.GetHandle());
             }
 
+            /// <summary>
+            /// 기존에는 여러번 호출하면 무한 yield가 돌았음
+            /// </summary>
+            /// <returns></returns>
+            [UnityTest]
+            public IEnumerator 캔버스매니져_Hide함수를_여러번_호출했을때_동작해야합니다()
+            {
+                // Arrange
+                const int iRandomCount = 5;
+
+                List<UICommandHandle<ICanvas>> listHandle = new List<UICommandHandle<ICanvas>>();
+                List<IEnumerator> listCoroutine = new List<IEnumerator>();
+                Dictionary<ICanvas, bool> mapCanvas_IsHided = new Dictionary<ICanvas, bool>();
+
+                // 일단 Random으로 같은 Canvas을 Show를 합니다
+                {
+                    for (int i = 0; i < iRandomCount; i++)
+                    {
+                        var pHandle = DoShowOnly(ECanvasName.Single).
+                            Set_OnShow_AfterAnimation(pCanvas => mapCanvas_IsHided[pCanvas]= false);
+
+                        listHandle.Add(pHandle);
+                        listCoroutine.Add(pHandle.Yield_WaitForAnimation());
+                    }
+
+                    yield return listCoroutine.GetEnumerator();
+                    listCoroutine.Clear();
+                }
+
+                // Act, Handle을 통해 Canvas를 Hide합니다.
+                {
+                    for (int i = 0; i < iRandomCount; i++)
+                    {
+                        listCoroutine.Add(listHandle[i].pUIObject.DoHide_Coroutine()
+                            .Set_OnHide(pCanvas => mapCanvas_IsHided[pCanvas] = true)
+                            .Yield_WaitForAnimation());
+                    }
+                    yield return listCoroutine.GetEnumerator();
+                }
+
+
+
+                // Assert
+                foreach (var bIsHide in mapCanvas_IsHided.Values)
+                    Assert.IsTrue(bIsHide);
+            }
+
             // ================================================================================================================
 
             IEnumerator MultiplePopup_ShowHideTest(int iMultipleOpenCount, int iMaxFrame, bool bIsHide = true)

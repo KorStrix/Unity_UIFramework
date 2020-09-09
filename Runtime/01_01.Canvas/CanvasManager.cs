@@ -58,10 +58,9 @@ namespace UIFramework
     {
         /* const & readonly declaration             */
 
-        //static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.Manager | EDebugLevelFlags.ManagerLogic | EDebugLevelFlags.Detail | EDebugLevelFlags.Manager_Core;
-
+        // static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.Manager | EDebugLevelFlags.ManagerLogic | EDebugLevelFlags.Detail | EDebugLevelFlags.Manager_Core;
         // static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.Manager | EDebugLevelFlags.Manager_Core | EDebugLevelFlags.ManagerLogic;
-        private static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.None;
+        static readonly EDebugLevelFlags eDebugLevel = EDebugLevelFlags.None;
 
         /* enum & struct declaration                */
 
@@ -89,6 +88,7 @@ namespace UIFramework
                 { EUIObjectState.Process_After_HideCoroutine, new List<CanvasManager_LogicUndo_Wrapper>() },
                 { EUIObjectState.Showing, new List<CanvasManager_LogicUndo_Wrapper>() },
                 { EUIObjectState.Disable, new List<CanvasManager_LogicUndo_Wrapper>() },
+                { EUIObjectState.Destroyed, new List<CanvasManager_LogicUndo_Wrapper>() },
             };
 
 
@@ -217,13 +217,18 @@ namespace UIFramework
 
             public void DoSet_State(EUIObjectState eState)
             {
-                // Debug.LogError(eName + "State : " + eState, pInstance.gameObject);
+                if((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                    Debug.LogWarning($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(DoSet_State)} eName : {eName} State : {eState}");
+
                 this.eState = eState;
             }
 
             public bool Check_IsEnable()
             {
-                return eState != EUIObjectState.Disable && eState != EUIObjectState.Creating;
+                if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                    Debug.LogWarning($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(Check_IsEnable)} eName : {eName} State : {eState} Result : {EUIObjectState.Process_Before_ShowCoroutine <= eState && eState < EUIObjectState.Disable}");
+
+                return EUIObjectState.Process_Before_ShowCoroutine <= eState && eState < EUIObjectState.Disable;
             }
 
             public bool Check_IsDisable()
@@ -293,6 +298,7 @@ namespace UIFramework
         Dictionary<EUIObjectState, List<ICanvasManager_Logic>> _mapManagerLogic = new Dictionary<EUIObjectState, List<ICanvasManager_Logic>>();
         Dictionary<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper> _mapManagerUndoLogic_Parser = new Dictionary<ICanvasManager_Logic, CanvasManager_LogicUndo_Wrapper>();
 
+        [SerializeField] // ForDebug
         List<ICanvas> _list_CanvasShowInstance = new List<ICanvas>();
         Dictionary<TENUM_CANVAS_NAME, KeyValuePair<CanvasWrapper, object>> _mapProcessCreating = new Dictionary<TENUM_CANVAS_NAME, KeyValuePair<CanvasWrapper, object>>();
         SimplePool<CanvasWrapper> _pWrapperPool;
@@ -504,8 +510,7 @@ namespace UIFramework
                 return false;
 
             bool bGet_IsSuccess = true;
-            CanvasWrapper pWrapper = null;
-            if (pInstance._mapWrapper_Key_Is_Instance.TryGetValue(pObject, out pWrapper))
+            if (pInstance._mapWrapper_Key_Is_Instance.TryGetValue(pObject, out CanvasWrapper pWrapper))
             {
                 eName = pWrapper.eName;
             }
@@ -714,7 +719,7 @@ namespace UIFramework
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
             if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
-                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_ShowCoroutine)} - Name : {eName} // {pWrapper.GetObjectName()}");
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_ShowCoroutine)} - Name : {eName} // {pWrapper.GetObjectName()} Start");
 
             if (pWrapper == null || pWrapper.pInstance.IsNull())
             {
@@ -754,6 +759,9 @@ namespace UIFramework
             yield return Execute_ManagerLogicCoroutine(EUIObjectState.Showing, pWrapper, sUICommandHandle);
 
             // _list_CanvasShow.Add(pWrapper);
+
+            if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_ShowCoroutine)} - Name : {eName} // {pWrapper.GetObjectName()} Finish");
         }
 
         protected virtual IEnumerator Process_HideCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
@@ -778,12 +786,23 @@ namespace UIFramework
 
             yield return Execute_ManagerLogicCoroutine(EUIObjectState.Process_After_HideCoroutine, pWrapper, sUICommandHandle);
 
+            // Hide와 Enable을 빠르게 교차시
+            // CreateInstance 중 Enable 상태를 물어볼 때
+            // 큐에서 제거되서 Create는 되었는데 Wrapper List에 없는 버그가 있음
+            // 일단 관련 Undo 로직은 전부 Process_After_HideCoroutine이 아닌 Disable로 처리했고,
+            // Handle Event도 Disable 이후로 이동함
+
+            //sUICommandHandle.Event_OnHide();
+
+            //int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
+            //OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
+
+            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Disable, pWrapper, sUICommandHandle);
+
             sUICommandHandle.Event_OnHide();
 
             int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
             OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
-
-            yield return Execute_ManagerLogicCoroutine(EUIObjectState.Disable, pWrapper, sUICommandHandle);
 
             DisableWrapper(pWrapper);
         }
@@ -822,6 +841,9 @@ namespace UIFramework
         IEnumerator Process_CreateInstance<T>(TENUM_CANVAS_NAME eName, CanvasWrapper pWrapper, bool bCreateInstance, bool bIsMultiple, UICommandHandle<T> pUICommandHandle)
             where T : class, ICanvas
         {
+            if ((eDebugLevel & EDebugLevelFlags.Manager) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager)} - {nameof(Process_CreateInstance)} eName : {eName} bCreateInstance : {bCreateInstance} bIsMultiple : {bIsMultiple} - Start");
+
             if (bCreateInstance)
             {
                 ICanvas pInstance = null;
@@ -837,14 +859,14 @@ namespace UIFramework
                 if (pInstance.IsNull())
                 {
                     RemoveWrapper(pWrapper);
-                    Debug.LogError(name + " CoProcess_Showing - eName : " + eName + " pInstance == null", this);
+                    Debug.LogError($"{name}.{nameof(Process_CreateInstance)} Create Instance Fail(pInstance == null) eName : {eName}", this);
                     yield break;
                 }
 
                 Wrapper_SetCanvasInstance(pWrapper, pInstance);
                 _mapProcessCreating.Remove(eName);
                 if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
-                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}{name} Removed Creating " + eName);
+                    Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}{name} Removed {nameof(_mapProcessCreating)} eName : {eName}");
             }
 
             if (pWrapper == null || pWrapper.pInstance.IsNull())
@@ -858,16 +880,23 @@ namespace UIFramework
 
             EnableWrapper(pWrapper, pUICommandHandle);
             yield return Process_ShowCoroutine(eName, pWrapper, pUICommandHandle);
+
+
+            if ((eDebugLevel & EDebugLevelFlags.Manager) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager)} - {nameof(Process_CreateInstance)} eName : {eName} bCreateInstance : {bCreateInstance} bIsMultiple : {bIsMultiple} - Finish");
         }
 
         IEnumerator Process_HideCoroutine<T>(TENUM_CANVAS_NAME eName, UICommandHandle<T> pUICommandHandle)
             where T : class, ICanvas
         {
+            if ((eDebugLevel & EDebugLevelFlags.Manager) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager)} - {nameof(Process_HideCoroutine)} eName : {eName} - Start");
+
             var listEnableWrapper = Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
             if (listEnableWrapper.Count == 0)
             {
                 // Hiding 요청이 왔는데 Canvas Instance가 없는 경우
-                Debug.LogWarning(name + " CoProcess_Hiding - eName : " + eName + " listEnableWrapper.Count == 0", this);
+                Debug.LogWarning($"{UIDebug.LogFormat(EDebugLevelFlags.Manager)}{nameof(Process_HideCoroutine)} eName : {eName} listEnableWrapper.Count == 0 // Wrapper Count : {GetWrapper(eName).Count}", this);
                 pUICommandHandle.Event_OnHide();
                 yield break;
             }
@@ -875,6 +904,9 @@ namespace UIFramework
             CanvasWrapper pWrapper = listEnableWrapper[0];
             EnableWrapper(pWrapper, pUICommandHandle);
             yield return Process_HideCoroutine(pWrapper, pUICommandHandle);
+
+            if ((eDebugLevel & EDebugLevelFlags.Manager) != 0)
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager)} - {nameof(Process_HideCoroutine)} eName : {eName} - Finish");
         }
 
 
@@ -950,16 +982,14 @@ namespace UIFramework
         List<CanvasWrapper> _listTempWrapper = new List<CanvasWrapper>();
         private List<CanvasWrapper> Get_MatchWrapperList(TENUM_CANVAS_NAME eName, System.Func<CanvasWrapper, bool> OnCheck_IsMatch)
         {
-            _listTempWrapper.Clear();
-            if (_mapWrapper.ContainsKey(eName) == false)
-                return _listTempWrapper;
-
-            List<CanvasWrapper> listWrapper = _mapWrapper[eName];
+            List<CanvasWrapper> listWrapper = GetWrapper(eName);
             for (int i = 0; i < listWrapper.Count; i++)
             {
                 CanvasWrapper pWrapper = listWrapper[i];
                 if (pWrapper.pInstance.IsNull() && pWrapper.eState != EUIObjectState.Creating)
                 {
+                    if((eDebugLevel & EDebugLevelFlags.Detail) != 0)
+                        Debug.LogWarning($"{name}.{nameof(Get_MatchWrapperList)}-{nameof(RemoveWrapper)} eName : {eName} State : {pWrapper.eState}");
                     RemoveWrapper(pWrapper);
                     i--;
                     continue;
@@ -972,9 +1002,18 @@ namespace UIFramework
             return _listTempWrapper;
         }
 
+        private List<CanvasWrapper> GetWrapper(TENUM_CANVAS_NAME eName)
+        {
+            _listTempWrapper.Clear();
+            if (_mapWrapper.ContainsKey(eName) == false)
+                return _listTempWrapper;
+
+            return _mapWrapper[eName];
+        }
+
         private static bool Check_Wrapper_IsNull(CanvasWrapper pWrapper)
         {
-            return (pWrapper == null || pWrapper.pInstance.Equals(null));
+            return (pWrapper == null || pWrapper.pInstance.IsNull());
         }
 
         bool Check_IsCreateInstance<T>(TENUM_CANVAS_NAME eName, bool bIsMultiple, UICommandHandle<T> pUICommandHandle, out CanvasWrapper pWrapper)
@@ -1041,6 +1080,9 @@ namespace UIFramework
                 _pWrapperPool.DoPush(pWrapper);
             }
 
+            if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                Debug.LogWarning($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(CreateWrapper_OrNull)} - eName : {pWrapper.eName}");
+
             return pWrapper;
         }
 
@@ -1065,8 +1107,8 @@ namespace UIFramework
 
         protected void RemoveWrapper(CanvasWrapper pWrapper)
         {
-            if ((eDebugLevel & EDebugLevelFlags.Manager) != 0)
-                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager)} Remove Wrapper - {pWrapper.eName} - Instance == Null : {pWrapper.pInstance == null}");
+            if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
+                Debug.LogWarning($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(RemoveWrapper)} - eName : {pWrapper.eName} - Instance == Null : {pWrapper.pInstance == null} State : {pWrapper.eState}");
 
             if (_mapWrapper.ContainsKey(pWrapper.eName))
                 _mapWrapper[pWrapper.eName].Remove(pWrapper);
@@ -1105,7 +1147,7 @@ namespace UIFramework
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
             if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
-                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(Execute_ManagerLogicCoroutine)} - {pWrapper.eName} // Set UIState : {eUIState}");
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(Execute_ManagerLogicCoroutine)} - {pWrapper.eName} // UIState : {eUIState}");
 
 
             sUICommandHandle.Set_UIState(eUIState);

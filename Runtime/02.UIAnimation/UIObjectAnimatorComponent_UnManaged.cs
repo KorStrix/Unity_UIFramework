@@ -117,7 +117,7 @@ namespace UIFramework
                 Debug.Log($"{name} - {nameof(OnShowCoroutine)} Start - eAnimationPlayHow : {eAnimationPlayHow}", this);
 
 
-            if (gameObject.activeSelf == false)
+            if (this.IsNull() || gameObject.activeSelf == false)
                 yield break;
 
             switch (eAnimationPlayHow)
@@ -140,7 +140,7 @@ namespace UIFramework
                 Debug.Log($"{name} - {nameof(OnHideCoroutine)} Start - eAnimationPlayHow : {eAnimationPlayHow}", this);
 
 
-            if (gameObject.activeSelf == false)
+            if (this.IsNull() || gameObject.activeSelf == false)
                 yield break;
 
             switch (eAnimationPlayHow)

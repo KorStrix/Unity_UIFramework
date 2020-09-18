@@ -265,7 +265,7 @@ namespace UIFramework_Test
             public IEnumerator 캔버스매니져_Hide함수를_여러번_호출했을때_동작해야합니다()
             {
                 // Arrange
-                const int iRandomCount = 5;
+                const int iRandomCount = 3;
 
                 List<UICommandHandle<ICanvas>> listHandle = new List<UICommandHandle<ICanvas>>();
                 List<IEnumerator> listCoroutine = new List<IEnumerator>();
@@ -304,96 +304,123 @@ namespace UIFramework_Test
                     Assert.IsTrue(bIsHide);
             }
 
+            /// <summary>
+            /// 기존에는 Show가 안됐음
+            /// </summary>
+            /// <returns></returns>
+            [UnityTest]
+            public IEnumerator 캔버스매니져_같은프레임에_Hide와_Show를하면_정상인지확인()
+            {
+                // Arrange
+                var pHandle = DoShow<Canvas_ForTest>(ECanvasName.Single);
+                yield return pHandle.Yield_WaitForSetUIObject();
+                Canvas_ForTest pCanvas = pHandle.pUIObject;
+
+                // Act
+                pCanvas.DoHide_NotPlayHideCoroutine();
+                var pHandle_New = DoShow<Canvas_ForTest>(ECanvasName.Single);
+                yield return pHandle_New.Yield_WaitForSetUIObject();
+                Canvas_ForTest pCanvas_New = pHandle_New.pUIObject;
+
+                // Assert
+                Assert.AreEqual(pCanvas, pCanvas_New);
+                // Assert.IsTrue(pCanvas_New.eState == Canvas_ForTest.EState.Show);
+            }
+
             // ================================================================================================================
 
+            #region private
+
             IEnumerator MultiplePopup_ShowHideTest(int iMultipleOpenCount, int iMaxFrame, bool bIsHide = true)
+        {
+            List<UICommandHandle<Canvas_ForTest>> listCommandHandle = new List<UICommandHandle<Canvas_ForTest>>();
+
+            for (int i = 1; i < iMultipleOpenCount + 1; i++)
             {
-                List<UICommandHandle<Canvas_ForTest>> listCommandHandle = new List<UICommandHandle<Canvas_ForTest>>();
+                int iWaitFrameCount = i % iMaxFrame;
 
-                for (int i = 1; i < iMultipleOpenCount + 1; i++)
+                var pHandle = DoShow_Multiple<Canvas_ForTest>(ECanvasName.Single).
+                    Set_OnBeforeShow(x => x.DoSetWaitFrameCount(iWaitFrameCount));
+
+                listCommandHandle.Add(pHandle);
+            }
+
+            // 모든 Yield For Animation 동시에 기다리기
+            List<IEnumerator> listWaitCoroutine = new List<IEnumerator>();
+            for (int i = 0; i < listCommandHandle.Count; i++)
+                listWaitCoroutine.Add(listCommandHandle[i].Yield_WaitForAnimation());
+            yield return listWaitCoroutine.GetEnumerator();
+
+            if (bIsHide)
+            {
+                HashSet<Canvas_ForTest> setCheckOverlap = new HashSet<Canvas_ForTest>();
+                for (int i = 0; i < listCommandHandle.Count; i++)
                 {
-                    int iWaitFrameCount = i % iMaxFrame;
+                    Canvas_ForTest pUITarget = listCommandHandle[i].pUIObject;
+                    if (setCheckOverlap.Add(pUITarget) == false)
+                    {
+                        Debug.LogError("CheckOverlap Fail");
+                        break;
+                    }
 
-                    var pHandle = DoShow_Multiple<Canvas_ForTest>(ECanvasName.Single).
-                        Set_OnBeforeShow(x => x.DoSetWaitFrameCount(iWaitFrameCount));
+                    try
+                    {
+                        Assert.AreEqual(pUITarget.eState, Canvas_ForTest.EState.Show);
+                        Assert.AreEqual(pUITarget.iWaitFrameCount_Current, 0);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError("Error - " + pUITarget.iID.ToString() + " " + e);
+                    }
 
-                    listCommandHandle.Add(pHandle);
+                    // 다시 Hide 시키기
+                    pUITarget.DoHide_Coroutine();
                 }
 
                 // 모든 Yield For Animation 동시에 기다리기
-                List<IEnumerator> listWaitCoroutine = new List<IEnumerator>();
+                listWaitCoroutine.Clear();
                 for (int i = 0; i < listCommandHandle.Count; i++)
                     listWaitCoroutine.Add(listCommandHandle[i].Yield_WaitForAnimation());
                 yield return listWaitCoroutine.GetEnumerator();
 
-                if (bIsHide)
+                for (int i = 0; i < listCommandHandle.Count; i++)
                 {
-                    HashSet<Canvas_ForTest> setCheckOverlap = new HashSet<Canvas_ForTest>();
-                    for (int i = 0; i < listCommandHandle.Count; i++)
+                    Canvas_ForTest pUITarget = listCommandHandle[i].pUIObject;
+
+                    try
                     {
-                        Canvas_ForTest pUITarget = listCommandHandle[i].pUIObject;
-                        if (setCheckOverlap.Add(pUITarget) == false)
-                        {
-                            Debug.LogError("CheckOverlap Fail");
-                            break;
-                        }
-
-                        try
-                        {
-                            Assert.AreEqual(pUITarget.eState, Canvas_ForTest.EState.Show);
-                            Assert.AreEqual(pUITarget.iWaitFrameCount_Current, 0);
-                        }
-                        catch (System.Exception e)
-                        {
-                            Debug.LogError("Error - " + pUITarget.iID.ToString() + " " + e);
-                        }
-
-                        // 다시 Hide 시키기
-                        pUITarget.DoHide_Coroutine();
+                        Assert.AreEqual(pUITarget.eState, Canvas_ForTest.EState.Hide);
+                        Assert.AreEqual(pUITarget.iWaitFrameCount_Current, 0);
                     }
-
-                    // 모든 Yield For Animation 동시에 기다리기
-                    listWaitCoroutine.Clear();
-                    for (int i = 0; i < listCommandHandle.Count; i++)
-                        listWaitCoroutine.Add(listCommandHandle[i].Yield_WaitForAnimation());
-                    yield return listWaitCoroutine.GetEnumerator();
-
-                    for (int i = 0; i < listCommandHandle.Count; i++)
+                    catch (System.Exception e)
                     {
-                        Canvas_ForTest pUITarget = listCommandHandle[i].pUIObject;
-
-                        try
-                        {
-                            Assert.AreEqual(pUITarget.eState, Canvas_ForTest.EState.Hide);
-                            Assert.AreEqual(pUITarget.iWaitFrameCount_Current, 0);
-                        }
-                        catch (System.Exception e)
-                        {
-                            Debug.LogError("Error - " + pUITarget.iID.ToString() + " " + e);
-                        }
+                        Debug.LogError("Error - " + pUITarget.iID.ToString() + " " + e);
                     }
                 }
-
-                yield return null;
             }
 
-            IEnumerator CoReturn_True(System.Action<bool> CheckIsShow)
-            {
-                Debug.Log(nameof(CoReturn_True));
+            yield return null;
+        }
 
-                CheckIsShow(true);
+        IEnumerator CoReturn_True(System.Action<bool> CheckIsShow)
+        {
+            Debug.Log(nameof(CoReturn_True));
 
-                yield return null;
-            }
+            CheckIsShow(true);
 
-            IEnumerator CoReturn_False(System.Action<bool> CheckIsShow)
-            {
-                Debug.Log(nameof(CoReturn_False));
+            yield return null;
+        }
 
-                CheckIsShow(false);
+        IEnumerator CoReturn_False(System.Action<bool> CheckIsShow)
+        {
+            Debug.Log(nameof(CoReturn_False));
 
-                yield return null;
-            }
+            CheckIsShow(false);
+
+            yield return null;
+        }
+
+        #endregion
         }
     }
 }

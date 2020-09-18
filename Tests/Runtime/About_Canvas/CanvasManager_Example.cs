@@ -48,6 +48,13 @@ namespace UIFramework_Test
             {
             }
 
+            protected override void OnHide(ECanvasName eName, ICanvas pInstance, int iInstanceCount)
+            {
+                base.OnHide(eName, pInstance, iInstanceCount);
+
+                // DestroyImmediate(pInstance.gameObject);
+            }
+
             public override Canvas GetParentCanvas(ECanvasName eName, ICanvas pCanvas)
             {
                 return null;

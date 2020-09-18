@@ -148,26 +148,18 @@ public static class ICanvasHelper
 
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
+    /// <para>코루틴을 실행하지 않습니다.</para>
+    /// <para>Delegate 핸들링용</para>
     /// </summary>
-    public static void DoHide_NotCoroutine<T>(this T pObject)
+    public static void DoHide_NotPlayHideCoroutine_ReturnVoid<T>(this T pObject)
         where T : ICanvas
     {
-        if (pObject.IsNull())
-            return;
-
-        if (pObject.pUIManager.IsNull())
-        {
-            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide_Coroutine), pObject);
-            pObject.gameObject.SetActive(false);
-
-            return;
-        }
-
-        pObject.pUIManager.IUIManager_Hide(pObject, true);
+        DoHide_NotPlayHideCoroutine(pObject);
     }
 
     /// <summary>
     /// 이 오브젝트를 관리하는 매니져를 찾아 매니져를 통해 오브젝트를 끕니다.
+    /// <para>코루틴을 실행하지 않습니다.</para>
     /// </summary>
     public static UICommandHandle<T> DoHide_NotPlayHideCoroutine<T>(this T pObject)
         where T : ICanvas
@@ -177,7 +169,7 @@ public static class ICanvasHelper
 
         if (pObject.pUIManager.IsNull())
         {
-            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(DoHide_NotPlayHideCoroutine), pObject);
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager", pObject.gameObject.name, nameof(DoHide_NotPlayHideCoroutine), pObject);
             pObject.gameObject.SetActive(false);
 
             return null;
@@ -197,7 +189,7 @@ public static class ICanvasHelper
 
         if (pObject.pUIManager.IsNull())
         {
-            Debug.LogWarningFormat("{0} {1} - Not Found Manager - Check Regist Manager", pObject.gameObject.name, nameof(GetUIObjectState), pObject);
+            Debug.LogWarningFormat("{0} {1} - Not Found Manager", pObject.gameObject.name, nameof(GetUIObjectState), pObject);
             return EUIObjectState.Disable;
         }
 

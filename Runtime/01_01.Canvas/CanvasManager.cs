@@ -761,7 +761,7 @@ namespace UIFramework
             // _list_CanvasShow.Add(pWrapper);
 
             if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
-                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_ShowCoroutine)} - Name : {eName} // {pWrapper.GetObjectName()} Finish");
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {nameof(Process_ShowCoroutine)} - Name : {eName} // {pWrapper.GetObjectName()} Finish");
         }
 
         protected virtual IEnumerator Process_HideCoroutine<CLASS_DRIVEN_CANVAS>(CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
@@ -811,7 +811,7 @@ namespace UIFramework
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
             if ((eDebugLevel & EDebugLevelFlags.Manager_Core) != 0)
-                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)}/{nameof(Process_Hide)} - Wrapper :  {pWrapper.GetObjectName()}");
+                Debug.Log($"{UIDebug.LogFormat(EDebugLevelFlags.Manager_Core)} {name}.{nameof(Process_Hide)} - Wrapper :  {pWrapper.GetObjectName()} Start");
 
             if (pWrapper == null)
                 return;
@@ -827,12 +827,22 @@ namespace UIFramework
 
             Execute_ManagerUndoLogic(EUIObjectState.Process_After_HideCoroutine, pWrapper, sUICommandHandle);
 
+            Execute_ManagerUndoLogic(EUIObjectState.Disable, pWrapper, sUICommandHandle);
+
             sUICommandHandle.Event_OnHide();
+
+            // 기존 방식은 OnHide -> Set Disable -> DisableWrapper 였으나,
+
+            // Set Disable -> 
+            // OnHide에서 override로 구현한 Destroy->Destroy Immediate로 인해
+            // DisableWrapper에서 Object의 null 체크 이후 Wrapper를 제거 하는식으로 해야함
+
+            // 안그럼 같은 프레임에서 Hide and Show를 할 때
+            // Set Disable 직후 DisableWrapper에서 인스턴스가 null인 Wrapper가 남고,
+            // Destroy이 예약된 애를 꺼내와서 Show하고, 한프레임 뒤 제거됨
 
             int iInstanceCount = Get_MatchWrapperList(pWrapper.eName, x => x.Check_IsEnable()).Count;
             OnHide(pWrapper.eName, pWrapper.pInstance, iInstanceCount);
-
-            Execute_ManagerUndoLogic(EUIObjectState.Disable, pWrapper, sUICommandHandle);
 
             DisableWrapper(pWrapper);
         }
@@ -1162,14 +1172,14 @@ namespace UIFramework
             yield return pWrapper.DoExecute_Manager_CoroutineLogic(this, eUIState, listLogic, GetUndoLogic, eDebugLevel);
         }
 
-        private void Execute_ManagerUndoLogic<CLASS_DRIVEN_CANVAS>(EUIObjectState eUIEvent, CanvasWrapper pContainerWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
+        private void Execute_ManagerUndoLogic<CLASS_DRIVEN_CANVAS>(EUIObjectState eUIEvent, CanvasWrapper pWrapper, UICommandHandle<CLASS_DRIVEN_CANVAS> sUICommandHandle)
             where CLASS_DRIVEN_CANVAS : IUIObject
         {
             sUICommandHandle.Set_UIState(eUIEvent);
-            pContainerWrapper.DoSet_State(eUIEvent);
+            pWrapper.DoSet_State(eUIEvent);
 
             if (eUIEvent != EUIObjectState.Process_Before_ShowCoroutine)
-                pContainerWrapper.DoExecute_Manager_UndoLogic(this, eUIEvent);
+                pWrapper.DoExecute_Manager_UndoLogic(this, eUIEvent);
         }
 
         CanvasManager_LogicUndo_Wrapper GetUndoLogic(ICanvasManager_Logic pLogic)

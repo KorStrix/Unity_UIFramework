@@ -4,12 +4,12 @@
  *	Initial Creation Date 	: 2020-06-15
  *	Summary 		        :
  *
- *  ¿øº» ÃâÃ³ : https://www.youtube.com/watch?v=X-H5Zu3k4Es
+ *  ì›ë³¸ ì¶œì²˜ : https://www.youtube.com/watch?v=X-H5Zu3k4Es
  *
- *  ±â´ÉÃß°¡
- *  - ¾Ö´Ï¸ŞÀÌ¼Ç ¹æÇâ Á¶Á¤
- *  - ¾÷µ¥ÀÌÆ® ¸ğµå Ãß°¡
- *  - ÀÌ¹ÌÁö / ÅØ½ºÆ® ¹ü¿ë Àû¿ë
+ *  ê¸°ëŠ¥ì¶”ê°€
+ *  - ì• ë‹ˆë©”ì´ì…˜ ë°©í–¥ ì¡°ì •
+ *  - ì—…ë°ì´íŠ¸ ëª¨ë“œ ì¶”ê°€
+ *  - ì´ë¯¸ì§€ / í…ìŠ¤íŠ¸ ë²”ìš© ì ìš©
  *
  *  Template 		        : New Behaviour For Unity Editor V2
    ============================================ */
@@ -48,12 +48,12 @@ public class UIGradientEffect : BaseMeshEffect
     public Graphic pGraphicTarget { get; private set; }
 
 
-    [Header("ÀÌÆåÆ® ¼³Á¤")]
+    [Header("ì´í™íŠ¸ ì„¤ì •")]
     public Gradient pGradient = new Gradient();
     public float fSpeed = 1f;
 
     [Space(10)]
-    [Header("»ö»óº¯È­ ¹æÇâ")]
+    [Header("ìƒ‰ìƒë³€í™” ë°©í–¥")]
     public EGradientDirection eGradient_Direction = EGradientDirection.Left_To_Right;
 
     [Space(10)]
@@ -167,7 +167,7 @@ public class UIGradientEffect : BaseMeshEffect
         if (_bIsEnable == false)
             return;
 
-        if (_fElapseTime == 0f)
+        if (_fElapseTime <= 0f)
             return;
 
         if (g_map_OnCalculateEvaluate.TryGetValue(eGradient_Direction, out OnCalculate_GradientEvaluate OnCalculateHow) == false)
@@ -178,7 +178,7 @@ public class UIGradientEffect : BaseMeshEffect
 
         _listVertex.Clear();
         pVertexHelper.GetUIVertexStream(_listVertex);
-        if (_listVertex.Count == 0) // TextÀÇ °æ¿ì ±æÀÌ°¡ 0ÀÌ¸é Vertex°¡ ¾øÀ» ¼ö ÀÖÀ½
+        if (_listVertex.Count == 0) // Textì˜ ê²½ìš° ê¸¸ì´ê°€ 0ì´ë©´ Vertexê°€ ì—†ì„ ìˆ˜ ìˆìŒ
             return;
 
         float fMin = _listVertex.Min(p => p.position.x);

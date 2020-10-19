@@ -21,7 +21,7 @@ using UnityEngine.UI;
 using System.Linq;
 
 /// <summary>
-/// 
+/// Texture, Image 등 UI 컴포넌트를 Gradient 효과를 냅니다.
 /// </summary>
 [RequireComponent(typeof(Graphic))]
 public class UIGradientEffect : BaseMeshEffect
@@ -97,6 +97,11 @@ public class UIGradientEffect : BaseMeshEffect
     }
 
 
+    /// <summary>
+    /// 이 컴포넌트의 Enable유무
+    /// <para> false일 시 원래 색상으로 되돌립니다.</para>
+    /// </summary>
+    /// <param name="bEnable"></param>
     public void DoSetEnable(bool bEnable)
     {
         if (pGraphicTarget == null)

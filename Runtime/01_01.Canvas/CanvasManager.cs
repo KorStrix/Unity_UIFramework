@@ -409,18 +409,39 @@ namespace UIFramework
         /// 모든 팝업을 닫습니다
         /// </summary>
         /// <param name="bPlayHideCoroutine"><see cref="IUIObject.OnHideCoroutine"/>실행 유무</param>
-        public static void DoAllHide_ShowedCanvas(bool bPlayHideCoroutine = true)
+        public static void DoAllHide_ShowedCanvas(System.Type[] arrIgnoreType, bool bPlayHideCoroutine = true)
         {
-            List<ICanvas> listCanavs = GetAlreadyShow_CanvasList();
+            List<ICanvas> listCanvas = GetAlreadyShow_CanvasList(arrIgnoreType);
             if (bPlayHideCoroutine)
             {
-                for (int i = 0; i < listCanavs.Count; i++)
-                    listCanavs[i].DoHide_Coroutine();
+                for (int i = 0; i < listCanvas.Count; i++)
+                    listCanvas[i].DoHide_Coroutine();
             }
             else
             {
-                for (int i = 0; i < listCanavs.Count; i++)
-                    listCanavs[i].DoHide_NotPlayHideCoroutine();
+                for (int i = 0; i < listCanvas.Count; i++)
+                    listCanvas[i].DoHide_NotPlayHideCoroutine();
+            }
+
+            instance?.OnAllHide_ShowedCanvas();
+        }
+
+        /// <summary>
+        /// 모든 팝업을 닫습니다
+        /// </summary>
+        /// <param name="bPlayHideCoroutine"><see cref="IUIObject.OnHideCoroutine"/>실행 유무</param>
+        public static void DoAllHide_ShowedCanvas(bool bPlayHideCoroutine = true)
+        {
+            List<ICanvas> listCanvas = GetAlreadyShow_CanvasList();
+            if (bPlayHideCoroutine)
+            {
+                for (int i = 0; i < listCanvas.Count; i++)
+                    listCanvas[i].DoHide_Coroutine();
+            }
+            else
+            {
+                for (int i = 0; i < listCanvas.Count; i++)
+                    listCanvas[i].DoHide_NotPlayHideCoroutine();
             }
 
             instance?.OnAllHide_ShowedCanvas();
@@ -457,18 +478,50 @@ namespace UIFramework
 
         /// <summary>
         /// 이미 보여지고 있는 Canvas List를 Return합니다. 없으면 count == 0인 list를 리턴합니다.
-        /// <para><see cref="DoShow_Multiple{CLASS_DRIVEN_CANVAS}(TENUM_CANVAS_NAME)"/>을 통해 Show를 할 경우 유효합니다.</para>
+        /// </summary>
+        /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
+        /// <param name="eName">얻고자 하는 캔버스 이름</param>
+        public static List<ICanvas> GetAlreadyShow_CanvasList(TENUM_CANVAS_NAME eName)
+        {
+            if (_bApplication_IsQuit)
+                return new List<ICanvas>();
+
+            TDRIVEN_MANAGER pInstance = instance;
+
+            var listWrapper = pInstance.Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
+            return listWrapper.Where(p => p.pInstance.IsNull() == false).Select(p => p.pInstance).ToList();
+        }
+
+        /// <summary>
+        /// 이미 보여지고 있는 Canvas List를 Return합니다. 없으면 count == 0인 list를 리턴합니다.
         /// </summary>
         /// <typeparam name="CLASS_DRIVEN_CANVAS">형변환 할 Canvas 타입</typeparam>
         /// <param name="eName">얻고자 하는 캔버스 이름</param>
         public static List<CLASS_DRIVEN_CANVAS> GetAlreadyShow_CanvasList<CLASS_DRIVEN_CANVAS>(TENUM_CANVAS_NAME eName)
             where CLASS_DRIVEN_CANVAS : class, ICanvas
         {
+            if (_bApplication_IsQuit)
+                return new List<CLASS_DRIVEN_CANVAS>();
+
             TDRIVEN_MANAGER pInstance = instance;
 
             var listWrapper = pInstance.Get_MatchWrapperList(eName, (x) => x.Check_IsEnable());
             return listWrapper.Where(p => p.pInstance is CLASS_DRIVEN_CANVAS && p.pInstance.IsNull() == false).Select(p => p.pInstance as CLASS_DRIVEN_CANVAS).ToList();
         }
+
+        /// <summary>
+        /// 이미 보여지고 있는 Canvas List를 Return합니다. 없으면 count == 0인 list를 리턴합니다.
+        /// </summary>
+        public static List<ICanvas> GetAlreadyShow_CanvasList(System.Type[] arrIgnoreType)
+        {
+            if (_bApplication_IsQuit)
+                return new List<ICanvas>();
+
+            return new List<ICanvas>(instance._list_CanvasShowInstance
+                .Where(p => p.IsNull() == false)
+                .Where(p => arrIgnoreType.Contains(p.GetType()) == false));
+        }
+
 
         /// <summary>
         /// 이미 보여지고 있는 Canvas List를 Return합니다. 없으면 count == 0인 list를 리턴합니다.

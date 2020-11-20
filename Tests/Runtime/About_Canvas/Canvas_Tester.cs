@@ -13,7 +13,7 @@ namespace UIFramework_Test
         /// <summary>
         /// protected에 접근하기 위해 <see cref="CanvasManager_Example"/>를 상속
         /// </summary>
-        [Category("UIFramework")]/* [Timeout(7000)]*/
+        [Category("UIFramework")] [Timeout(2000)]
         public class Canvas_Tester : CanvasManager_Example
         {
             int iWaitFrameCount;
@@ -25,8 +25,7 @@ namespace UIFramework_Test
             public IEnumerator ICanvas_Basic_Test()
             {
                 Debug.LogWarning(nameof(ICanvas_Basic_Test).ConvertRichText_SetColor(EColor_ForRichText.red));
-
-                CanvasManager_Example.DoDestroy_Manager(true);
+                DoDestroy_Manager(true);
 
                 iWaitFrameCount = Random.Range(3, 6);
                 // 매니져를 통한 팝업 켜기
@@ -170,7 +169,7 @@ namespace UIFramework_Test
                 int iTestCase = 3;
                 for (int i = 0; i < iTestCase; i++)
                 {
-                    int iMultipleOpenCount = Random.Range(10, 20);
+                    int iMultipleOpenCount = Random.Range(3, 5);
                     iRandomCountMax += iMultipleOpenCount;
 
                     yield return MultiplePopup_ShowHideTest(iMultipleOpenCount, 2);
@@ -267,11 +266,14 @@ namespace UIFramework_Test
                 // Arrange
                 const int iRandomCount = 3;
 
+                DoDestroy_Manager(true);
                 List<UICommandHandle<ICanvas>> listHandle = new List<UICommandHandle<ICanvas>>();
                 List<IEnumerator> listCoroutine = new List<IEnumerator>();
                 Dictionary<ICanvas, bool> mapCanvas_IsHided = new Dictionary<ICanvas, bool>();
 
-                // 일단 Random으로 같은 Canvas을 Show를 합니다
+
+
+                // Act 일단 Random으로 같은 Canvas을 Show를 합니다
                 {
                     for (int i = 0; i < iRandomCount; i++)
                     {

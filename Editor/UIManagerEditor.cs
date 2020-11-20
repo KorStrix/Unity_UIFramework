@@ -39,7 +39,7 @@ public class UIManagerEditor : EditorWindow
 
     /* public - [Do~Something] Function 	        */
 
-    [MenuItem("Tools/UIManager Editor")]
+    [MenuItem("Tools/Strix/UIManager Editor")]
     static void ShowWindow()
     {
         UIManagerEditor pWindow = (UIManagerEditor)GetWindow(typeof(UIManagerEditor), false);

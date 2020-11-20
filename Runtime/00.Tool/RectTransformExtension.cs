@@ -11,6 +11,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.UI;
+
 public enum AnchorPresets
 {
     TopLeft,
@@ -273,7 +276,7 @@ public static class RectTransformExtensions
     /// </summary>
     /// <param name="pTarget">변환할 UI 오브젝트</param>
     /// <param name="pUICamera">UI오브젝트를 그리는 카메라</param>
-    /// <param name="pOtherCamera">변환할 기준이 되는 타겟 카메라</param>
+    /// <param name="pOtherCam">변환할 기준이 되는 타겟 카메라</param>
     /// <returns></returns>
     public static Vector2 Convert_UI_To_OtherSizeDelta(this RectTransform pTarget, Camera pUICamera, Camera pOtherCam)
     {
@@ -305,8 +308,7 @@ public static class RectTransformExtensions
     /// UI에 있는 오브젝트의 Rect를 다른 카메라 기준의 SizeDelta로 변환합니다.
     /// </summary>
     /// <param name="pTarget">변환할 UI 오브젝트</param>
-    /// <param name="pUICamera">UI오브젝트를 그리는 카메라</param>
-    /// <param name="pOtherCamera">변환할 기준이 되는 타겟 카메라</param>
+    /// <param name="pOtherCam">변환할 기준이 되는 타겟 카메라</param>
     /// <returns></returns>
     public static Vector2 Convert_World_To_OtherSizeDelta(this RectTransform pTarget, Camera pOtherCam)
     {
@@ -319,16 +321,80 @@ public static class RectTransformExtensions
         return new Vector2(Mathf.Abs(vecRightUp.x - vecLeftDown.x), Mathf.Abs(vecRightUp.y - vecLeftDown.y));
     }
 
-    public static Rect GetWorldRect(this RectTransform rt)
+    /// <summary>
+    /// 이 <see cref="RectTransform.anchoredPosition"/>을 인자로 넣는 다른 오브젝트의 위치로 설정합니다.
+    /// </summary>
+    public static void SetAnchorPos_FromOtherWorld(this RectTransform pTarget, Vector3 vecOtherObject_WorldPos, Camera pOtherObjectDrawCamera)
     {
-        // Convert the rectangle to world corners and grab the top left
-        Vector3[] corners = new Vector3[4];
-        rt.GetWorldCorners(corners);
-        Vector3 vecLeftDown = corners[0];
+        pTarget.anchoredPosition = pTarget.ConvertUIPos_FromOtherWorld(vecOtherObject_WorldPos, pOtherObjectDrawCamera);
+    }
 
-        // Rescale the size appropriately based on the current Canvas scale
-        Vector2 scaledSize = new Vector2(rt.rect.size.x, rt.rect.size.y);
+    public static Vector2 ConvertUIPos_FromOtherWorld(this RectTransform pTarget, Vector3 vecOtherObject_WorldPos, Camera pOtherObjectDrawCamera)
+    {
+        Canvas pCanvas = pTarget.GetComponentInParent<Canvas>();
+        RectTransform pCanvasRect = pCanvas.rootCanvas.GetComponent<RectTransform>();
 
-        return new Rect(vecLeftDown, scaledSize);
+        return Convert_World_To_ViewportPoint(vecOtherObject_WorldPos, pOtherObjectDrawCamera, pCanvasRect.sizeDelta);
+    }
+
+    /// <summary>
+    /// 이 <see cref="RectTransform.anchoredPosition"/>을 인자로 넣는 다른 오브젝트의 위치로 설정합니다.
+    /// </summary>
+    public static Bounds ConvertBound_FromOtherWorld(this RectTransform pTarget, Bounds sBound, Camera pOtherObjectDrawCamera)
+    {
+        Canvas pCanvas = pTarget.GetComponentInParent<Canvas>();
+        Canvas pRootCanvas = pCanvas.rootCanvas;
+        RectTransform pCanvasRect = pRootCanvas.GetComponent<RectTransform>();
+
+        Vector2 vecCenter = Convert_World_To_ViewportPoint(sBound.center, pOtherObjectDrawCamera, pCanvasRect.sizeDelta);
+
+
+        // Center는 구하기 쉬운데,
+        // Rect(3D)를 2D로 바꾸려면 모든 정점을 구해서
+        // 일일이 ViewPort로 컨버팅 후 (World기준으로 Bounds의 min, max가 Screen상에서 min, max가 아님, 로테이션된 오브젝트 기준)
+        // 최소 x,y 최대 x,y를 기준으로 새로 Rect를 만듦
+        Vector3[] arrVertices = GetVertices_FromBound(sBound);
+        Vector3[] arrVertices_ViewPortPoint = arrVertices.Select(p => Convert_World_To_ViewportPoint(p, pOtherObjectDrawCamera, pCanvasRect.sizeDelta)).ToArray();
+
+        float fMinX = arrVertices_ViewPortPoint.OrderBy(p => p.x).First().x;
+        float fMinY = arrVertices_ViewPortPoint.OrderBy(p => p.y).First().y;
+        float fMaxX = arrVertices_ViewPortPoint.OrderByDescending(p => p.x).First().x;
+        float fMaxY = arrVertices_ViewPortPoint.OrderByDescending(p => p.y).First().y;
+
+        Vector2 vecMin = new Vector2(fMinX, fMinY);
+        Vector2 vecMax = new Vector2(fMaxX, fMaxY);
+
+        Vector2 vecOffset = vecMax - vecMin;
+        return new Bounds(vecCenter, new Vector2(Mathf.Abs(vecOffset.x), Mathf.Abs(vecOffset.y)));
+    }
+
+    private static Vector3[] GetVertices_FromBound(Bounds sBound)
+    {
+        Vector3 boundPoint1 = sBound.min;
+        Vector3 boundPoint2 = sBound.max;
+
+        return new Vector3[]
+        {
+            boundPoint1,
+            boundPoint2,
+            new Vector3(boundPoint1.x, boundPoint1.y, boundPoint2.z),
+            new Vector3(boundPoint1.x, boundPoint2.y, boundPoint1.z),
+            new Vector3(boundPoint2.x, boundPoint1.y, boundPoint1.z),
+            new Vector3(boundPoint1.x, boundPoint2.y, boundPoint2.z),
+            new Vector3(boundPoint2.x, boundPoint1.y, boundPoint2.z),
+            new Vector3(boundPoint2.x, boundPoint2.y, boundPoint1.z)
+        };
+    }
+
+
+    private static Vector3 Convert_World_To_ViewportPoint(Vector3 vecWorldPos, Camera pOtherObjectDrawCamera, Vector2 vecSizeDelta)
+    {
+        Vector3 ViewportPosition = pOtherObjectDrawCamera.WorldToViewportPoint(vecWorldPos);
+
+        return new Vector3(
+            ((ViewportPosition.x * vecSizeDelta.x) - (vecSizeDelta.x * 0.5f)),
+            ((ViewportPosition.y * vecSizeDelta.y) - (vecSizeDelta.y * 0.5f)),
+                ViewportPosition.z
+            );
     }
 }

@@ -1,7 +1,7 @@
 {
 	"name" : "com.korstrix.uiframework",
 	"version": "1.0.0",
-	"displayName" :"UI Framework",
+	"displayName" :"ZZ.UI Framework",
 	"description" :"UGUI 기반의 UI Framework입니다.",
 	"unity": "2018.1",
 	"dependencies": {},

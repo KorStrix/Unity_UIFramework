@@ -345,6 +345,13 @@ public static class UIElement_Extension
     //    return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextStart, strTextDest, fSpeed));
     //}
 
+    public delegate void OnLerpText_WhenTween(Text pText, string strTextDest, int iCutLength);
+
+    public static void DoSeekTweenText(this Text pText, string strTextDest, float fSeekPos_0_1)
+    {
+        SeekTweenText_String_Default(pText, strTextDest, (int)(strTextDest.Length * fSeekPos_0_1));
+    }
+
     public static Coroutine DoPlayTween(this Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fDuration)
     {
         if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
@@ -353,8 +360,20 @@ public static class UIElement_Extension
             return null;
         }
 
-        return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fDuration, OnCalculateProgress_Duration));
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fDuration, SeekTweenText_String_Default, OnCalculateProgress_Duration));
     }
+
+    public static Coroutine DoPlayTween_BySpeed(this Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fSpeed, OnLerpText_WhenTween OnLerpText)
+    {
+        if (pCoroutineExecuter.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogWarning($"{pCoroutineExecuter.name} - {nameof(DoPlayTween)} activeInHierarchy == false", pCoroutineExecuter);
+            return null;
+        }
+
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fSpeed, OnLerpText, OnCalculateProgress_Speed));
+    }
+
 
     public static Coroutine DoPlayTween_BySpeed(this Text pText, MonoBehaviour pCoroutineExecuter, string strTextDest, float fSpeed)
     {
@@ -364,30 +383,29 @@ public static class UIElement_Extension
             return null;
         }
 
-        return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fSpeed, OnCalculateProgress_Speed));
+        return pCoroutineExecuter.StartCoroutine(TweenText(pText, strTextDest, fSpeed, SeekTweenText_String_Default, OnCalculateProgress_Speed));
     }
 
-    private static IEnumerator TweenText(Text pText, string strTextDest, float fValue, System.Func<float, float, float> OnCalculateProgress)
+
+    private static IEnumerator TweenText(Text pText, string strTextDest, float fValue, OnLerpText_WhenTween OnLerpText, System.Func<float, float, float> OnCalculateProgress)
     {
-        int iLength = strTextDest.Length;
-        int iCutLengthPrev = -1;
         pText.text = "";
 
         float fProgress_0_1 = 0f;
         while (fProgress_0_1 < 1f)
         {
-            int iCutLength = (int)(iLength * fProgress_0_1);
-            if (iCutLengthPrev != iCutLength)
-            {
-                iCutLengthPrev = iCutLength;
-                pText.text = strTextDest.Substring(0, iCutLength);
-            }
-
+            int iCutLength = (int)(strTextDest.Length * fProgress_0_1);
+            OnLerpText(pText, strTextDest, iCutLength);
             fProgress_0_1 += OnCalculateProgress(fValue, fProgress_0_1);
             yield return null;
         }
 
         pText.text = strTextDest;
+    }
+
+    private static void SeekTweenText_String_Default(Text pText, string strTextDest, int iCutLength)
+    {
+        pText.text = strTextDest.Substring(0, iCutLength);
     }
 
     private static float OnCalculateProgress_Duration(float fDuration, float fProgress_0_1)
